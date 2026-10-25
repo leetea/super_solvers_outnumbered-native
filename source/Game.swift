@@ -1,7 +1,7 @@
 import Cocoa
 
 // Native infrastructure only. Original game rules are added after their evidence is recovered.
-enum VerifiedRank: String, CaseIterable {
+enum VerifiedRank: String, CaseIterable, Codable {
     case trainee = "Trainee", junior = "Junior", senior = "Senior", pro = "Pro", expert = "Expert", master = "Master", allStar = "All-Star", champion = "Champion"
     static let thresholds = [0, 5_000, 30_000, 60_000, 120_000, 200_000, 300_000, 500_000]
     static func forLifetimePoints(_ points: Int) -> VerifiedRank {
@@ -121,6 +121,7 @@ struct NativeSaveFile: Codable {
     var formatVersion = 1
     var selectedProfileID: UUID?
     var profiles: [NativeProfile] = []
+    var highGameScores: [NativeHighGameScore]?
 }
 
 enum NativeSaveError: LocalizedError {
@@ -152,8 +153,13 @@ final class NativeProfileStore {
             guard document.formatVersion == 1 else { throw NativeSaveError.unsupportedVersion(document.formatVersion) }
             guard Set(document.profiles.map(\.id)).count == document.profiles.count,
                   document.profiles.allSatisfy({ Self.validName($0.name) && ($0.lifetimePoints == nil || (0...9_999_999).contains($0.lifetimePoints!)) && ($0.customGameSettings == nil || $0.customGameSettings!.valid) && ($0.practiceSettings == nil || $0.practiceSettings!.valid) }),
+                  Self.validHighGameScores(document.highGameScores),
                   document.selectedProfileID == nil || document.profiles.contains(where: { $0.id == document.selectedProfileID }) else { throw NativeSaveError.invalidDocument }
         } else { document = NativeSaveFile() }
+    }
+    private static func validHighGameScores(_ scores: [NativeHighGameScore]?) -> Bool {
+        guard let scores else { return true }
+        return scores.count <= 10 && Set(scores.map(\.runID)).count == scores.count && scores.allSatisfy { validName($0.name) && $0.score > 0 } && zip(scores,scores.dropFirst()).allSatisfy { $0.score >= $1.score }
     }
     private static func validName(_ name: String) -> Bool {
         !name.isEmpty && name.count <= 32 && name == name.trimmingCharacters(in: .whitespacesAndNewlines) && name.rangeOfCharacter(from: .controlCharacters) == nil
@@ -184,6 +190,10 @@ final class NativeProfileStore {
         if document.profiles[index].lastResultRunID == runID { return document.profiles[index].lifetimePoints ?? lifetimeBefore }
         var updated = document
         let total = VerifiedScore.lifetimeAfterSession(current: updated.profiles[index].lifetimePoints ?? lifetimeBefore,sessionScore: score,won: won)
+        if won {
+            let entry = NativeHighGameScore(name: updated.profiles[index].name,score: score,rank: VerifiedRank.forLifetimePoints(updated.profiles[index].lifetimePoints ?? lifetimeBefore),runID: runID)
+            updated.highGameScores = OriginalScoreTable.adding(entry,to: updated.highGameScores ?? [])
+        }
         updated.profiles[index].lifetimePoints = total; updated.profiles[index].lastResultRunID = runID
         updated.profiles[index].updatedAt = Date(); try commit(updated)
         return total

@@ -15,7 +15,7 @@ Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers O
 2. Complete asset recovery and native rendering: room backgrounds, sprites, fonts, HUD, teaching templates and sound. 389 bitmap records and 430 font glyphs recovered; all52 PC-speaker data sequences rendered to PCM. Trailer semantics, exact palette/transparency and audio parity still require validation.
 3. One authentic original interaction: the recovered rainfall question now runs in the native development app. Original question text/numbers/answer644, three-attempt flow, Enter-before-hint acknowledgement, 300/200/100 score, room clues, pending recharge, paused clock and original-data correct/wrong PCM are integrated. Verified in an actual native window and with independent fixture checks. All3,200 recovered finite-domain question cases are compiled into native data. Original new-game choices, eligibility, template bands and setup order are implemented in0.7; complete custom/practice lifecycle and timed activity random consumption remain pending.
 4. Traversal and encounters: hallway/room/elevator traversal plus Telly spawn/movement/throw/stun, projectiles,90IRQ zaps, delayed energy cost, drills and code-piece capture are integrated. Native drill pools reproduce original arithmetic and rank counts; the local six-question fixture reaches600→900→1,000. Body/projectile penalties are implemented; LiveWire room encounters and energy-machine recharge are integrated. Knockback/impact animations and full transition fidelity remain incomplete.
-5. Complete game logic: all challenge types and ranks, drill/custom settings, four secret-code pieces, room clues, decoder/match rules, calculator, help, win/loss states, awards and progression. Native0.8 now includes the original scripted hideout reveal, energy/time/victory tally, wrong-choice/midnight losses, persistent lifetime/rank updates and replay, with269 passing checks and an observed ending checkpoint. Native0.9 adds player/game/custom/practice menus, separate13-byte settings, practice counters/no rewards and unfinished-game continuation, with309 checks. High-game history/music, exact menu/practice presentation, detailed effects/transitions and complete-playthrough verification remain required. Not complete.
+5. Complete game logic: all challenge types and ranks, drill/custom settings, four secret-code pieces, room clues, decoder/match rules, calculator, help, win/loss states, awards and progression. Native0.8 now includes the original scripted hideout reveal, energy/time/victory tally, wrong-choice/midnight losses, persistent lifetime/rank updates and replay, with269 passing checks and an observed ending checkpoint. Native0.9 adds player/game/custom/practice menus, separate13-byte settings, practice counters/no rewards and unfinished-game continuation, with309 checks. Music, exact menu/practice presentation, detailed effects/transitions and complete-playthrough verification remain required. Not complete.
 6. Native persistence and packaging: profile foundation plus versioned atomic native session saves now preserve location, question/input/attempt state, clock, clues and score. Corrupt/future saves are preserved; transient menu pauses are normalized for resume. A self-contained ARM64 development bundle is available in outputs; final complete-game packaging remains.
 7. Fidelity validation: compare full playable loops and representative edge cases against the original code and local recording; visually inspect the native window, check audio measurements, package/extract/launch independently, and retain clear limits. Not complete.
 
@@ -25,7 +25,7 @@ Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers O
 - `work/reimplementation/`: expanded native source, original resource catalog, decoded images/fonts/audio, question VM recovery, references and static evidence.
 - `work/reimplementation/reference-media/source.json`: local video identity and measured tracks. Derived PNG frames and mono PCM are analysis copies only.
 - `work/reimplementation/REFERENCE-OVERRIDE.md`: local-video replacement instruction and workspace migration.
-- `outputs/Outnumbered Native Development.app`: current0.10 playable milestone. Command-R opens the local rainfall checkpoint; Command-D opens its six-question Telly drill. Command-4 opens an original-selected Junior question (answer165); Command-5 runs the ending checkpoint to Game11680/Total64275 and replay. These are isolated reference sessions. All ten activity families and3,200 recovered cases have native visual context. Core player/custom/practice menus are integrated; music/history, exact presentation, timed effects, detailed transitions and complete-game fidelity remain unresolved. This is separate from the preserved first prototype.
+- `outputs/Outnumbered Native Development.app`: current0.11 playable milestone. Command-R opens the local rainfall checkpoint; Command-D opens its six-question Telly drill. Command-4 opens an original-selected Junior question (answer165); Command-5 runs the ending checkpoint to Game11680/Total64275 and replay. These are isolated reference sessions. All ten activity families and3,200 recovered cases have native visual context. Core player/custom/practice menus are integrated; music/history, exact presentation, timed effects, detailed transitions and complete-game fidelity remain unresolved. This is separate from the preserved first prototype.
 - `work/reimplementation/DEVELOPMENT-STATUS.md`: implemented behavior, verification, known approximations and next work. Treat this alongside this checklist when continuing.
 
 Current workspace is `.`. Earlier work was copied from the previous Codex directory without modifying that directory; compiler caches were omitted.
@@ -66,7 +66,19 @@ and independent package/source rebuilds are separate gates. See help-recovery.md
 
 The former notes_clipboard/paper catalog labels were corrected: original code
 uses those assets for player sign-in. No source evidence establishes a notes
-editor, so no invented editor is required. High-game history/music, original
+editor, so no invented editor is required. Music, original
 practice/menu presentation, transitions, collisions, timed effects, ending
 refinements and complete natural-playthrough validation remain required. The
 complete-game goal stays active.
+
+
+Milestone0.11 adds original lifetime/high-game score screens and the source
+top-ten insertion rules. Individual winning games retain their pre-award rank;
+ties stay behind existing equals, and ties with tenth do not qualify. History
+and lifetime commit atomically with result recovery. Existing files without
+history remain readable; historical games are not invented from lifetime totals.
+353 native checks pass. Command7/8 open the score screens; Enter/Esc returns.
+Arrow keys page lifetime rows when native profiles exceed the DOS ten slots.
+Music/new-user options, original practice animations, full File/sign-in UI,
+transitions/collision, timed effects and complete playthrough remain unfinished.
+See score-history-recovery.md for original evidence and native adaptations.

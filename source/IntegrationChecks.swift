@@ -119,6 +119,7 @@ func nativeIntegrationChecks(root: URL) throws {
     checks.merge(try nativeEndingChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeMenuChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeHelpChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeScoreChecks(root: root,output: output)) { _,new in new }
     let report: [String:Any] = ["passed": checks.values.allSatisfy { $0 },"checks": checks,"checkCount": checks.count,"guiVerified": false,"completeGame": false,"reference": "Local OutNumbered Gameplay.mkv weather and drill checkpoints; original static data/code"]
     let data = try JSONSerialization.data(withJSONObject: report,options: [.prettyPrinted,.sortedKeys])
     try data.write(to: output.appendingPathComponent("native-integration-checks.json"))

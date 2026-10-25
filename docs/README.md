@@ -1,4 +1,4 @@
-# Outnumbered Native Development Build 0.10
+# Outnumbered Native Development Build 0.11
 
 Open `Outnumbered Native Development.app` on an Apple Silicon Mac with macOS12 or later. This is a playable development milestone toward the complete game, not the finished game.
 
@@ -8,7 +8,7 @@ From the title screen, Return opens the player menu. Create or select a player, 
 
 Choose **Game → Reference Telly Drill** (Command-D) to play the recording's six questions. Answers are **19,12,22,7,22,3**. Correct answers earn50 each; at least five correct answers earn a code piece and100 more. Feedback pauses are automatic, and the game clock keeps running. This checkpoint uses an isolated native session.
 
-The app includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, all ten activity families, decoder logic, recharge, LiveWire, the calculator and native saves. It now includes the original scripted hideout reveal, progressive bonuses, win/loss outcomes, lifetime points and replay. Separate custom game/practice settings, player switching, practice counters and unfinished-game continuation are now connected. Original high-game history/music, exact menu/practice animations, detailed ending/transition effects, collision presentation, palette and full-playthrough validation remain incomplete. This is not a complete or pixel-exact game.
+The app includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, all ten activity families, decoder logic, recharge, LiveWire, the calculator and native saves. It now includes the original scripted hideout reveal, progressive bonuses, win/loss outcomes, lifetime points and replay. Separate custom game/practice settings, player switching, practice counters and unfinished-game continuation are now connected. Original music, exact menu/practice animations, detailed ending/transition effects, collision presentation, palette and full-playthrough validation remain incomplete. This is not a complete or pixel-exact game.
 
 Native player files are separate from DOS assets:
 
@@ -44,7 +44,19 @@ and independent package/source rebuilds are separate gates. See help-recovery.md
 
 The former notes_clipboard/paper catalog labels were corrected: original code
 uses those assets for player sign-in. No source evidence establishes a notes
-editor, so no invented editor is required. High-game history/music, original
+editor, so no invented editor is required. Music, original
 practice/menu presentation, transitions, collisions, timed effects, ending
 refinements and complete natural-playthrough validation remain required. The
 complete-game goal stays active.
+
+
+Milestone0.11 adds original lifetime/high-game score screens and the source
+top-ten insertion rules. Individual winning games retain their pre-award rank;
+ties stay behind existing equals, and ties with tenth do not qualify. History
+and lifetime commit atomically with result recovery. Existing files without
+history remain readable; historical games are not invented from lifetime totals.
+353 native checks pass. Command7/8 open the score screens; Enter/Esc returns.
+Arrow keys page lifetime rows when native profiles exceed the DOS ten slots.
+Music/new-user options, original practice animations, full File/sign-in UI,
+transitions/collision, timed effects and complete playthrough remain unfinished.
+See score-history-recovery.md for original evidence and native adaptations.

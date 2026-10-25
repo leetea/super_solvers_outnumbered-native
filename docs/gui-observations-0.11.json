@@ -1,0 +1,23 @@
+{
+  "milestone": "0.11",
+  "app": "/private/tmp/Outnumbered-Scores-Final.app",
+  "temporaryPlayers": "/private/tmp/outnumbered-011-gui-players",
+  "fixtureScope": "Three temporary profiles and three high-game display fixtures; not evidence of earning these scores during a natural playthrough.",
+  "observations": [
+    "Command8 displays original-style top-ten table: SENIOR/Senior/55,000; JUNIOR/Junior/11,680; SENIOR/Trainee/5,000",
+    "Command7 displays lifetime order EXPERT/Expert/120,000; SENIOR/Pro/64,275; JUNIOR/Junior/5,000",
+    "Enter closes lifetime table; Esc closes high-game table",
+    "From rainfall question, entered42, opened high games, opened/closed F1 help, then Esc restored question with42 unchanged",
+    "Final panel separator/frame checked after small candidate-frame correction"
+  ],
+  "screenshots": [
+    "gui-high-game-scores-final.png",
+    "gui-lifetime-scores-final.png",
+    "gui-score-question-return-final.png"
+  ],
+  "limits": [
+    "Persistence and source insertion/tie/rank rules are tested separately by native checks",
+    "Full original File/menu/sign-in presentation, music/new-user options and natural full playthrough remain unfinished",
+    "No full-game pixel or perceptual audio parity claim"
+  ]
+}

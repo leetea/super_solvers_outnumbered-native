@@ -40,7 +40,7 @@ struct NativeHelpBrowser {
 
 extension NativeCanvas {
     //1862:05f9, the two source panel forms used by the Help menu/viewer.
-    func originalHelpPanel(left: Int,top: Int,right: Int,bottom: Int,title: String?,footer: String?,font: OriginalFont) {
+    func originalHelpPanel(left: Int,top: Int,right: Int,bottom: Int,title: String?,footer: String?,font: OriginalFont,bottomSeparator: Int = 21) {
         fill(left,top,right-left+1,bottom-top+1,15)
         fill(left+2,top,2,bottom-top-3,1)
         fill(right-5,top+2,4,bottom-top-3,1)
@@ -50,7 +50,7 @@ extension NativeCanvas {
             fill(left,top-2,right-left+1,2,15)
             fill(left+3,top+15,right-left-5,1,1)
             text(title,font: font,x: right-(right-left)/2-font.width(of: title)/2,y: top+4,color: 1)
-            fill(left+3,bottom-21,right-left-5,1,1)
+            fill(left+3,bottom-bottomSeparator,right-left-5,1,1)
         }
         if let footer { text(footer,font: font,x: right-(right-left)/2-font.width(of: footer)/2,y: bottom-16,color: 1) }
     }

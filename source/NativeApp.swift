@@ -1,7 +1,7 @@
 import Cocoa
 
 final class NativeGameView: NSView, NSMenuItemValidation {
-    enum Screen { case title, menu, practice, world, question, drill, decoder, help, ending, results }
+    enum Screen { case title, menu, practice, world, question, drill, decoder, help, scores, ending, results }
     let content: OriginalContent
     let world: OriginalWorld
     let renderer: ChallengeRenderer
@@ -21,6 +21,10 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var helpReturn = Screen.world
     var helpBrowser: NativeHelpBrowser?
     var helpPausesAdventure = false
+    var scoreReturn = Screen.title
+    var scoresPauseAdventure = false
+    var scoresShowHighGames = false
+    var scorePage = 0
     var tick = 0
     var jumpStep: Int?
     var jumpDirection = 0
@@ -127,7 +131,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     func step() {
         tick += 1
-        guard modalDepth == 0, screen != .menu, screen != .title else { return }
+        guard modalDepth == 0, screen != .menu, screen != .title, screen != .scores else { return }
         if screen == .help && !helpPausesAdventure { return }
         if screen == .practice {
             let phase = practice?.drill.phase, attempts = practice?.attempts, correct = practice?.correctAnswers
@@ -259,6 +263,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if key == 99 { showOptions(); return }
         if key == 122 { toggleHelp(); return }
         if screen == .help { helpKey(event); return }
+        if screen == .scores { scoresKey(event); return }
         if screen == .practice { practiceKey(event); return }
         if screen == .menu {
             if key == 125 { menuSelection = (menuSelection+1)%Self.playerMenuItems.count }
@@ -312,7 +317,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 confirmDecision()
             }
             else if event.charactersIgnoringModifiers?.lowercased() == "m" { showMatchRule() }
-        case .help: break
+        case .help, .scores: break
         }
         needsDisplay = true
     }
@@ -358,9 +363,10 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             else { helpClick(x: x,y: y) }
             return
         }
+        if screen == .scores { closeScores(); return }
         if screen == .title { showPlayerMenu(); return }
         if screen == .menu {
-            if x >= 34 && x < 286 && y >= 58 && y < 170 { menuSelection = min(6,(y-58)/16); activatePlayerMenu(menuSelection) }
+            if x >= 34 && x < 286 && y >= 58 && y < 170 { menuSelection = min(Self.playerMenuItems.count-1,(y-58)/14); activatePlayerMenu(menuSelection) }
             return
         }
         if y < 12 && x >= 50 && x < 100 { showPlayerMenu(); return }
@@ -522,6 +528,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let visibleScreen = visibleScreen ?? screen
         canvas.clip = nil; canvas.clear(0)
         if visibleScreen == .help { try render(helpReturn); try drawOriginalHelp(); return }
+        if visibleScreen == .scores { try render(scoreReturn); try drawScores(); return }
         if visibleScreen == .title { canvas.draw(try content.bitmap("OPENING.GRA.000"),x: 0,y: 0); return }
         if visibleScreen == .menu { try drawPlayerMenu(); return }
         if visibleScreen == .practice { try drawPractice(); return }
@@ -534,7 +541,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         case .decoder: try drawDecoder()
         case .ending: try drawEnding()
         case .results: try drawResults()
-        case .help: break
+        case .help, .scores: break
         }
     }
     override func draw(_ dirtyRect: NSRect) {
@@ -564,6 +571,8 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
             let players = NSMenuItem(title: "Play Another Game",action: #selector(NativeGameView.showPlayerMenu),keyEquivalent: "p"); players.target = game; gameMenu.addItem(players)
             let newPlayer = NSMenuItem(title: "Start New Player",action: #selector(NativeGameView.choosePlayer),keyEquivalent: "n"); newPlayer.target = game; gameMenu.addItem(newPlayer)
             let practice = NSMenuItem(title: "Drill for Skill",action: #selector(NativeGameView.startPractice),keyEquivalent: "k"); practice.target = game; gameMenu.addItem(practice)
+            let lifetime = NSMenuItem(title: "Lifetime Scores",action: #selector(NativeGameView.showLifetimeScores),keyEquivalent: "7"); lifetime.target = game; gameMenu.addItem(lifetime)
+            let highScores = NSMenuItem(title: "High Game Scores",action: #selector(NativeGameView.showHighGameScores),keyEquivalent: "8"); highScores.target = game; gameMenu.addItem(highScores)
             let options = NSMenuItem(title: "Options",action: #selector(NativeGameView.showOptions),keyEquivalent: ","); options.target = game; gameMenu.addItem(options)
             gameMenu.addItem(.separator())
             let reference = NSMenuItem(title: "Reference Rainfall Question",action: #selector(NativeGameView.referenceQuestion),keyEquivalent: "r"); reference.target = game

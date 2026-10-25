@@ -74,6 +74,7 @@ extension NativeGameView {
     }
     @objc func showPlayerMenu() {
         if screen == .help { closeHelp() }
+        if screen == .scores { closeScores() }
         guard session?.activeZap == nil, session?.activeFountain == nil, screen != .ending else { return }
         save(); held.removeAll(); sound?.stop(); lastSoundIndex = nil
         if screen != .menu && screen != .practice { menuReturn = screen }
@@ -143,6 +144,7 @@ extension NativeGameView {
     }
     @objc func startPractice() {
         if screen == .help { closeHelp() }
+        if screen == .scores { closeScores() }
         save()
         guard let profile = selectedProfile, let settings = configure(practice: true) else { return }
         do {
@@ -168,15 +170,6 @@ extension NativeGameView {
         } catch { present(error) }
         needsDisplay = true
     }
-    @objc func showLifetimeScores() {
-        modalDepth += 1; defer { modalDepth -= 1 }
-        let alert = NSAlert(); alert.messageText = "Lifetime Scores"
-        alert.informativeText = profileStore.document.profiles.sorted { ($0.lifetimePoints ?? 0) > ($1.lifetimePoints ?? 0) }.map {
-            "\($0.name): \($0.lifetimePoints ?? 0)  \(VerifiedRank.forLifetimePoints($0.lifetimePoints ?? 0).rawValue)"
-        }.joined(separator: "\n")
-        if alert.informativeText.isEmpty { alert.informativeText = "Start a new player to begin." }
-        alert.runModal()
-    }
     @objc func toggleSound() { soundEnabled.toggle(); if !soundEnabled { sound?.stop() }; needsDisplay = true }
     @objc func showOptions() {
         guard session?.activeZap == nil, session?.activeFountain == nil, screen != .ending else { return }
@@ -198,7 +191,7 @@ extension NativeGameView {
             }
         }
     }
-    static let playerMenuItems = ["Play Game","Customized Game","Customized Drill for Skill","Start New Player","Lifetime Scores","Sound","Return"]
+    static let playerMenuItems = ["Play Game","Customized Game","Customized Drill for Skill","Start New Player","Lifetime Scores","High Game Scores","Sound","Return"]
     func activatePlayerMenu(_ index: Int) {
         switch index {
         case 0: playGame()
@@ -206,7 +199,8 @@ extension NativeGameView {
         case 2: startPractice()
         case 3: choosePlayer()
         case 4: showLifetimeScores()
-        case 5: toggleSound()
+        case 5: showHighGameScores()
+        case 6: toggleSound()
         default:
             if session != nil && menuReturn != .title && menuReturn != .practice { screen = menuReturn }
             else { screen = .title }
@@ -224,8 +218,8 @@ extension NativeGameView {
         canvas.clip = nil
         if let profile { canvas.text(VerifiedRank.forLifetimePoints(profile.lifetimePoints ?? 0).rawValue,font: small,x: 220,y: 40,color: 0) }
         for (i,label) in Self.playerMenuItems.enumerated() {
-            let y = 60+i*16, selected = i == menuSelection
-            if selected { canvas.fill(34,y-2,252,15,1) }
+            let y = 60+i*14, selected = i == menuSelection
+            if selected { canvas.fill(34,y-2,252,13,1) }
             canvas.text(label == "Sound" ? "Sound: \(soundEnabled ? "On" : "Off")" : label,font: font,x: 42,y: y,color: selected ? 15 : 0)
         }
         canvas.text("Choose an item and press Enter.",font: small,x: 38,y: 172,color: 0)

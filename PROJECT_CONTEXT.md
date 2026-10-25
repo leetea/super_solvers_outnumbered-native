@@ -65,3 +65,15 @@ editor, so no invented editor is required. High-game history/music, original
 practice/menu presentation, transitions, collisions, timed effects, ending
 refinements and complete natural-playthrough validation remain required. The
 complete-game goal stays active.
+
+
+Milestone0.11 adds original lifetime/high-game score screens and the source
+top-ten insertion rules. Individual winning games retain their pre-award rank;
+ties stay behind existing equals, and ties with tenth do not qualify. History
+and lifetime commit atomically with result recovery. Existing files without
+history remain readable; historical games are not invented from lifetime totals.
+353 native checks pass. Command7/8 open the score screens; Enter/Esc returns.
+Arrow keys page lifetime rows when native profiles exceed the DOS ten slots.
+Music/new-user options, original practice animations, full File/sign-in UI,
+transitions/collision, timed effects and complete playthrough remain unfinished.
+See score-history-recovery.md for original evidence and native adaptations.
