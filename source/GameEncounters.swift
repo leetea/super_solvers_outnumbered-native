@@ -56,7 +56,7 @@ extension NativeGameView {
         if session != nil && session.activeFountain != nil { pulseFountain(); return }
         let now = ProcessInfo.processInfo.systemUptime
         defer { lastZapPulse = now }
-        guard session != nil, screen == .world, var zap = session.activeZap else { return }
+        guard modalDepth == 0, session != nil, screen == .world, var zap = session.activeZap else { return }
         let ticks = max(0,now-lastZapPulse)*VerifiedClock.pitInputHz/VerifiedClock.pitDivisor+zapFraction
         let whole = min(90-zap.elapsedIRQTicks,Int(ticks.rounded(.down)))
         zapFraction = ticks-ticks.rounded(.down)
@@ -91,7 +91,7 @@ extension NativeGameView {
     func pulseFountain() {
         let now = ProcessInfo.processInfo.systemUptime
         defer { lastZapPulse = now }
-        guard screen == .world, var fountain = session.activeFountain else { return }
+        guard modalDepth == 0, screen == .world, var fountain = session.activeFountain else { return }
         let ticks = max(0,now-lastZapPulse)*VerifiedClock.pitInputHz/VerifiedClock.pitDivisor+zapFraction
         let whole = min(fountain.duration-fountain.elapsedIRQTicks,Int(ticks.rounded(.down)))
         zapFraction = ticks-ticks.rounded(.down)
@@ -149,7 +149,7 @@ extension NativeGameView {
     func startDrill(reference: Bool = false) {
         do {
             var generator = session.generator
-            session.activeDrill = try NativeDrill(tier: session.decoder.difficulty,nextRandom: { generator.nextRandomValue() },reference: reference)
+            session.activeDrill = try NativeDrill(tier: session.decoder.difficulty,nextRandom: { generator.nextRandomValue() },reference: reference,settings: session.gameSettings)
             session.generator = generator; clearTelly(); held.removeAll(); screen = .drill; status = ""; save()
         } catch { present(error) }
     }
@@ -187,12 +187,15 @@ extension NativeGameView {
     }
     func drawDrill() throws {
         guard let drill = session.activeDrill else { return }
+        try drawDrill(drill)
+    }
+    func drawDrill(_ drill: NativeDrill) throws {
         canvas.draw(try content.bitmap("DMOCKET.GRA.157c"),x: 0,y: 15)
         let font = try content.font("MOCKET.DAT.1394"), small = try content.font("MOCKET.DAT.1396"), ui = try content.font("MOCKET.DAT.1393")
-        if drill.phase == .finished {
+        if drill.phase == .finished && drill.practice != true {
             if let symbol = drill.capturedSymbol { try sprite(Int(symbol)+78,x: 156,y: 65,transparent: false) }
             else { canvas.text("No Code. Catch me again!",font: small,x: 102,y: 70,color: 15) }
-        } else if drill.phase != .between {
+        } else if drill.phase != .between && drill.phase != .finished {
             let parts = drill.displayParts, widths = parts.map { font.width(of: $0) }
             let total = widths.reduce(0,+)+27
             let left = 164-total/2

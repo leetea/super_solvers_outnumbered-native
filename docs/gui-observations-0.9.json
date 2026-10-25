@@ -1,0 +1,62 @@
+{
+  "milestone": "0.9.0",
+  "shippingBinarySHA256": "fa19bcb7a83b0cfadf402cb12e46739a1ec4882b53030aac6b27634d1a3fc7b8",
+  "verificationBundle": "/private/tmp/Outnumbered-Menus-Verification.app",
+  "verificationPlayersDirectory": "/private/tmp/outnumbered-09-gui-players",
+  "codeIdentity": "gui-0.9-code-identity.json",
+  "scope": "The verification bundle has distinct name/identifier and a temporary player directory; all32 compiled Mach-O sections match the shipping executable. Ad-hoc signatures differ because its Info.plist differs.",
+  "headlessChecks": 309,
+  "observed": [
+    "Title Return opened native player menu with the selected named profile and rank.",
+    "Native custom-game controls changed operations to multiplication and math level4; saved room setup contained only original operation index2 and math level3.",
+    "An earlier candidate showed the original empty-group validation warning and Undo restored entry choices.",
+    "Shipping settings rejected division alone with only0 selected using the recovered original warning.",
+    "Shipping Undo restored saved multiplication settings; Standard Settings restored rank-default addition/subtraction and numbers0..5; Undo restored the entry snapshot again.",
+    "Shipping native practice completed five multiplication-with-zero problems and showed5 of5 correct, with running Problems5/Correct5 counters.",
+    "An earlier candidate completed a mixed set with4 of5 correct and resumed the unfinished custom game after another set.",
+    "F3 sound/calculator checkboxes were exposed in the native window.",
+    "Shipping Enter began another set with Problems6/Correct5.",
+    "Shipping Esc returned to the player menu; Play Game offered Continue/New; Continue resumed the saved custom adventure at score0/energy12/9:03PM with its prior settings."
+  ],
+  "practicePreservation": {
+    "beforeSHA256": "41b649531e4eadfd8cbcddd17d23ad83030be0a976812272833d74d0702b43f0",
+    "afterSHA256": "41b649531e4eadfd8cbcddd17d23ad83030be0a976812272833d74d0702b43f0",
+    "unchanged": true,
+    "score": 0,
+    "energy": 12,
+    "minutes": 3
+  },
+  "screenshots": [
+    "gui-menu-shipping.png",
+    "gui-settings-shipping.png",
+    "gui-practice-shipping-result.png",
+    "gui-practice-shipping-new-set.png",
+    "gui-menu-shipping-continue.png"
+  ],
+  "limits": [
+    "Original DOS settings-dialog pixels and practice interstitial/result animations are not reproduced.",
+    "No perceptual sound or complete-playthrough claim.",
+    "Repeated captures sometimes omit fixed text; a diagnostic build's native canvas PNG remained identical/correct before presentation. A CoreGraphics trial did not resolve this and was reverted. The capture/display discrepancy remains unresolved.",
+    "Historical candidate screenshots have different executable/signature identities and do not alone establish the shipping binary."
+  ],
+  "resumedAdventure": {
+    "score": 0,
+    "energy": 12,
+    "minutes": 3,
+    "customSettings": [
+      15,
+      20,
+      4,
+      4,
+      4,
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}

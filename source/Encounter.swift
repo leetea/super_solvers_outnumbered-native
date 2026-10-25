@@ -97,11 +97,15 @@ struct NativeDrill: Codable {
     var rewardApplied = false
     var capturedSymbol: UInt8?
     var resultTicksRemaining = 0
+    var practice: Bool?
     static let acknowledgements = ["That's correct!","That's the answer!","That's right!","You're right!","Good job!"] // Original DS:5354 pointers.
-    init(tier: Int, nextRandom: () -> Int, reference: Bool = false) throws {
+    init(tier: Int, nextRandom: () -> Int, reference: Bool = false, settings: OriginalGameSettings? = nil, practice: Bool = false) throws {
         guard (0..<4).contains(tier) else { throw DrillError.invalidSettings }
-        questionCount = tier*2+4
-        var generator = try OriginalDrillGenerator(settings: OriginalDrillGenerator.defaults[tier])
+        let settings = settings ?? .defaults(tier: tier)
+        guard settings.valid, !practice || !reference else { throw DrillError.invalidSettings }
+        self.practice = practice
+        questionCount = practice ? settings.practiceQuestionCount : tier*2+4
+        var generator = try OriginalDrillGenerator(settings: settings.bytes)
         if reference {
             guard tier == 1 else { throw DrillError.invalidSettings }
             // Six equations/blank positions independently visible in the local
@@ -112,7 +116,7 @@ struct NativeDrill: Codable {
         } else { referenceQuestions = nil; question = try generator.next(nextRandom: nextRandom) }
         self.generator = generator
     }
-    var entitledToCode: Bool { correct >= questionCount-1 }
+    var entitledToCode: Bool { practice != true && correct >= questionCount-1 }
     var displayParts: [String] {
         var values = [String(question.left),question.operation.glyph,String(question.right),"=",String(question.result)]
         let index = [4,0,2][question.blank.rawValue]
@@ -144,7 +148,7 @@ struct NativeDrill: Codable {
             guard ticksRemaining == 0 else { break }
             switch phase {
             case .between: phase = .asking
-            case .correctFeedback: award += 50; phase = .correctPause; ticksRemaining = 240
+            case .correctFeedback: if practice != true { award += 50 }; phase = .correctPause; ticksRemaining = 240
             case .wrongFeedback: phase = .showCorrect; ticksRemaining = 720
             case .correctPause,.showCorrect:
                 if answered >= questionCount { phase = .finished }
@@ -160,7 +164,7 @@ struct NativeDrill: Codable {
     }
     mutating func abort() { if phase == .asking { phase = .finished } }
     var valid: Bool {
-        [4,6,8,10].contains(questionCount) && generator.valid && question.valid &&
+        (practice == true ? [5,10,15,20] : [4,6,8,10]).contains(questionCount) && generator.valid && question.valid &&
         (0...questionCount).contains(answered) && (0...answered).contains(correct) &&
         (0...720).contains(ticksRemaining) && input.count <= 3 && input.utf8.allSatisfy { (48...57).contains($0) } &&
         (referenceQuestions == nil || (questionCount == 6 && referenceQuestions!.count == 6 && referenceQuestions!.allSatisfy(\.valid))) &&

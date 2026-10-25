@@ -45,15 +45,19 @@ struct NativeSession: Codable {
     var migratedQuestionSetup: Bool?
     var runID: UUID?
     var activeEnding: NativeEnding?
+    var gameSettings: OriginalGameSettings?
     var outcome = "active"
     var rank: VerifiedRank { VerifiedRank.forLifetimePoints(lifetimePoints) }
-    init(profileID: UUID, seed: UInt32, lifetimePoints: Int = 0) {
+    init(profileID: UUID, seed: UInt32, lifetimePoints: Int = 0, settings: OriginalGameSettings? = nil, previousGenerator: DecoderGenerator? = nil) {
         formatVersion = 1; self.profileID = profileID; self.lifetimePoints = lifetimePoints
         runID = UUID()
-        var generator = DecoderGenerator(seed: seed)
+        var generator = previousGenerator ?? DecoderGenerator(seed: seed)
         let tier = VerifiedRank.allCases.firstIndex(of: VerifiedRank.forLifetimePoints(lifetimePoints))! >> 1
+        let settings = settings ?? .defaults(tier: tier)
+        precondition(settings.valid)
+        gameSettings = settings
         generator.restoreRandomState(seed & 65535) // original srand takes a 16-bit seed
-        questionSetup = try! OriginalQuestionSetup(tier: tier,settings: .defaults(tier: tier),generator: &generator)
+        questionSetup = try! OriginalQuestionSetup(tier: tier,settings: settings.questionSettings,generator: &generator)
         decoder = generator.makePuzzle(difficulty: tier)
         energyMachineSlot = OriginalWorld.energyMachineCandidates[generator.nextRandomValue()%9]
         self.generator = generator
@@ -69,6 +73,7 @@ struct NativeSession: Codable {
         attempts.allSatisfy { (0..<10).contains($0.key) && (0...2).contains($0.value.wrongAnswers) && $0.value.input.count <= 4 && $0.value.input.utf8.allSatisfy { (48...57).contains($0) } } &&
         assignedChallenges.allSatisfy { (0..<10).contains($0.key) && $0.key == $0.value.hotspot } &&
         (questionSetup == nil || questionSetup!.valid) &&
+        (gameSettings == nil || gameSettings!.valid) &&
         (activeEnding == nil || (activeEnding!.valid && runID != nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil)) &&
         (telly == nil || telly!.hasValidPersistenceState) &&
         (activeDrill == nil || activeDrill!.valid) && (activeZap == nil || activeZap!.valid) &&

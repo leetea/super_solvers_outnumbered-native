@@ -1,7 +1,7 @@
 import Cocoa
 
 final class NativeGameView: NSView, NSMenuItemValidation {
-    enum Screen { case title, world, question, drill, decoder, help, ending, results }
+    enum Screen { case title, menu, practice, world, question, drill, decoder, help, ending, results }
     let content: OriginalContent
     let world: OriginalWorld
     let renderer: ChallengeRenderer
@@ -30,6 +30,10 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var lastError: String?
     var referenceMode = false
     var lastSaveTick = 0
+    var menuReturn = Screen.title
+    var menuSelection = 0
+    var modalDepth = 0
+    var practice: NativePractice?
     override var acceptsFirstResponder: Bool { true }
     override var isFlipped: Bool { true }
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
@@ -68,6 +72,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             screen = session.activeDrill != nil ? .drill : (session.activeChallenge == nil ? .world : .question)
             if let ending = session.activeEnding { screen = ending.elapsedTicks >= EndingTimeline(ending,data: endingData).duration ? .results : .ending }
             status = ""; referenceMode = false
+            practice = nil
             needsDisplay = true
         } catch { present(error) }
     }
@@ -117,6 +122,12 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     func step() {
         tick += 1
+        guard modalDepth == 0, screen != .menu, screen != .title else { return }
+        if screen == .practice {
+            do { for index in try practice?.advance(irqTicks: OriginalWorld.frameIRQTicks) ?? [] { effect(index) } }
+            catch { present(error) }
+            needsDisplay = true; return
+        }
         guard session != nil else { return }
         if screen == .ending {
             do { try advanceEnding() } catch { present(error) }
@@ -236,24 +247,34 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     override func keyDown(with event: NSEvent) {
         let key = event.keyCode
         if screen == .ending { return }
+        if key == 120 { showPlayerMenu(); return }
+        if key == 99 { showOptions(); return }
+        if screen == .practice { practiceKey(event); return }
+        if screen == .menu {
+            if key == 125 { menuSelection = (menuSelection+1)%Self.playerMenuItems.count }
+            else if key == 126 { menuSelection = (menuSelection+Self.playerMenuItems.count-1)%Self.playerMenuItems.count }
+            else if key == 36 { activatePlayerMenu(menuSelection) }
+            else if key == 53 { activatePlayerMenu(Self.playerMenuItems.count-1) }
+            needsDisplay = true; return
+        }
         if screen == .results {
             if key == 36 { continueAfterResults() }
             else if key == 53 { screen = .title; needsDisplay = true }
             return
         }
         if key == 123 || key == 124 { held.insert(key) }
-        if screen == .title { if key == 36 { begin() }; return }
+        if screen == .title { if key == 36 { showPlayerMenu() }; return }
         guard session != nil else { return }
         if session.activeZap != nil || session.activeFountain != nil { return }
         if key == 122 { toggleHelp(); return }
         switch screen {
-        case .title, .ending, .results: break
+        case .title, .menu, .practice, .ending, .results: break
         case .world:
             if key == 126 && !event.isARepeat && session.outcome == "active" { interact() }
             else if key == 49 && !event.isARepeat && jumpStep == nil && session.outcome == "active" {
                 beginZap()
             } else if key == 48 { sound?.stop(); lastSoundIndex = nil; screen = .decoder; session.clock.pause(); held.removeAll() }
-            else if key == 53 { save(); screen = .title }
+            else if key == 53 { showPlayerMenu() }
         case .question:
             guard let challenge = session.activeChallenge else { return }
             if key == 53 { leaveQuestion(); return }
@@ -290,7 +311,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     override func resignFirstResponder() -> Bool { held.removeAll(); return true }
     @objc func toggleHelp() {
         guard session != nil else { return }
-        if screen == .ending || screen == .results { return }
+        if screen == .ending || screen == .results || screen == .menu || screen == .practice { return }
         if session.activeZap != nil || session.activeFountain != nil { return }
         if screen == .help { screen = helpReturn; session.clock.resume() }
         else { helpReturn = screen; screen = .help; session.clock.pause(); held.removeAll() }
@@ -318,7 +339,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if session != nil && (session.activeZap != nil || session.activeFountain != nil) { return }
         let p = convert(event.locationInWindow, from: nil)
         let x = Int(p.x/bounds.width*320), y = Int(p.y/bounds.height*200)
-        if screen == .title { begin(); return }
+        if screen == .title { showPlayerMenu(); return }
+        if screen == .menu {
+            if x >= 34 && x < 286 && y >= 58 && y < 170 { menuSelection = min(6,(y-58)/16); activatePlayerMenu(menuSelection) }
+            return
+        }
+        if y < 12 && x >= 50 && x < 100 { showPlayerMenu(); return }
+        if y < 12 && x >= 100 && x < 170 { showOptions(); return }
+        if screen == .practice { return }
         if y < 12 && x < 50 { toggleHelp(); return }
         if screen == .decoder {
             if x >= 172 && y >= 17 && y < 157 { selectedRoom = min(4,(y-17)/28) }
@@ -473,9 +501,11 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     func render() throws {
         canvas.clip = nil; canvas.clear(0)
         if screen == .title { canvas.draw(try content.bitmap("OPENING.GRA.000"),x: 0,y: 0); return }
+        if screen == .menu { try drawPlayerMenu(); return }
+        if screen == .practice { try drawPractice(); return }
         try drawHUD()
         switch screen {
-        case .title: break
+        case .title, .menu, .practice: break
         case .world: try drawWorld()
         case .question: try drawQuestion()
         case .drill: try drawDrill()
@@ -513,6 +543,11 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
             menu.addItem(withTitle: "Quit Outnumbered",action: #selector(NSApplication.terminate(_:)),keyEquivalent: "q")
             let gameItem = NSMenuItem(), gameMenu = NSMenu(title: "Game")
             root.addItem(gameItem); gameItem.submenu = gameMenu
+            let players = NSMenuItem(title: "Play Another Game",action: #selector(NativeGameView.showPlayerMenu),keyEquivalent: "p"); players.target = game; gameMenu.addItem(players)
+            let newPlayer = NSMenuItem(title: "Start New Player",action: #selector(NativeGameView.choosePlayer),keyEquivalent: "n"); newPlayer.target = game; gameMenu.addItem(newPlayer)
+            let practice = NSMenuItem(title: "Drill for Skill",action: #selector(NativeGameView.startPractice),keyEquivalent: "k"); practice.target = game; gameMenu.addItem(practice)
+            let options = NSMenuItem(title: "Options",action: #selector(NativeGameView.showOptions),keyEquivalent: ","); options.target = game; gameMenu.addItem(options)
+            gameMenu.addItem(.separator())
             let reference = NSMenuItem(title: "Reference Rainfall Question",action: #selector(NativeGameView.referenceQuestion),keyEquivalent: "r"); reference.target = game
             gameMenu.addItem(reference)
             let songs = NSMenuItem(title: "Reference Cartoon Songs Question",action: #selector(NativeGameView.referenceSongs),keyEquivalent: "g"); songs.target = game; gameMenu.addItem(songs)

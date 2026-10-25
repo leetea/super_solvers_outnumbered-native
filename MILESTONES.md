@@ -13,7 +13,9 @@ documented history, not backdated Git commits.
 | 0.7 | Original startup selection, eligibility, bands and RNG boundary; all3,200 cases recovered |245 checks; extracted app verified and packaged source rebuilt; Junior165 and music106 accepted in native windows |
 | 0.8 | Scripted hideout reveal, progressive bonuses, win/loss results, persistent lifetime/rank updates and replay; corrected room backgrounds |269 checks; native window reached Game 11,680 / Total 64,275 and replay; normal save/restart/result-commit recovery checked in temporary player directories; extracted app and source rebuild verified |
 
-The full-game goal is **not complete**. Next are original menus/options/help/
-notes/practice, followed by remaining transitions, collision presentation,
-effects, palette and complete-playthrough validation. Exact bonus sliding,
+| 0.9 | Player menus, custom settings, independent Drill for Skill and unfinished-game continuation; replay preserves decoder pools |309 checks; native-window settings/practice flow; extracted app and source rebuild verified; original UI/practice animations remain pending |
+
+The full-game goal is **not complete**. Next are original full help/notes,
+high-game history/music and practice presentation, followed by transitions,
+collision presentation, effects, palette and complete-playthrough validation. Exact bonus sliding,
 rank-tower animation and midnight meter flashing remain presentation gaps.

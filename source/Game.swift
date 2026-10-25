@@ -113,6 +113,8 @@ struct NativeProfile: Codable, Identifiable {
     var updatedAt: Date
     var lifetimePoints: Int?
     var lastResultRunID: UUID?
+    var customGameSettings: OriginalGameSettings?
+    var practiceSettings: OriginalGameSettings?
 }
 
 struct NativeSaveFile: Codable {
@@ -149,7 +151,7 @@ final class NativeProfileStore {
             document = try decoder.decode(NativeSaveFile.self, from: Data(contentsOf: file))
             guard document.formatVersion == 1 else { throw NativeSaveError.unsupportedVersion(document.formatVersion) }
             guard Set(document.profiles.map(\.id)).count == document.profiles.count,
-                  document.profiles.allSatisfy({ Self.validName($0.name) && ($0.lifetimePoints == nil || (0...9_999_999).contains($0.lifetimePoints!)) }),
+                  document.profiles.allSatisfy({ Self.validName($0.name) && ($0.lifetimePoints == nil || (0...9_999_999).contains($0.lifetimePoints!)) && ($0.customGameSettings == nil || $0.customGameSettings!.valid) && ($0.practiceSettings == nil || $0.practiceSettings!.valid) }),
                   document.selectedProfileID == nil || document.profiles.contains(where: { $0.id == document.selectedProfileID }) else { throw NativeSaveError.invalidDocument }
         } else { document = NativeSaveFile() }
     }
@@ -185,6 +187,14 @@ final class NativeProfileStore {
         updated.profiles[index].lifetimePoints = total; updated.profiles[index].lastResultRunID = runID
         updated.profiles[index].updatedAt = Date(); try commit(updated)
         return total
+    }
+    func saveSettings(profileID: UUID,settings: OriginalGameSettings,practice: Bool) throws {
+        guard settings.valid else { throw DrillError.invalidSettings }
+        guard let index = document.profiles.firstIndex(where: { $0.id == profileID }) else { throw NativeSaveError.unknownProfile }
+        var updated = document
+        if practice { updated.profiles[index].practiceSettings = settings }
+        else { updated.profiles[index].customGameSettings = settings }
+        updated.profiles[index].updatedAt = Date(); try commit(updated)
     }
 }
 

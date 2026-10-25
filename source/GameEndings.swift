@@ -48,7 +48,9 @@ extension NativeGameView {
     func beginNextGame() throws {
         try commitEndingResult()
         guard session.activeEnding?.committed == true else { return }
-        session = NativeSession(profileID: session.profileID,seed: UInt32.random(in: 0...65535),lifetimePoints: session.lifetimePoints)
+        var stream = session.generator
+        let seed = UInt32(stream.nextRandomValue())
+        session = NativeSession(profileID: session.profileID,seed: seed,lifetimePoints: session.lifetimePoints,previousGenerator: stream)
         screen = .world; held.removeAll(); status = ""; save(); needsDisplay = true
     }
     func continueAfterResults() {
