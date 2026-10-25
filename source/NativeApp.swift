@@ -1,11 +1,12 @@
 import Cocoa
 
 final class NativeGameView: NSView, NSMenuItemValidation {
-    enum Screen { case title, world, question, drill, decoder, help }
+    enum Screen { case title, world, question, drill, decoder, help, ending, results }
     let content: OriginalContent
     let world: OriginalWorld
     let renderer: ChallengeRenderer
     let bank: ChallengeBank
+    let endingData: OriginalEndingData
     let profileStore: NativeProfileStore
     let saves: NativeSessionStore
     let canvas = NativeCanvas()
@@ -44,6 +45,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let coordinates = try JSONDecoder().decode(MapCoordinates.self, from: Data(contentsOf: root.appendingPathComponent("map_coordinates.json")))
         renderer = ChallengeRenderer(content: content, coordinates: coordinates)
         bank = try JSONDecoder().decode(ChallengeBank.self, from: Data(contentsOf: root.appendingPathComponent("challenges.json")))
+        endingData = try JSONDecoder().decode(OriginalEndingData.self,from: Data(contentsOf: root.appendingPathComponent("ending-sequences.json")))
         profileStore = try NativeProfileStore(directory: saveDirectory)
         saves = NativeSessionStore(directory: saveDirectory)
         super.init(frame: NSRect(x: 0, y: 0, width: 960, height: 600))
@@ -57,13 +59,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             let profile: NativeProfile
             if let selected = profileStore.document.selectedProfileID, let saved = profileStore.document.profiles.first(where: { $0.id == selected }) { profile = saved }
             else { profile = try profileStore.create(name: "Player") }
-            session = try saves.load(profile.id) ?? NativeSession(profileID: profile.id, seed: UInt32.random(in: 1...UInt32.max))
+            session = try saves.load(profile.id) ?? NativeSession(profileID: profile.id, seed: UInt32.random(in: 0...65535),lifetimePoints: profile.lifetimePoints ?? 0)
             session.ensureQuestionSetup()
             ensureEnergyMachine()
             ensureCalculator()
             if let active = session.activeChallenge { try prepareActivityState(active) }
             lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
             screen = session.activeDrill != nil ? .drill : (session.activeChallenge == nil ? .world : .question)
+            if let ending = session.activeEnding { screen = ending.elapsedTicks >= EndingTimeline(ending,data: endingData).duration ? .results : .ending }
             status = ""; referenceMode = false
             needsDisplay = true
         } catch { present(error) }
@@ -95,7 +98,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         var snapshot = session!
         // Decoder/help are transient native screens. On relaunch the app opens
         // exploration (or the saved active question), so retain only its pause.
-        let retainedPauses = snapshot.activeChallenge == nil ? 0 : 1
+        let retainedPauses = snapshot.activeChallenge == nil && snapshot.activeEnding == nil ? 0 : 1
         while snapshot.clock.pauseDepth > retainedPauses { snapshot.clock.resume() }
         do { try saves.save(snapshot) } catch { present(error) }
     }
@@ -115,14 +118,18 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     func step() {
         tick += 1
         guard session != nil else { return }
+        if screen == .ending {
+            do { try advanceEnding() } catch { present(error) }
+            return
+        }
         if session.activeZap != nil || session.activeFountain != nil { needsDisplay = true; return }
         // Original IRQ time continues while questions/decoder pause displayed
         // game minutes. Resume restores the remaining minute deadline.
         if screen != .title { session.clock.pollAfterIRQTicks(UInt64(OriginalWorld.frameIRQTicks)) }
         if screen == .world && session.outcome == "active" {
+            if session.clock.expired { startEnding(room: session.decoder.hideoutRoom,reason: .midnight); return }
             updateTelly()
-            if session.clock.expired { session.outcome = "lost"; status = "Midnight!"; save() }
-            else if let jump = jumpStep {
+            if let jump = jumpStep {
                 if jumpDirection != 0 { move(jumpDirection * 2) }
                 jumpStep = jump == 7 ? nil : jump+1
             } else {
@@ -148,7 +155,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                     }
                     if session.activeDrill?.resultTicksRemaining == 0 { session.activeDrill = nil; screen = .world; save() }
                 }
-                if session.clock.expired { session.activeDrill = nil; session.outcome = "lost"; screen = .world; status = "Midnight!"; save() }
+                if session.clock.expired { startEnding(room: session.decoder.hideoutRoom,reason: .midnight); return }
             } catch { present(error) }
         }
         needsDisplay = true
@@ -228,13 +235,19 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     override func keyDown(with event: NSEvent) {
         let key = event.keyCode
+        if screen == .ending { return }
+        if screen == .results {
+            if key == 36 { continueAfterResults() }
+            else if key == 53 { screen = .title; needsDisplay = true }
+            return
+        }
         if key == 123 || key == 124 { held.insert(key) }
         if screen == .title { if key == 36 { begin() }; return }
         guard session != nil else { return }
         if session.activeZap != nil || session.activeFountain != nil { return }
         if key == 122 { toggleHelp(); return }
         switch screen {
-        case .title: break
+        case .title, .ending, .results: break
         case .world:
             if key == 126 && !event.isARepeat && session.outcome == "active" { interact() }
             else if key == 49 && !event.isARepeat && jumpStep == nil && session.outcome == "active" {
@@ -277,6 +290,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     override func resignFirstResponder() -> Bool { held.removeAll(); return true }
     @objc func toggleHelp() {
         guard session != nil else { return }
+        if screen == .ending || screen == .results { return }
         if session.activeZap != nil || session.activeFountain != nil { return }
         if screen == .help { screen = helpReturn; session.clock.resume() }
         else { helpReturn = screen; screen = .help; session.clock.pause(); held.removeAll() }
@@ -287,9 +301,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         alert.informativeText = "Is the Master of Mischief hiding in the \(DecoderPuzzle.roomNames[selectedRoom])?"
         alert.addButton(withTitle: "Yes"); alert.addButton(withTitle: "No")
         guard alert.runModal() == .alertFirstButtonReturn else { return }
-        // The original transitions into a final encounter here. A correct
-        // decoder choice alone does not establish a faithfully completed game.
-        present(ContentError.invalid("The final encounter is not available in this development build."))
+        startEnding(room: selectedRoom)
     }
     func showMatchRule() {
         let text: String
@@ -301,6 +313,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let alert = NSAlert(); alert.messageText = "Match Rule"; alert.informativeText = text; alert.runModal()
     }
     override func mouseDown(with event: NSEvent) {
+        if screen == .ending { return }
+        if screen == .results { continueAfterResults(); return }
         if session != nil && (session.activeZap != nil || session.activeFountain != nil) { return }
         let p = convert(event.locationInWindow, from: nil)
         let x = Int(p.x/bounds.width*320), y = Int(p.y/bounds.height*200)
@@ -343,7 +357,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let hour = (21+minute/60)%12
         let time = session.clock.expired ? "12:00A.M." : "\(hour == 0 ? 12 : hour):\(String(format: "%02d",minute%60))P.M."
         canvas.fill(254,163,58,10,0)
-        canvas.text(session.clock.roomChallengeActive ? "Pause" : time,font: try content.font("MOCKET.DAT.1396"),x: 256,y: 164,color: 14)
+        canvas.text(session.clock.roomChallengeActive && screen != .ending && screen != .results ? "Pause" : time,font: try content.font("MOCKET.DAT.1396"),x: 256,y: 164,color: 14)
         canvas.fill(256,176,48,8,0)
         canvas.fill(256,176,min(48,max(0,session.energy)*2),8,14)
         canvas.fill(254,188,58,8,0)
@@ -466,6 +480,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         case .question: try drawQuestion()
         case .drill: try drawDrill()
         case .decoder: try drawDecoder()
+        case .ending: try drawEnding()
+        case .results: try drawResults()
         case .help:
             canvas.fill(8,16,304,140,15)
             let font = try content.font("MOCKET.DAT.1393")
@@ -505,6 +521,7 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
             let music = NSMenuItem(title: "Music Chart Checkpoint",action: #selector(NativeGameView.referenceMusic),keyEquivalent: "2"); music.target = game; gameMenu.addItem(music)
             let supplies = NSMenuItem(title: "Equipment List Checkpoint",action: #selector(NativeGameView.referenceSupplies),keyEquivalent: "3"); supplies.target = game; gameMenu.addItem(supplies)
             let questions = NSMenuItem(title: "Junior Questions Checkpoint",action: #selector(NativeGameView.referenceJuniorQuestions),keyEquivalent: "4"); questions.target = game; gameMenu.addItem(questions)
+            let ending = NSMenuItem(title: "Ending Checkpoint",action: #selector(NativeGameView.referenceEnding),keyEquivalent: "5"); ending.target = game; gameMenu.addItem(ending)
             let drill = NSMenuItem(title: "Reference Telly Drill",action: #selector(NativeGameView.referenceDrill),keyEquivalent: "d"); drill.target = game
             gameMenu.addItem(drill)
             let energy = NSMenuItem(title: "Energy Machine Checkpoint",action: #selector(NativeGameView.referenceEnergy),keyEquivalent: "e"); energy.target = game; gameMenu.addItem(energy)

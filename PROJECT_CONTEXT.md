@@ -40,3 +40,11 @@ the project, plan and chat-derived context, with updates after every completed
 milestone. This private repository implements that request. This document is a
 project-focused summary, not a verbatim chat transcript or a record of internal
 agent/tool instructions.
+
+Milestone 0.8 connects the original scripted ending and native session lifecycle.
+A correct hideout runs the reveal/escape presentation and energy/time/victory
+bonus tally; a wrong choice ends the game. The recorded checkpoint reaches
+11,680 game points and 64,275 lifetime points. Native run IDs make result commits
+idempotent after interruption, and replay retains earned lifetime/rank. These
+checks do not establish a complete natural playthrough or exact presentation
+parity. Original menus and the remaining fidelity work are still required.

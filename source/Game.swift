@@ -111,6 +111,8 @@ struct NativeProfile: Codable, Identifiable {
     var name: String
     let createdAt: Date
     var updatedAt: Date
+    var lifetimePoints: Int?
+    var lastResultRunID: UUID?
 }
 
 struct NativeSaveFile: Codable {
@@ -147,7 +149,7 @@ final class NativeProfileStore {
             document = try decoder.decode(NativeSaveFile.self, from: Data(contentsOf: file))
             guard document.formatVersion == 1 else { throw NativeSaveError.unsupportedVersion(document.formatVersion) }
             guard Set(document.profiles.map(\.id)).count == document.profiles.count,
-                  document.profiles.allSatisfy({ Self.validName($0.name) }),
+                  document.profiles.allSatisfy({ Self.validName($0.name) && ($0.lifetimePoints == nil || (0...9_999_999).contains($0.lifetimePoints!)) }),
                   document.selectedProfileID == nil || document.profiles.contains(where: { $0.id == document.selectedProfileID }) else { throw NativeSaveError.invalidDocument }
         } else { document = NativeSaveFile() }
     }
@@ -174,6 +176,15 @@ final class NativeProfileStore {
         guard document.profiles.contains(where: { $0.id == id }) else { throw NativeSaveError.unknownProfile }
         var updated = document; updated.selectedProfileID = id
         try commit(updated)
+    }
+    func recordFinishedSession(profileID: UUID,runID: UUID,score: UInt16,won: Bool,lifetimeBefore: Int) throws -> Int {
+        guard let index = document.profiles.firstIndex(where: { $0.id == profileID }) else { throw NativeSaveError.unknownProfile }
+        if document.profiles[index].lastResultRunID == runID { return document.profiles[index].lifetimePoints ?? lifetimeBefore }
+        var updated = document
+        let total = VerifiedScore.lifetimeAfterSession(current: updated.profiles[index].lifetimePoints ?? lifetimeBefore,sessionScore: score,won: won)
+        updated.profiles[index].lifetimePoints = total; updated.profiles[index].lastResultRunID = runID
+        updated.profiles[index].updatedAt = Date(); try commit(updated)
+        return total
     }
 }
 

@@ -22,5 +22,5 @@ No GitHub CLI installation, saved access token or recurring automation is needed
 
 The local `repository/` folder is a publication snapshot. Active development
 continues in `work/reimplementation/`; preserve unverified work there until its
-milestone passes. The current initial snapshot is0.7, independently of later
-work in progress.
+milestone passes. The initial snapshot was 0.7; later verified milestones update
+the source, derived runtime data, plan, evidence summary and milestone ledger.

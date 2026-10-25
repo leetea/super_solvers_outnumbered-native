@@ -43,10 +43,13 @@ struct NativeSession: Codable {
     var activityStates: [Int:OriginalActivityState]?
     var questionSetup: OriginalQuestionSetup?
     var migratedQuestionSetup: Bool?
+    var runID: UUID?
+    var activeEnding: NativeEnding?
     var outcome = "active"
     var rank: VerifiedRank { VerifiedRank.forLifetimePoints(lifetimePoints) }
     init(profileID: UUID, seed: UInt32, lifetimePoints: Int = 0) {
         formatVersion = 1; self.profileID = profileID; self.lifetimePoints = lifetimePoints
+        runID = UUID()
         var generator = DecoderGenerator(seed: seed)
         let tier = VerifiedRank.allCases.firstIndex(of: VerifiedRank.forLifetimePoints(lifetimePoints))! >> 1
         generator.restoreRandomState(seed & 65535) // original srand takes a 16-bit seed
@@ -66,6 +69,7 @@ struct NativeSession: Codable {
         attempts.allSatisfy { (0..<10).contains($0.key) && (0...2).contains($0.value.wrongAnswers) && $0.value.input.count <= 4 && $0.value.input.utf8.allSatisfy { (48...57).contains($0) } } &&
         assignedChallenges.allSatisfy { (0..<10).contains($0.key) && $0.key == $0.value.hotspot } &&
         (questionSetup == nil || questionSetup!.valid) &&
+        (activeEnding == nil || (activeEnding!.valid && runID != nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil)) &&
         (telly == nil || telly!.hasValidPersistenceState) &&
         (activeDrill == nil || activeDrill!.valid) && (activeZap == nil || activeZap!.valid) &&
         (activeDrill == nil || (activeChallenge == nil && activeZap == nil)) &&

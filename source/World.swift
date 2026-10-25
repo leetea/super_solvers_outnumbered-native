@@ -105,7 +105,7 @@ struct OriginalWorld {
         switch scene { case 10: return 1; case 12: return 3; case 13: return 6; case 14: return 7; case 15: return 8; default: return nil }
     }
     static func backgroundSelector(forRoom scene: Int) -> Int? {
-        switch scene { case 10: return 191; case 12: return 193; case 13: return 197; case 14: return 198; case 15: return 196; default: return nil }
+        switch scene { case 10: return 191; case 12: return 193; case 13: return 196; case 14: return 197; case 15: return 198; default: return nil }
     }
     static func elevatorExitScreenUnit(from hallway: Int) -> Int? {
         switch hallway { case 0, 5: return 12; case 4, 9: return 24; default: return nil }

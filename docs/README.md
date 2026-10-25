@@ -1,4 +1,4 @@
-# Outnumbered Native Development Build 0.7
+# Outnumbered Native Development Build 0.8
 
 Open `Outnumbered Native Development.app` on an Apple Silicon Mac with macOS12 or later. This is a playable development milestone toward the complete game, not the finished game.
 
@@ -8,7 +8,7 @@ From the title screen, Return opens/resumes a native Player session. Left/Right 
 
 Choose **Game → Reference Telly Drill** (Command-D) to play the recording's six questions. Answers are **19,12,22,7,22,3**. Correct answers earn50 each; at least five correct answers earn a code piece and100 more. Feedback pauses are automatic, and the game clock keeps running. This checkpoint uses an isolated native session.
 
-The app now includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, map/prize-board/television-table activities, decoder logic and partial-game saves. It also includes energy recharge, LiveWire, measurement controls, video cassettes and Cartoon line charts. It now includes bar charts and the original calculator arithmetic/editing rules. All ten activity families now have native visual context for the recovered question bank. Complete custom/practice settings, final sequence, progression and fidelity refinements remain incomplete. Some palette, collision and transition details also remain incomplete. This is not a complete or pixel-exact game.
+The app includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, all ten activity families, decoder logic, recharge, LiveWire, the calculator and native saves. It now includes the original scripted hideout reveal, progressive bonuses, win/loss outcomes, lifetime points and replay. Original menus/custom/practice settings, detailed ending/transition effects, collision presentation, palette and full-playthrough validation remain incomplete. This is not a complete or pixel-exact game.
 
 Native player files are separate from DOS assets:
 
@@ -27,3 +27,7 @@ Calculator: type numbers and +, -, * or /. Press = (or E) to calculate, then Ent
 Command-1 opens Spinner (answer100); Command-2 opens Great Eight (answer106); Command-3 opens Equipment List (answer29). Each is an isolated original-data checkpoint. Extra chart numbers follow the recovered question seed and drawing rules, and repainting does not change them.
 
 Command-4 opens a Junior question selected by the recovered original new-game rules (answer165). New games now store original seeds, variants and operations, enable one question per room at lower rank pairs and both at higher pairs, and generate decoder clues and machine placement afterward. All3,200 compiled question cases are available;30 retain unusual original references which produce an empty second paragraph. Existing saves preserve their progress through a marked migration. Complete custom/practice menus, timed activity effects and full campaign fidelity remain pending.
+
+Command-5 opens the ending checkpoint from the local video: 2,650 points, 17 energy, 9:52 PM and 52,595 lifetime points. It runs the scripted reveal and awards 2,550 for energy, 4,480 for time and 2,000 for winning. The result is Game 11,680 / Total 64,275, crossing the Pro threshold. Enter then Yes starts a fresh isolated game. This checkpoint does not affect saved player progress.
+
+In normal play, confirming a correct decoder choice runs the ending and saves lifetime points once; a wrong hideout choice or midnight loses without adding lifetime points. Partial ending progress is saved, and replay retains earned rank while resetting game progress. Bonus sliding, rank animation and midnight meter flashing still need refinement. The private GitHub repository is https://github.com/leetea/outnumbered-native-macos ; each verified milestone is pushed there.
