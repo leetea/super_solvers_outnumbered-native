@@ -49,4 +49,19 @@ idempotent after interruption, and replay retains earned lifetime/rank. These
 checks do not establish a complete natural playthrough or exact presentation
 parity. Original menus and the remaining fidelity work are still required.
 
-Milestone 0.9 adds functional player/game/custom/practice menus and the recovered13-byte settings record. Game and practice settings are stored separately per native player; old profiles/sessions remain readable. Practice retains running counters across sets and cannot award adventure points or modify an unfinished adventure. Native macOS dialogs expose original values/validation rather than claiming DOS dialog pixel parity. Replay keeps mutated decoder pools while reseeding from the previous stream. Timed effects and practice/menu RNG still prevent a full campaign identity claim; full help/notes, score history/music and fidelity work remain.
+Milestone 0.9 adds functional player/game/custom/practice menus and the recovered13-byte settings record. Game and practice settings are stored separately per native player; old profiles/sessions remain readable. Practice retains running counters across sets and cannot award adventure points or modify an unfinished adventure. Native macOS dialogs expose original values/validation rather than claiming DOS dialog pixel parity. Replay keeps mutated decoder pools while reseeding from the previous stream. Timed effects and practice/menu RNG still prevent a full campaign identity claim; score history/music and fidelity work remain.
+
+
+Milestone 0.10 restores the original eight-topic help book:22 pages, four
+illustrations, original font/keycaps, topic menu, frame and Back/Next/Done
+navigation. F1 works from title, menus, activities and practice. Practice exposes
+only About Drill for Skill. Help preserves unfinished question input and pauses
+active adventure time. All332 headless checks pass; native-window observations
+and independent package/source rebuilds are separate gates. See help-recovery.md.
+
+The former notes_clipboard/paper catalog labels were corrected: original code
+uses those assets for player sign-in. No source evidence establishes a notes
+editor, so no invented editor is required. High-game history/music, original
+practice/menu presentation, transitions, collisions, timed effects, ending
+refinements and complete natural-playthrough validation remain required. The
+complete-game goal stays active.

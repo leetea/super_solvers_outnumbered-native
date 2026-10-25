@@ -1,4 +1,4 @@
-# Native reimplementation 0.8 — October 24, 2026
+# Native reimplementation 0.10 — October 25, 2026
 
 The complete-game goal remains active. This turn made concrete implementation progress; it was not a wait or a blocked turn.
 
@@ -36,7 +36,7 @@ Implemented in the development app:
 ## Gaps that still prevent completion
 
 1. Complete original menu/practice presentation and campaign RNG consumption. New-game question selection, eligibility, template bands and seed/variant choices now follow recovered source rules; all3,200 question cases compile and render. Data generation is compiled ahead of time for the recovered finite seed/variant domain. Original timed drawing effects and their random draws still prevent a complete campaign stream identity claim. Pre-0.7 saves use a marked migration because they lack historical startup choices.
-2. Original timed activity effects and original notes/full help/high-game history/music/menu presentation. Calculator arithmetic is implemented; exact original dialog/pressed-button/digit rendering and F3 option presentation remain incomplete.
+2. Original timed activity effects and high-game history/music/menu presentation. Calculator arithmetic is implemented; exact original dialog/pressed-button/digit rendering and F3 option presentation remain incomplete.
 3. Detailed collision knockback/impact animations, portrait/code-capture transitions, queued input during feedback and full encounter sound/animation comparison. Telly/drill/zap/capture now run, but their native integration still needs broader runtime validation. No speculative door/jump sounds are substituted.
 4. Detailed scrolling/door/elevator animations, exact HUD digits/meters, transparent/mirrored driver semantics, sprite occlusion and full-frame video comparison. Current room entry/exit/elevator changes are immediate native transitions.
 5. Complete original ending presentation and remaining session/menu lifecycle. Native reveal, wrong-choice/midnight losses, bonus arithmetic, persistent lifetime/rank updates and replay now work. Original door/scroll transitions, bonus sliding, rank-tower animation and midnight meter-flash pixels remain incomplete; core profile/game/custom/practice choices now work; remaining original menu features/presentation are documented below.
@@ -44,7 +44,7 @@ Implemented in the development app:
 
 Next work should complete original question eligibility/selection and generation, then the original final encounter, while refining scripted transitions and collision response. Reuse retained assembly, raw byte tables and the local drill fixtures; do not restart completed recovery or reference browsing. `drill-analysis-derivatives.json` proves that analysis seeds changed only MZ initial IP/CS, never code or relocation bytes.
 
-The next-work sentence above is historical through0.6. Question setup and ending recovery below supersede it. Continue with original menus/options/help/notes/practice and the remaining transitions, collision and fidelity work.
+The next-work sentence above is historical through0.6. Question setup and ending recovery below supersede it. Continue with original menus/options/practice and the remaining transitions, collision and fidelity work.
 
 `DRILL-RECOVERY.md` supersedes the historical `encounters-recovery-partial.md` handoff.
 
@@ -68,6 +68,21 @@ Native 0.8 translates 14 original ending scripts containing 403 commands, with s
 
 Final 0.8 checks: **269 passed**. These include mid-tally autosave/resume through the normal profile path, a simulated restart between profile and session commits, and replay reopened from disk with earned rank. The final native window showed Energy Left 2,550, the progressing score, Game 11,680 / Total 64,275, and a working replay into a reset 9:00 PM game. `ending-recovery.md` and `verification/gui-observations-0.8.json` retain exact evidence and limits. Command-5 opens this isolated reference checkpoint; it never writes player progress. The complete-game goal remains active.
 
-Native 0.9 connects player creation/selection, separate custom game/practice settings, original configuration validation, unfinished-game continuation and Drill for Skill sets. Practice tracks attempts/correct answers across sets, applies no adventure rewards, and leaves the suspended game unchanged. Custom settings feed both room setup and Telly pools; rank still controls Telly count. Replay/new-game creation now retains mutated decoder pools and derives its next seed from the prior stream. Separate practice RNG and remaining timed/menu effects prevent claiming complete campaign identity. Native macOS dialogs replace original setting-dialog pixels. Full help, notes, high-game history, music and original practice interstitial scripts remain pending. See menu-practice-recovery.md.
+Native 0.9 connects player creation/selection, separate custom game/practice settings, original configuration validation, unfinished-game continuation and Drill for Skill sets. Practice tracks attempts/correct answers across sets, applies no adventure rewards, and leaves the suspended game unchanged. Custom settings feed both room setup and Telly pools; rank still controls Telly count. Replay/new-game creation now retains mutated decoder pools and derives its next seed from the prior stream. Separate practice RNG and remaining timed/menu effects prevent claiming complete campaign identity. Native macOS dialogs replace original setting-dialog pixels. High-game history, music and original practice interstitial scripts remain pending. See menu-practice-recovery.md.
 
 Final 0.9 candidate:309 headless checks passed, including an unchanged suspended adventure/file during practice, profile separation, legacy saves, all four practice sizes, custom room/drill settings, original validation and replay pool continuity. Native-window observations and package/source-rebuild verification are recorded separately. The complete-game goal remains active.
+
+
+Milestone 0.10 restores the original eight-topic help book:22 pages, four
+illustrations, original font/keycaps, topic menu, frame and Back/Next/Done
+navigation. F1 works from title, menus, activities and practice. Practice exposes
+only About Drill for Skill. Help preserves unfinished question input and pauses
+active adventure time. All332 headless checks pass; native-window observations
+and independent package/source rebuilds are separate gates. See help-recovery.md.
+
+The former notes_clipboard/paper catalog labels were corrected: original code
+uses those assets for player sign-in. No source evidence establishes a notes
+editor, so no invented editor is required. High-game history/music, original
+practice/menu presentation, transitions, collisions, timed effects, ending
+refinements and complete natural-playthrough validation remain required. The
+complete-game goal stays active.

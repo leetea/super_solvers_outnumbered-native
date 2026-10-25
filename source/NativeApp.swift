@@ -7,6 +7,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     let renderer: ChallengeRenderer
     let bank: ChallengeBank
     let endingData: OriginalEndingData
+    let helpBook: OriginalHelpBook
     let profileStore: NativeProfileStore
     let saves: NativeSessionStore
     let canvas = NativeCanvas()
@@ -18,6 +19,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var lastZapPulse = ProcessInfo.processInfo.systemUptime
     var zapFraction = 0.0
     var helpReturn = Screen.world
+    var helpBrowser: NativeHelpBrowser?
+    var helpPausesAdventure = false
     var tick = 0
     var jumpStep: Int?
     var jumpDirection = 0
@@ -50,6 +53,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         renderer = ChallengeRenderer(content: content, coordinates: coordinates)
         bank = try JSONDecoder().decode(ChallengeBank.self, from: Data(contentsOf: root.appendingPathComponent("challenges.json")))
         endingData = try JSONDecoder().decode(OriginalEndingData.self,from: Data(contentsOf: root.appendingPathComponent("ending-sequences.json")))
+        helpBook = try JSONDecoder().decode(OriginalHelpBook.self,from: Data(contentsOf: root.appendingPathComponent("help-pages.json")))
+        guard helpBook.valid else { throw ContentError.invalid("Invalid original help pages") }
         profileStore = try NativeProfileStore(directory: saveDirectory)
         saves = NativeSessionStore(directory: saveDirectory)
         super.init(frame: NSRect(x: 0, y: 0, width: 960, height: 600))
@@ -123,10 +128,13 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     func step() {
         tick += 1
         guard modalDepth == 0, screen != .menu, screen != .title else { return }
+        if screen == .help && !helpPausesAdventure { return }
         if screen == .practice {
+            let phase = practice?.drill.phase, attempts = practice?.attempts, correct = practice?.correctAnswers
             do { for index in try practice?.advance(irqTicks: OriginalWorld.frameIRQTicks) ?? [] { effect(index) } }
             catch { present(error) }
-            needsDisplay = true; return
+            if phase != practice?.drill.phase || attempts != practice?.attempts || correct != practice?.correctAnswers { needsDisplay = true }
+            return
         }
         guard session != nil else { return }
         if screen == .ending {
@@ -169,7 +177,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 if session.clock.expired { startEnding(room: session.decoder.hideoutRoom,reason: .midnight); return }
             } catch { present(error) }
         }
-        needsDisplay = true
+        if screen == .world || screen == .drill { needsDisplay = true }
     }
     func move(_ delta: Int) {
         session.playerHasMoved = true
@@ -249,6 +257,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if screen == .ending { return }
         if key == 120 { showPlayerMenu(); return }
         if key == 99 { showOptions(); return }
+        if key == 122 { toggleHelp(); return }
+        if screen == .help { helpKey(event); return }
         if screen == .practice { practiceKey(event); return }
         if screen == .menu {
             if key == 125 { menuSelection = (menuSelection+1)%Self.playerMenuItems.count }
@@ -266,7 +276,6 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if screen == .title { if key == 36 { showPlayerMenu() }; return }
         guard session != nil else { return }
         if session.activeZap != nil || session.activeFountain != nil { return }
-        if key == 122 { toggleHelp(); return }
         switch screen {
         case .title, .menu, .practice, .ending, .results: break
         case .world:
@@ -303,18 +312,21 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 confirmDecision()
             }
             else if event.charactersIgnoringModifiers?.lowercased() == "m" { showMatchRule() }
-        case .help: if key == 53 || key == 36 { toggleHelp() }
+        case .help: break
         }
         needsDisplay = true
     }
     override func keyUp(with event: NSEvent) { held.remove(event.keyCode) }
     override func resignFirstResponder() -> Bool { held.removeAll(); return true }
     @objc func toggleHelp() {
-        guard session != nil else { return }
-        if screen == .ending || screen == .results || screen == .menu || screen == .practice { return }
-        if session.activeZap != nil || session.activeFountain != nil { return }
-        if screen == .help { screen = helpReturn; session.clock.resume() }
-        else { helpReturn = screen; screen = .help; session.clock.pause(); held.removeAll() }
+        if screen == .ending || screen == .results { return }
+        if session?.activeZap != nil || session?.activeFountain != nil { return }
+        if screen == .help { closeHelp(); return }
+        helpReturn = screen
+        helpBrowser = NativeHelpBrowser(practice: screen == .practice)
+        helpPausesAdventure = session != nil && [.world,.question,.drill,.decoder].contains(screen)
+        if helpPausesAdventure { session.clock.pause() }
+        screen = .help; held.removeAll()
         needsDisplay = true
     }
     func confirmDecision() {
@@ -339,6 +351,13 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if session != nil && (session.activeZap != nil || session.activeFountain != nil) { return }
         let p = convert(event.locationInWindow, from: nil)
         let x = Int(p.x/bounds.width*320), y = Int(p.y/bounds.height*200)
+        if screen == .help {
+            if y < 12 && x < 50 { closeHelp() }
+            else if y < 12 && x < 100 { showPlayerMenu() }
+            else if y < 12 && x < 170 { showOptions() }
+            else { helpClick(x: x,y: y) }
+            return
+        }
         if screen == .title { showPlayerMenu(); return }
         if screen == .menu {
             if x >= 34 && x < 286 && y >= 58 && y < 170 { menuSelection = min(6,(y-58)/16); activatePlayerMenu(menuSelection) }
@@ -376,7 +395,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     func sprite(_ index: Int, x: Int, y: Int, transparent: Bool = true, flipped: Bool = false) throws {
         canvas.draw(try content.bitmap(String(format: "FASTLOAD.GRA.%03d", index)),x: x,y: y,transparent: transparent,flipped: flipped)
     }
-    func drawHUD() throws {
+    func drawHUD(for visibleScreen: Screen? = nil) throws {
+        let visibleScreen = visibleScreen ?? screen
         canvas.fill(0,160,320,40,1)
         canvas.draw(try content.bitmap("FASTLOAD.GRA.057"),x: 0,y: 0)
         try sprite(56,x: 216,y: 162,transparent: false)
@@ -385,12 +405,12 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let hour = (21+minute/60)%12
         let time = session.clock.expired ? "12:00A.M." : "\(hour == 0 ? 12 : hour):\(String(format: "%02d",minute%60))P.M."
         canvas.fill(254,163,58,10,0)
-        canvas.text(session.clock.roomChallengeActive && screen != .ending && screen != .results ? "Pause" : time,font: try content.font("MOCKET.DAT.1396"),x: 256,y: 164,color: 14)
+        canvas.text(session.clock.roomChallengeActive && visibleScreen != .ending && visibleScreen != .results ? "Pause" : time,font: try content.font("MOCKET.DAT.1396"),x: 256,y: 164,color: 14)
         canvas.fill(256,176,48,8,0)
         canvas.fill(256,176,min(48,max(0,session.energy)*2),8,14)
         canvas.fill(254,188,58,8,0)
         canvas.text(String(format: "%06d", Int(session.score)),font: font,x: 254,y: 187,color: 14)
-        if screen == .world {
+        if visibleScreen == .world {
             let prompt = status.isEmpty ? "\u{86} to See Decoder" : status
             canvas.text(prompt,font: font,x: 8,y: 176,color: 15,wrapWidth: 201)
         }
@@ -498,13 +518,15 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         canvas.draw(try content.bitmap("DMOCKET.GRA.1771"),x: 4,y: 162,transparent: true)
         canvas.clip = nil
     }
-    func render() throws {
+    func render(_ visibleScreen: Screen? = nil) throws {
+        let visibleScreen = visibleScreen ?? screen
         canvas.clip = nil; canvas.clear(0)
-        if screen == .title { canvas.draw(try content.bitmap("OPENING.GRA.000"),x: 0,y: 0); return }
-        if screen == .menu { try drawPlayerMenu(); return }
-        if screen == .practice { try drawPractice(); return }
-        try drawHUD()
-        switch screen {
+        if visibleScreen == .help { try render(helpReturn); try drawOriginalHelp(); return }
+        if visibleScreen == .title { canvas.draw(try content.bitmap("OPENING.GRA.000"),x: 0,y: 0); return }
+        if visibleScreen == .menu { try drawPlayerMenu(); return }
+        if visibleScreen == .practice { try drawPractice(); return }
+        try drawHUD(for: visibleScreen)
+        switch visibleScreen {
         case .title, .menu, .practice: break
         case .world: try drawWorld()
         case .question: try drawQuestion()
@@ -512,11 +534,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         case .decoder: try drawDecoder()
         case .ending: try drawEnding()
         case .results: try drawResults()
-        case .help:
-            canvas.fill(8,16,304,140,15)
-            let font = try content.font("MOCKET.DAT.1393")
-            let text = helpReturn == .question ? "SOLVE THE MATH CHALLENGE\n\nType numbers and + - * /\n= or E: Calculate\nEnter: Check your answer\nBackspace / Del: Erase\nC: Clear calculator\nGame menu: Calculator on/off\n\nPress Enter to continue." : "EXPLORE THE TV STATION\n\nLeft / Right: Walk\nUp: Enter, use object, or jump\nUp + Left / Right: Flip\nSpace: Zap\nTab: Decoder\nEsc: Return\n\nPress Enter to continue."
-            canvas.text(text,font: font,x: 16,y: 24,color: 1,lineHeight: 10)
+        case .help: break
         }
     }
     override func draw(_ dirtyRect: NSRect) {
@@ -561,7 +579,7 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
             gameMenu.addItem(drill)
             let energy = NSMenuItem(title: "Energy Machine Checkpoint",action: #selector(NativeGameView.referenceEnergy),keyEquivalent: "e"); energy.target = game; gameMenu.addItem(energy)
             let wire = NSMenuItem(title: "LiveWire Checkpoint",action: #selector(NativeGameView.referenceLiveWire),keyEquivalent: "l"); wire.target = game; gameMenu.addItem(wire)
-            let help = NSMenuItem(title: "Controls",action: #selector(NativeGameView.toggleHelp),keyEquivalent: "h"); help.target = game; gameMenu.addItem(help)
+            let help = NSMenuItem(title: "Help",action: #selector(NativeGameView.toggleHelp),keyEquivalent: "h"); help.target = game; gameMenu.addItem(help)
             let calculator = NSMenuItem(title: "Use Calculator",action: #selector(NativeGameView.toggleCalculator(_:)),keyEquivalent: ""); calculator.target = game; calculator.state = .on; gameMenu.addItem(calculator)
             NSApp.mainMenu = root; NSApp.activate(ignoringOtherApps: true)
         } catch { let alert = NSAlert(); alert.messageText = "Outnumbered could not open"; alert.informativeText = error.localizedDescription; alert.runModal(); NSApp.terminate(nil) }

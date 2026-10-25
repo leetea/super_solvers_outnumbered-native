@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.9
+## Current verified milestone: 0.10
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -14,13 +14,13 @@ unfinished-game continuation, separate custom settings and Drill for Skill.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**309 integration checks pass.** The app ZIP passes strict signature verification
+**332 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.9.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.10.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
-Full help, notes, high-game history, music, original menu/practice animations,
+High-game history, music, original menu/practice animations,
 detailed encounter/transition effects, palette and full-playthrough validation
 remain unfinished. See [the full plan](docs/PLAN.md),
 [project context](PROJECT_CONTEXT.md) and [milestones](MILESTONES.md).
@@ -41,6 +41,7 @@ build script. Python, a DOS emulator and a downloaded runtime are not required
 to build or play this version. The app has an ad-hoc development signature;
 it is not Apple-notarized.
 
+F1 opens the original eight-topic help book with22 pages and four illustrations.
 Title Return opens the player menu; F2 returns to it and F3 opens options.
 Practice Enter starts another set; Esc/F2 preserves the suspended adventure.
 
@@ -53,6 +54,8 @@ into a new game. Reference checkpoints are isolated from player saves.
 In normal play, a correct decoder choice runs the ending and saves the winning
 result once. A wrong hideout choice or midnight loses without adding lifetime
 points. Replay retains earned rank and resets game progress.
+
+![Original help rendered natively](docs/screenshots/original-help.png)
 
 ![Native player menu](docs/screenshots/player-menu.png)
 

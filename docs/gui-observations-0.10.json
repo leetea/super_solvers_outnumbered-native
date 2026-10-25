@@ -1,0 +1,21 @@
+{
+  "milestone": "0.10",
+  "application": "temporary metadata-only verification bundle",
+  "temporaryPlayerDirectory": "/private/tmp/outnumbered-010-gui-players",
+  "observations": [
+    "F1 opens eight-topic help from title; original keyboard pages and Back/Next/Done work",
+    "Esc returns to topics; final Done returns to underlying screen",
+    "Playing the Game portrait and Collecting Clues illustration displayed",
+    "Calculator help opened during rainfall question; returned to same visible unfinished expression and question",
+    "Practice exposes only About Drill for Skill; Done resumes 9 x 0 = ? with Problems1 Correct0"
+  ],
+  "repeatedCaptures": {
+    "help": "Three topic-menu and three keyboard-page captures identical after title-bar crop",
+    "practice": "Within each before/after triplet, captures differ only in moving cursor rectangle(1055,1055)..(1105,1105). Across the help round trip there are small raster/color differences; visible question9 x0 and counters1/0 retained. No exact before/after pixel-identity claim.",
+    "question": "Before/after visible expression123 minus retained; captures have small raster/color differences, no exact pixel identity claim"
+  },
+  "limits": [
+    "Does not establish full-game pixel parity, original practice interstitials, audible sound parity or a complete natural playthrough",
+    "Prior dynamic-world/drill display/capture discrepancy not globally resolved"
+  ]
+}

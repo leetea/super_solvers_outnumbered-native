@@ -1,0 +1,45 @@
+{
+  "menu": {
+    "canvasPixelsIdentical": true,
+    "sha256": [
+      "f6ee01ca21cee23335ba7f613676dab35e87dbcf36c459be20cbaac2b04b011a",
+      "f6ee01ca21cee23335ba7f613676dab35e87dbcf36c459be20cbaac2b04b011a",
+      "f6ee01ca21cee23335ba7f613676dab35e87dbcf36c459be20cbaac2b04b011a"
+    ]
+  },
+  "keyboard": {
+    "canvasPixelsIdentical": true,
+    "sha256": [
+      "623b633f589de11a09ce59089cfd2567df2c85e8ba4f76695afccfd666f1acec",
+      "623b633f589de11a09ce59089cfd2567df2c85e8ba4f76695afccfd666f1acec",
+      "623b633f589de11a09ce59089cfd2567df2c85e8ba4f76695afccfd666f1acec"
+    ]
+  },
+  "practiceAsking": {
+    "gui-help-practice-before-a.png": "6a6e6cc8e7229b96a50a44837414cada57e6cf584abeb04506cb4b180784bd69",
+    "gui-help-practice-before-b.png": "feec24db88dec3322dc4dbec94b8e8aeaa9664914b3067c77adffae13b40ec2b",
+    "gui-help-practice-before-c.png": "7661d1e253110560a39af7944763a509bbbde86153fd4f736dbdd9640a3236b5",
+    "gui-help-practice-after-a.png": "32ebb47576d6f226303a122649604197b8be0f0c48437ef86d16430c34b52098",
+    "gui-help-practice-after-b.png": "f5065c17be521fe1f7e9f1a43a4baa1edc6d2dfde5392cdddcaabe0027ec3444",
+    "gui-help-practice-after-c.png": "1b7e093594245633c01ee3f54f8f78a8b6cb8ef1721414587e9720390db2e01a"
+  },
+  "questionBeforeAfterIdentical": false,
+  "practiceAskingCursorMasked": {
+    "gui-help-practice-before-a.png": "3909d4534b7991aa88840329b1e76a163d8a91bdfb7208f84d88ea02a6d3454a",
+    "gui-help-practice-before-b.png": "3909d4534b7991aa88840329b1e76a163d8a91bdfb7208f84d88ea02a6d3454a",
+    "gui-help-practice-before-c.png": "3909d4534b7991aa88840329b1e76a163d8a91bdfb7208f84d88ea02a6d3454a",
+    "gui-help-practice-after-a.png": "a91459ab7da1e6bd2a494bd905aeee444b3a49103461448b75a41225d7ae22a2",
+    "gui-help-practice-after-b.png": "a91459ab7da1e6bd2a494bd905aeee444b3a49103461448b75a41225d7ae22a2",
+    "gui-help-practice-after-c.png": "a91459ab7da1e6bd2a494bd905aeee444b3a49103461448b75a41225d7ae22a2"
+  },
+  "practiceAskingCursorMaskedAllIdentical": false,
+  "excludedCursorRectangle": [
+    1055,
+    1055,
+    1106,
+    1106
+  ],
+  "practiceBeforeTripletIdentical": true,
+  "practiceAfterTripletIdentical": true,
+  "practiceBeforeAfterLimit": "Between trips through help, small raster/color capture differences remain; visible question9 x0 and counters1/0 retained."
+}

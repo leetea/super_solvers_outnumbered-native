@@ -73,6 +73,7 @@ extension NativeGameView {
         profileStore.document.profiles.first { $0.id == profileStore.document.selectedProfileID }
     }
     @objc func showPlayerMenu() {
+        if screen == .help { closeHelp() }
         guard session?.activeZap == nil, session?.activeFountain == nil, screen != .ending else { return }
         save(); held.removeAll(); sound?.stop(); lastSoundIndex = nil
         if screen != .menu && screen != .practice { menuReturn = screen }
@@ -141,6 +142,7 @@ extension NativeGameView {
         } catch { present(error) }
     }
     @objc func startPractice() {
+        if screen == .help { closeHelp() }
         save()
         guard let profile = selectedProfile, let settings = configure(practice: true) else { return }
         do {
