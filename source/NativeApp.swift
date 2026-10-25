@@ -1,0 +1,533 @@
+import Cocoa
+
+final class NativeGameView: NSView, NSMenuItemValidation {
+    enum Screen { case title, world, question, drill, decoder, help }
+    let content: OriginalContent
+    let world: OriginalWorld
+    let renderer: ChallengeRenderer
+    let bank: ChallengeBank
+    let profileStore: NativeProfileStore
+    let saves: NativeSessionStore
+    let canvas = NativeCanvas()
+    var screen = Screen.title
+    var session: NativeSession!
+    var held: Set<UInt16> = []
+    var timer: Timer?
+    var zapTimer: Timer?
+    var lastZapPulse = ProcessInfo.processInfo.systemUptime
+    var zapFraction = 0.0
+    var helpReturn = Screen.world
+    var tick = 0
+    var jumpStep: Int?
+    var jumpDirection = 0
+    var fireFrames = 0
+    var selectedRoom = 0
+    var status = ""
+    var sound: NSSound?
+    var soundEnabled = true
+    var lastSoundIndex: Int?
+    var lastError: String?
+    var referenceMode = false
+    var lastSaveTick = 0
+    override var acceptsFirstResponder: Bool { true }
+    override var isFlipped: Bool { true }
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        if menuItem.action == #selector(toggleCalculator(_:)) {
+            menuItem.state = session?.calculatorEnabled == false ? .off : .on
+            return session != nil
+        }
+        return true
+    }
+    init(root: URL, saveDirectory: URL = NativeProfileStore.defaultDirectory) throws {
+        content = OriginalContent(root: root)
+        world = try OriginalWorld(resource: Data(contentsOf: root.appendingPathComponent("catalog/decoded/MOCKET.DAT.1388.bin")))
+        let coordinates = try JSONDecoder().decode(MapCoordinates.self, from: Data(contentsOf: root.appendingPathComponent("map_coordinates.json")))
+        renderer = ChallengeRenderer(content: content, coordinates: coordinates)
+        bank = try JSONDecoder().decode(ChallengeBank.self, from: Data(contentsOf: root.appendingPathComponent("challenges.json")))
+        profileStore = try NativeProfileStore(directory: saveDirectory)
+        saves = NativeSessionStore(directory: saveDirectory)
+        super.init(frame: NSRect(x: 0, y: 0, width: 960, height: 600))
+        setAccessibilityLabel("Outnumbered native game")
+        timer = Timer.scheduledTimer(withTimeInterval: Double(OriginalWorld.frameIRQTicks)*VerifiedClock.pitDivisor/VerifiedClock.pitInputHz, repeats: true) { [weak self] _ in self?.step() }
+        zapTimer = Timer.scheduledTimer(withTimeInterval: 1.0/60,repeats: true) { [weak self] _ in self?.pulseZap() }
+    }
+    required init?(coder: NSCoder) { fatalError("Not used") }
+    func begin() {
+        do {
+            let profile: NativeProfile
+            if let selected = profileStore.document.selectedProfileID, let saved = profileStore.document.profiles.first(where: { $0.id == selected }) { profile = saved }
+            else { profile = try profileStore.create(name: "Player") }
+            session = try saves.load(profile.id) ?? NativeSession(profileID: profile.id, seed: UInt32.random(in: 1...UInt32.max))
+            session.ensureQuestionSetup()
+            ensureEnergyMachine()
+            ensureCalculator()
+            if let active = session.activeChallenge { try prepareActivityState(active) }
+            lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
+            screen = session.activeDrill != nil ? .drill : (session.activeChallenge == nil ? .world : .question)
+            status = ""; referenceMode = false
+            needsDisplay = true
+        } catch { present(error) }
+    }
+    @objc func referenceQuestion() {
+        // Deterministic video checkpoint, isolated from the player's saved game.
+        session = NativeSession(profileID: UUID(), seed: 1, lifetimePoints: 30_000)
+        session.position = NativePosition(scene: 10, playerUnit: 23, cameraUnit: 0, facing: 1)
+        session.returnPosition = NativePosition(scene: 1, playerUnit: 52, cameraUnit: 38, facing: 1)
+        referenceMode = true; screen = .world
+        if let fixture = bank.cases.first(where: { $0.id == 9078 && $0.seed == 2 && $0.variant == 3 }) { open(fixture) }
+    }
+    @objc func referenceSongs() {
+        session = NativeSession(profileID: UUID(),seed: 1,lifetimePoints: 30_000)
+        session.position = NativePosition(scene: 13,playerUnit: 15,cameraUnit: 0,facing: 1)
+        session.returnPosition = NativePosition(scene: 6,playerUnit: 248,cameraUnit: 228,facing: 1)
+        referenceMode = true; screen = .world
+        if let fixture = bank.cases.first(where: { $0.id == 9068 && $0.seed == 7 && $0.variant == 3 }) { open(fixture) }
+    }
+    @objc func referenceBarChart() {
+        session = NativeSession(profileID: UUID(),seed: 1,lifetimePoints: 30_000)
+        session.position = NativePosition(scene: 10,playerUnit: 15,cameraUnit: 0,facing: 1)
+        session.returnPosition = NativePosition(scene: 1,playerUnit: 52,cameraUnit: 38,facing: 1)
+        referenceMode = true; screen = .world
+        if let fixture = bank.cases.first(where: { $0.id == 9010 && $0.seed == 1 && $0.variant == 0 }) { open(fixture) }
+    }
+    func save() {
+        guard session != nil, !referenceMode else { return }
+        var snapshot = session!
+        // Decoder/help are transient native screens. On relaunch the app opens
+        // exploration (or the saved active question), so retain only its pause.
+        let retainedPauses = snapshot.activeChallenge == nil ? 0 : 1
+        while snapshot.clock.pauseDepth > retainedPauses { snapshot.clock.resume() }
+        do { try saves.save(snapshot) } catch { present(error) }
+    }
+    func present(_ error: Error) {
+        let message = error.localizedDescription
+        guard message != lastError else { return }; lastError = message
+        let alert = NSAlert(); alert.messageText = "Outnumbered"; alert.informativeText = message; alert.runModal()
+    }
+    func effect(_ index: Int) {
+        guard soundEnabled else { return }
+        guard OriginalSoundPolicy.accepts(incoming: index,current: lastSoundIndex,playing: sound?.isPlaying == true) else { return }
+        sound?.stop()
+        sound = NSSound(contentsOf: content.root.appendingPathComponent(String(format: "audio/effect-%02d.wav", index)), byReference: false)
+        sound?.play()
+        lastSoundIndex = index
+    }
+    func step() {
+        tick += 1
+        guard session != nil else { return }
+        if session.activeZap != nil || session.activeFountain != nil { needsDisplay = true; return }
+        // Original IRQ time continues while questions/decoder pause displayed
+        // game minutes. Resume restores the remaining minute deadline.
+        if screen != .title { session.clock.pollAfterIRQTicks(UInt64(OriginalWorld.frameIRQTicks)) }
+        if screen == .world && session.outcome == "active" {
+            updateTelly()
+            if session.clock.expired { session.outcome = "lost"; status = "Midnight!"; save() }
+            else if let jump = jumpStep {
+                if jumpDirection != 0 { move(jumpDirection * 2) }
+                jumpStep = jump == 7 ? nil : jump+1
+            } else {
+                let direction = (held.contains(124) ? 1 : 0) - (held.contains(123) ? 1 : 0)
+                if direction != 0 { move(direction) }
+            }
+            if fireFrames > 0 { fireFrames -= 1 }
+            updateTellyProjectileAndCollision()
+            updateLiveWireAndCollision()
+            if tick-lastSaveTick >= 100 { save(); lastSaveTick = tick }
+        }
+        if screen == .drill && session.outcome == "active" {
+            do {
+                var drill = session.activeDrill!, generator = session.generator
+                let award = try drill.advance(irqTicks: OriginalWorld.frameIRQTicks,nextRandom: { generator.nextRandomValue() })
+                session.score = VerifiedScore.adding(award,to: session.score)
+                session.generator = generator; session.activeDrill = drill
+                if drill.phase == .finished {
+                    finishDrill()
+                    if drill.rewardApplied {
+                        let remaining = max(0,session.activeDrill!.resultTicksRemaining-OriginalWorld.frameIRQTicks)
+                        session.activeDrill?.resultTicksRemaining = remaining
+                    }
+                    if session.activeDrill?.resultTicksRemaining == 0 { session.activeDrill = nil; screen = .world; save() }
+                }
+                if session.clock.expired { session.activeDrill = nil; session.outcome = "lost"; screen = .world; status = "Midnight!"; save() }
+            } catch { present(error) }
+        }
+        needsDisplay = true
+    }
+    func move(_ delta: Int) {
+        session.playerHasMoved = true
+        let oldCamera = session.position.cameraUnit
+        let direction = delta < 0 ? -1 : 1
+        session.position.facing = direction
+        if session.position.scene < 10 {
+            let floor = session.position.scene / 5
+            session.position.playerUnit = max(floor*190+1,min(floor*190+185,session.position.playerUnit+delta))
+            let screenUnit = session.position.playerUnit-session.position.cameraUnit
+            if screenUnit < 6 { session.position.cameraUnit = max(floor*190,session.position.playerUnit-6) }
+            if screenUnit > 26 { session.position.cameraUnit = min(floor*190+152,session.position.playerUnit-26) }
+            session.position.scene = min(floor*5+4,max(floor*5,session.position.playerUnit/38))
+        } else { session.position.playerUnit = max(1,min(33,session.position.playerUnit+delta)) }
+        let cameraShift = session.position.cameraUnit-oldCamera
+        session.telly?.shiftForCamera(by: cameraShift)
+    }
+    func interact() {
+        session.playerHasMoved = true
+        let scene = session.position.scene
+        let unit = scene < 10 ? session.position.playerUnit-(scene*38) : session.position.playerUnit
+        if let object = world.object(scene: scene, overlappingPlayerAt: unit,energyMachineSlot: session.energyMachineSlot) {
+            if object.kind == 1 {
+                if let room = OriginalWorld.roomScene(throughHallway: scene) {
+                    session.returnPosition = session.position
+                    session.position = NativePosition(scene: room, playerUnit: 5, cameraUnit: 0, facing: 1)
+                    clearTelly()
+                    attemptLiveWire()
+                    save(); return
+                } else if scene >= 10, let prior = session.returnPosition {
+                    session.position = prior; session.returnPosition = nil; clearTelly(); session.liveWire?.clear(); save(); return
+                }
+            } else if object.kind == 2, let destination = OriginalWorld.elevatorDestination(from: scene) {
+                let local = OriginalWorld.elevatorExitScreenUnit(from: scene)!
+                session.position.scene = destination
+                session.position.playerUnit = destination*38+local
+                session.position.cameraUnit = destination < 5 ? (destination == 0 ? 0 : 152) : (destination == 5 ? 190 : 342)
+                clearTelly()
+                effect(scene < 5 ? 22 : 21); save(); return
+            } else if object.kind == 9 {
+                beginFountain(object); return
+            } else if let hotspot = object.challengeIndex {
+                guard !session.completed.contains(hotspot) else { status = "Clues collected."; return }
+                // Other template renderers are still under recovery. Never
+                // present a word problem without its required visual evidence.
+                guard hotspot == 0 || ActivityTemplates.supportedHotspots.contains(hotspot) || ActivityMore.supportedHotspots.contains(hotspot) || ActivityFinal.supportedHotspots.contains(hotspot) else {
+                    present(ContentError.invalid("This activity is not available in this development build.")); return
+                }
+                do {
+                    if let challenge = try session.question(hotspot: hotspot,bank: bank) { open(challenge) }
+                    else { status = "There is no question here in this game." }
+                } catch { present(error) }
+                return
+            }
+        }
+        jumpDirection = (held.contains(124) ? 1 : 0) - (held.contains(123) ? 1 : 0)
+        jumpStep = 0
+    }
+    func open(_ challenge: OriginalChallenge) {
+        // Upgrade an assigned pre-0.7 question with the same original data and
+        // recovered post-generation stream; never change its identity.
+        let challenge = bank.cases.first { $0.id == challenge.id && $0.seed == challenge.seed && $0.variant == challenge.variant } ?? challenge
+        do { try prepareActivityState(challenge,regenerating: true) } catch { present(error); return }
+        session.liveWire?.clear()
+        session.calculator = NativeCalculator()
+        session.activeChallenge = challenge
+        if session.attempts[challenge.hotspot] == nil { session.attempts[challenge.hotspot] = RoomAttempt() }
+        session.clock.pause(); screen = .question; held.removeAll(); status = ""
+        save(); needsDisplay = true
+    }
+    func leaveQuestion() {
+        attemptLiveWire()
+        session.activeChallenge = nil; session.clock.resume(); screen = .world; status = ""; save()
+    }
+    override func keyDown(with event: NSEvent) {
+        let key = event.keyCode
+        if key == 123 || key == 124 { held.insert(key) }
+        if screen == .title { if key == 36 { begin() }; return }
+        guard session != nil else { return }
+        if session.activeZap != nil || session.activeFountain != nil { return }
+        if key == 122 { toggleHelp(); return }
+        switch screen {
+        case .title: break
+        case .world:
+            if key == 126 && !event.isARepeat && session.outcome == "active" { interact() }
+            else if key == 49 && !event.isARepeat && jumpStep == nil && session.outcome == "active" {
+                beginZap()
+            } else if key == 48 { sound?.stop(); lastSoundIndex = nil; screen = .decoder; session.clock.pause(); held.removeAll() }
+            else if key == 53 { save(); screen = .title }
+        case .question:
+            guard let challenge = session.activeChallenge else { return }
+            if key == 53 { leaveQuestion(); return }
+            if key == 36 { submitQuestion() }
+            else if key == 51 || key == 117 {
+                if usesCalculator { calculatorKey(.delete) }
+                else if session.attempts[challenge.hotspot]?.result == .editing && session.attempts[challenge.hotspot]?.input.isEmpty == false { session.attempts[challenge.hotspot]?.input.removeLast() }
+            } else if let chars = event.characters, chars.count == 1 { questionCharacter(chars) }
+        case .drill:
+            if key == 53 {
+                session.activeDrill?.abort()
+                if session.activeDrill?.phase == .finished { finishDrill() }
+            } else if key == 36, session.activeDrill?.phase == .finished {
+                session.activeDrill = nil; screen = .world; save()
+            } else if key == 36 {
+                var drill = session.activeDrill!, generator = session.generator
+                if let accepted = drill.submit(nextRandom: { generator.nextRandomValue() }) { effect(accepted ? 6 : 8) }
+                session.generator = generator; session.activeDrill = drill; save()
+            } else if key == 51 || key == 117 { session.activeDrill?.erase() }
+            else if let chars = event.charactersIgnoringModifiers, chars.count == 1, let digit = Int(chars) { session.activeDrill?.digit(digit) }
+        case .decoder:
+            if key == 48 || key == 53 { screen = .world; session.clock.resume(); save() }
+            else if key == 125 { selectedRoom = (selectedRoom+1)%5 }
+            else if key == 126 { selectedRoom = (selectedRoom+4)%5 }
+            else if key == 36 && session.decoder.canDecide(energy: session.energy,pendingRecharge: session.pendingRecharge) {
+                confirmDecision()
+            }
+            else if event.charactersIgnoringModifiers?.lowercased() == "m" { showMatchRule() }
+        case .help: if key == 53 || key == 36 { toggleHelp() }
+        }
+        needsDisplay = true
+    }
+    override func keyUp(with event: NSEvent) { held.remove(event.keyCode) }
+    override func resignFirstResponder() -> Bool { held.removeAll(); return true }
+    @objc func toggleHelp() {
+        guard session != nil else { return }
+        if session.activeZap != nil || session.activeFountain != nil { return }
+        if screen == .help { screen = helpReturn; session.clock.resume() }
+        else { helpReturn = screen; screen = .help; session.clock.pause(); held.removeAll() }
+        needsDisplay = true
+    }
+    func confirmDecision() {
+        let alert = NSAlert(); alert.messageText = "Decide?"
+        alert.informativeText = "Is the Master of Mischief hiding in the \(DecoderPuzzle.roomNames[selectedRoom])?"
+        alert.addButton(withTitle: "Yes"); alert.addButton(withTitle: "No")
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        // The original transitions into a final encounter here. A correct
+        // decoder choice alone does not establish a faithfully completed game.
+        present(ContentError.invalid("The final encounter is not available in this development build."))
+    }
+    func showMatchRule() {
+        let text: String
+        switch session.decoder.rule {
+        case .samePicturesSameOrder: text = "MATCH RULE: The hideout room has the same pictures and the same pattern as the secret code."
+        case .samePicturesDifferentOrder: text = "MATCH RULE: The hideout room has the same pictures but a different pattern from the secret code."
+        case .differentPicturesSamePattern: text = "MATCH RULE: The hideout room has different pictures but the same pattern as the secret code."
+        }
+        let alert = NSAlert(); alert.messageText = "Match Rule"; alert.informativeText = text; alert.runModal()
+    }
+    override func mouseDown(with event: NSEvent) {
+        if session != nil && (session.activeZap != nil || session.activeFountain != nil) { return }
+        let p = convert(event.locationInWindow, from: nil)
+        let x = Int(p.x/bounds.width*320), y = Int(p.y/bounds.height*200)
+        if screen == .title { begin(); return }
+        if y < 12 && x < 50 { toggleHelp(); return }
+        if screen == .decoder {
+            if x >= 172 && y >= 17 && y < 157 { selectedRoom = min(4,(y-17)/28) }
+            if y >= 162 {
+                if x < 56 { screen = .world; session.clock.resume(); save() }
+                else if x < 108 { showMatchRule() }
+                else if x < 160 {
+                    if session.decoder.canDecide(energy: session.energy,pendingRecharge: session.pendingRecharge) { confirmDecision() }
+                    else { present(ContentError.invalid("Collect more room clues and secret-code pieces before deciding.")) }
+                }
+            }
+        }
+        if screen == .question, let challenge = session.activeChallenge {
+            if let button = NativeCalculator.button(atX: x,y: y) {
+                if button == 10 { submitQuestion() }
+                else if button < 10 { questionCharacter(String(button)) }
+                else if usesCalculator, let operation = NativeCalculator.Operation(rawValue: button) { calculatorKey(.operation(operation)) }
+                else if usesCalculator && button == 15 { calculatorKey(.equals) }
+                else if button == 16 {
+                    if usesCalculator { calculatorKey(.clear) }
+                    else if session.attempts[challenge.hotspot]?.result == .editing { session.attempts[challenge.hotspot]?.input = "" }
+                }
+            }
+        }
+        needsDisplay = true
+    }
+    func sprite(_ index: Int, x: Int, y: Int, transparent: Bool = true, flipped: Bool = false) throws {
+        canvas.draw(try content.bitmap(String(format: "FASTLOAD.GRA.%03d", index)),x: x,y: y,transparent: transparent,flipped: flipped)
+    }
+    func drawHUD() throws {
+        canvas.fill(0,160,320,40,1)
+        canvas.draw(try content.bitmap("FASTLOAD.GRA.057"),x: 0,y: 0)
+        try sprite(56,x: 216,y: 162,transparent: false)
+        let font = try content.font("MOCKET.DAT.1393")
+        let minute = session.clock.elapsedMinutes
+        let hour = (21+minute/60)%12
+        let time = session.clock.expired ? "12:00A.M." : "\(hour == 0 ? 12 : hour):\(String(format: "%02d",minute%60))P.M."
+        canvas.fill(254,163,58,10,0)
+        canvas.text(session.clock.roomChallengeActive ? "Pause" : time,font: try content.font("MOCKET.DAT.1396"),x: 256,y: 164,color: 14)
+        canvas.fill(256,176,48,8,0)
+        canvas.fill(256,176,min(48,max(0,session.energy)*2),8,14)
+        canvas.fill(254,188,58,8,0)
+        canvas.text(String(format: "%06d", Int(session.score)),font: font,x: 254,y: 187,color: 14)
+        if screen == .world {
+            let prompt = status.isEmpty ? "\u{86} to See Decoder" : status
+            canvas.text(prompt,font: font,x: 8,y: 176,color: 15,wrapWidth: 201)
+        }
+    }
+    func drawWorld() throws {
+        canvas.fill(0,12,320,148,1)
+        canvas.fill(5,15,310,143,8)
+        canvas.clip = (8,15,304,143)
+        let p = session.position
+        if p.scene < 10 {
+            canvas.fill(8,15,304,16,0)
+            for i in 0..<38 { try sprite(137+(p.cameraUnit+i)%38,x: 8+i*8,y: 31,transparent: false) }
+            let floor = p.scene/5
+            for scene in floor*5..<floor*5+5 {
+                let origin = (scene*38-p.cameraUnit)*8
+                for object in world.objects(scene: scene,energyMachineSlot: session.energyMachineSlot) where object.kind >= 0 {
+                    let x = origin+object.pixelX
+                    if x > 312 || x+128 < 8 { continue }
+                    if object.kind == 1 { try sprite(124,x: x,y: 48) }
+                    try sprite(object.sprite,x: x,y: object.drawY,flipped: object.kind == 6 && scene%5 == 4)
+                    //196..201 replace only the top24 rows, not the whole
+                    //88x87 machine. Original1b03:013f backs up this strip.
+                    if object.kind == 9, let fountain = session.activeFountain, fountain.phase == .dispensing {
+                        try sprite(fountain.machineSprite,x: x,y: object.drawY)
+                    }
+                }
+            }
+        } else if let selector = OriginalWorld.backgroundSelector(forRoom: p.scene) {
+            canvas.draw(try content.bitmap(String(format: "DMOCKET.GRA.%04x",selector)),x: 0,y: 15)
+        }
+        try drawTellyAndProjectile()
+        try drawLiveWire()
+        let moving = held.contains(123) || held.contains(124)
+        var frame = moving ? world.animations[2].frames[tick%8] : 0
+        var y = 81
+        if let jump = jumpStep { frame = world.animations[8].frames[jump]; y += OriginalWorld.jumpYOffsets[jump] }
+        if fireFrames > 0 { frame = 47+(3-fireFrames)%3 }
+        if let fountain = session.activeFountain { frame = fountain.playerFrame }
+        var x = (p.scene < 10 ? p.playerUnit-p.cameraUnit : p.playerUnit)*8
+        if let zap = session.activeZap {
+            let frames = zap.schedule.playerFrames
+            let firing = frames[min(2,zap.elapsedIRQTicks/10)]
+            frame = firing.ordinal; x = firing.xUnits*8; y = firing.yPixels
+        }
+        try sprite(frame,x: x,y: y,flipped: p.facing < 0)
+        if let zap = session.activeZap, zap.elapsedIRQTicks >= 30, !zap.schedule.beamFrames.isEmpty {
+            let index = min(5,(zap.elapsedIRQTicks-30)/10), beam = zap.schedule.beamFrames[index]
+            try sprite(beam.ordinal,x: beam.xUnits*8,y: beam.yPixels,flipped: p.facing < 0)
+        }
+        canvas.clip = nil
+        canvas.border(4,14,312,146,0)
+    }
+    func drawQuestion() throws {
+        guard let challenge = session.activeChallenge else { return }
+        let attempt = session.attempts[challenge.hotspot] ?? RoomAttempt()
+        canvas.fill(4,14,184,146,0)
+        if challenge.hotspot == 0 { try renderer.draw(challenge,on: canvas) }
+        else if ActivityTemplates.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityTemplates(content: content).draw(challenge,on: canvas) }
+        else if ActivityMore.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityMore(content: content).draw(challenge,on: canvas) }
+        else { _ = try ActivityFinal(content: content).draw(challenge,state: session.activityStates?[challenge.hotspot],on: canvas) }
+        canvas.draw(try content.bitmap("ROOMS.GRA.017"),x: 188,y: 15)
+        let small = try content.font("MOCKET.DAT.1396"), ui = try content.font("MOCKET.DAT.1393")
+        canvas.text(challenge.question,font: small,x: 200,y: 32,color: 0,wrapWidth: 105,lineHeight: 9)
+        if attempt.result == .editing {
+            if usesCalculator {
+                canvas.draw(try content.bitmap("ROOMS.GRA.016"),x: 188,y: 138)
+                let calculator = session.calculator ?? NativeCalculator()
+                canvas.text(calculator.display,font: ui,x: 229-ui.width(of: calculator.display),y: 148,color: 0)
+                if let operation = calculator.operation { canvas.text(operation.glyph,font: ui,x: 237,y: 148,color: 0) }
+            } else { canvas.text(attempt.input,font: ui,x: 208,y: 141,color: 0) }
+            if attempt.wrongAnswers == 1 {
+                canvas.text("That's not correct.",font: ui,x: 12,y: 163,color: 15)
+                canvas.text("Read the question.",font: ui,x: 12,y: 173,color: 15)
+            } else if attempt.awaitingHintAcknowledgement {
+                canvas.text("That's not correct.",font: ui,x: 12,y: 163,color: 15)
+                canvas.text("Press \u{85} for a hint.",font: ui,x: 12,y: 183,color: 15)
+            } else if attempt.wrongAnswers == 2 {
+                canvas.fill(10,157,174,41,15)
+                canvas.text(challenge.hint,font: small,x: 12,y: 158,color: 1,wrapWidth: 170,lineHeight: 8)
+            }
+        } else {
+            canvas.text(attempt.input,font: ui,x: 208,y: 141,color: 0)
+            canvas.text(attempt.result == .correct ? "That's correct." : "That's not correct.",font: ui,x: 12,y: 163,color: 15)
+            if attempt.result == .failed { canvas.text("The correct answer is \(challenge.answer).",font: ui,x: 12,y: 173,color: 15) }
+        }
+        if attempt.result != .editing || attempt.wrongAnswers != 2 {
+            canvas.text(attempt.result == .editing ? "\u{84} to Explore TV Station" : "\u{85} to Explore TV Station",font: ui,x: 8,y: 185,color: 15)
+        }
+    }
+    func drawDecoder() throws {
+        canvas.draw(try content.bitmap("DMOCKET.GRA.1770"),x: 8,y: 17)
+        for i in 0..<4 {
+            let value = session.decoder.secret[i]
+            if value & 0x80 == 0 { try sprite(Int(value & 0x3f)+78,x: 32+i*28,y: 110) }
+        }
+        for room in 0..<5 {
+            for i in 0..<4 {
+                let value = session.decoder.roomClues[room][i]
+                if value & 0x80 == 0 { try sprite(Int(value & 0x3f)+78,x: 184+i*28,y: 24+room*28) }
+            }
+        }
+        canvas.border(172,17+selectedRoom*28,137,27,14)
+        canvas.fill(5,163,211,34,0)
+        canvas.clip = (4,162,212,36)
+        canvas.draw(try content.bitmap("DMOCKET.GRA.1771"),x: 4,y: 162,transparent: true)
+        canvas.clip = nil
+    }
+    func render() throws {
+        canvas.clip = nil; canvas.clear(0)
+        if screen == .title { canvas.draw(try content.bitmap("OPENING.GRA.000"),x: 0,y: 0); return }
+        try drawHUD()
+        switch screen {
+        case .title: break
+        case .world: try drawWorld()
+        case .question: try drawQuestion()
+        case .drill: try drawDrill()
+        case .decoder: try drawDecoder()
+        case .help:
+            canvas.fill(8,16,304,140,15)
+            let font = try content.font("MOCKET.DAT.1393")
+            let text = helpReturn == .question ? "SOLVE THE MATH CHALLENGE\n\nType numbers and + - * /\n= or E: Calculate\nEnter: Check your answer\nBackspace / Del: Erase\nC: Clear calculator\nGame menu: Calculator on/off\n\nPress Enter to continue." : "EXPLORE THE TV STATION\n\nLeft / Right: Walk\nUp: Enter, use object, or jump\nUp + Left / Right: Flip\nSpace: Zap\nTab: Decoder\nEsc: Return\n\nPress Enter to continue."
+            canvas.text(text,font: font,x: 16,y: 24,color: 1,lineHeight: 10)
+        }
+    }
+    override func draw(_ dirtyRect: NSRect) {
+        do {
+            try render()
+            let image = NSImage(size: NSSize(width: 320,height: 200)); image.addRepresentation(try canvas.representation())
+            NSGraphicsContext.current?.imageInterpolation = .none
+            image.draw(in: bounds,from: .zero,operation: .copy,fraction: 1,respectFlipped: true,hints: [.interpolation: NSImageInterpolation.none.rawValue])
+        } catch { NSLog("Native render: %@",error.localizedDescription) }
+    }
+}
+
+final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
+    var window: NSWindow!
+    var game: NativeGameView!
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        do {
+            game = try NativeGameView(root: NativeApplication.assets)
+            window = NSWindow(contentRect: NSRect(x: 0,y: 0,width: 960,height: 600),styleMask: [.titled,.closable,.miniaturizable],backing: .buffered,defer: false)
+            window.title = "Outnumbered — Native Development Build"
+            window.contentView = game; window.center(); window.makeKeyAndOrderFront(nil); window.makeFirstResponder(game)
+            let root = NSMenu(), application = NSMenuItem(), menu = NSMenu()
+            root.addItem(application); application.submenu = menu
+            menu.addItem(withTitle: "Quit Outnumbered",action: #selector(NSApplication.terminate(_:)),keyEquivalent: "q")
+            let gameItem = NSMenuItem(), gameMenu = NSMenu(title: "Game")
+            root.addItem(gameItem); gameItem.submenu = gameMenu
+            let reference = NSMenuItem(title: "Reference Rainfall Question",action: #selector(NativeGameView.referenceQuestion),keyEquivalent: "r"); reference.target = game
+            gameMenu.addItem(reference)
+            let songs = NSMenuItem(title: "Reference Cartoon Songs Question",action: #selector(NativeGameView.referenceSongs),keyEquivalent: "g"); songs.target = game; gameMenu.addItem(songs)
+            let bars = NSMenuItem(title: "Bar Chart Checkpoint",action: #selector(NativeGameView.referenceBarChart),keyEquivalent: "b"); bars.target = game; gameMenu.addItem(bars)
+            let spinner = NSMenuItem(title: "Spinner Checkpoint",action: #selector(NativeGameView.referenceSpinner),keyEquivalent: "1"); spinner.target = game; gameMenu.addItem(spinner)
+            let music = NSMenuItem(title: "Music Chart Checkpoint",action: #selector(NativeGameView.referenceMusic),keyEquivalent: "2"); music.target = game; gameMenu.addItem(music)
+            let supplies = NSMenuItem(title: "Equipment List Checkpoint",action: #selector(NativeGameView.referenceSupplies),keyEquivalent: "3"); supplies.target = game; gameMenu.addItem(supplies)
+            let questions = NSMenuItem(title: "Junior Questions Checkpoint",action: #selector(NativeGameView.referenceJuniorQuestions),keyEquivalent: "4"); questions.target = game; gameMenu.addItem(questions)
+            let drill = NSMenuItem(title: "Reference Telly Drill",action: #selector(NativeGameView.referenceDrill),keyEquivalent: "d"); drill.target = game
+            gameMenu.addItem(drill)
+            let energy = NSMenuItem(title: "Energy Machine Checkpoint",action: #selector(NativeGameView.referenceEnergy),keyEquivalent: "e"); energy.target = game; gameMenu.addItem(energy)
+            let wire = NSMenuItem(title: "LiveWire Checkpoint",action: #selector(NativeGameView.referenceLiveWire),keyEquivalent: "l"); wire.target = game; gameMenu.addItem(wire)
+            let help = NSMenuItem(title: "Controls",action: #selector(NativeGameView.toggleHelp),keyEquivalent: "h"); help.target = game; gameMenu.addItem(help)
+            let calculator = NSMenuItem(title: "Use Calculator",action: #selector(NativeGameView.toggleCalculator(_:)),keyEquivalent: ""); calculator.target = game; calculator.state = .on; gameMenu.addItem(calculator)
+            NSApp.mainMenu = root; NSApp.activate(ignoringOtherApps: true)
+        } catch { let alert = NSAlert(); alert.messageText = "Outnumbered could not open"; alert.informativeText = error.localizedDescription; alert.runModal(); NSApp.terminate(nil) }
+    }
+    func applicationWillTerminate(_ notification: Notification) { game?.save() }
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
+}
+
+@main enum NativeApplication {
+    static var assets: URL {
+        if let value = ProcessInfo.processInfo.environment["OUTNUMBERED_ASSETS"] { return URL(fileURLWithPath: value) }
+        return Bundle.main.resourceURL!.appendingPathComponent("assets")
+    }
+    static func main() {
+        if CommandLine.arguments.contains("--self-test") {
+            do { try nativeIntegrationChecks(root: assets) } catch { fputs("Native checks failed: \(error)\n",stderr); exit(1) }; return
+        }
+        let app = NSApplication.shared; app.setActivationPolicy(.regular)
+        let delegate = NativeApplicationDelegate(); app.delegate = delegate; app.run()
+    }
+}

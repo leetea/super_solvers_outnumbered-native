@@ -1,0 +1,13 @@
+.DS_Store
+build/
+source/module-cache/
+source/resources/
+source/challenges.json
+source/map_coordinates.json
+source/decoder-recovered-tables.json
+source/drill-video-fixtures.json
+source/ending-sequences.json
+*.EXE
+*.exe
+*.mkv
+*.app/
