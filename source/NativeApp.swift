@@ -149,12 +149,19 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if screen == .help && !helpPausesAdventure { return }
         if screen == .practice {
             practiceIRQ += UInt64(OriginalWorld.frameIRQTicks)
-            let phase = practice?.drill.phase, attempts = practice?.attempts, correct = practice?.correctAnswers
-            do { for index in try practice?.advance(irqTicks: OriginalWorld.frameIRQTicks) ?? [] { effect(index) } }
+            let phase = practice?.drill.phase, presentation = practice?.presentation, seconds = practice?.elapsedSeconds, attempts = practice?.attempts, correct = practice?.correctAnswers
+            do {
+                for event in try practice?.advance(irqTicks: OriginalWorld.frameIRQTicks,soundPlaying: sound?.isPlaying == true) ?? [] {
+                    switch event {
+                    case let .sound(index): effect(index)
+                    case .stop: sound?.stop(); lastSoundIndex = nil
+                    }
+                }
+            }
             catch { present(error) }
             if phase != practice?.drill.phase && practice?.drill.phase == .asking { scheduleTutorial(8,ticks: 720) }
             processTutorials()
-            if phase != practice?.drill.phase || attempts != practice?.attempts || correct != practice?.correctAnswers { needsDisplay = true }
+            if seconds != practice?.elapsedSeconds || presentation != practice?.presentation || practice?.presentation != .questions || phase != practice?.drill.phase || attempts != practice?.attempts || correct != practice?.correctAnswers { needsDisplay = true }
             return
         }
         guard session != nil else { return }

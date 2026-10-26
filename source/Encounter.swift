@@ -155,7 +155,7 @@ struct NativeDrill: Codable {
                 else {
                     if let reference = referenceQuestions { question = reference[answered] }
                     else { question = try generator.next(nextRandom: nextRandom) }
-                    input = ""; phase = .between; ticksRemaining = 120
+                    input = ""; phase = .between; ticksRemaining = practice == true ? 240 : 120
                 }
             case .asking,.finished: break
             }

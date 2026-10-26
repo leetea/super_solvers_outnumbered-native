@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.12
+## Current verified milestone: 0.13
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,15 +16,16 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**382 integration checks pass.** The app ZIP passes strict signature verification
+**469 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.12.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.13.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
-[music/message recovery](docs/music-messages-recovery.md).
+[music/message recovery](docs/music-messages-recovery.md) and
+[practice presentation](docs/practice-presentation-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
-Original opening/menu/practice animations,
+Original opening/menu animations,
 detailed encounter/transition effects, palette and full-playthrough validation
 remain unfinished. See [the full plan](docs/PLAN.md),
 [project context](PROJECT_CONTEXT.md) and [milestones](MILESTONES.md).
@@ -119,3 +120,17 @@ opening credits remain presentation gaps; see music-messages-recovery.md.
 The complete-game goal remains active, with original practice animations,
 transitions/collisions, timed effects, palette/sound calibration, ending refinements
 and full natural-playthrough verification still required.
+
+
+Milestone0.13 restores the original Drill for Skill introduction and all three
+result animations (108 recovered sprite commands), their sounds and the
+sound-completion wait before the original Enter-to-continue prompt. The source
+counter panel/digits,120-tick problem-count boundary and independent practice
+timer replace the previous native footer. Running counters survive another set;
+practice still awards no adventure rewards and never writes its suspended save.
+469 native checks pass, including both imperfect animation/sound selections,
+exact two-draw result RNG consumption, timer/counter boundaries, sound waiting,
+repeated sets, visible questions and deterministic animation repainting.
+Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
+timed activities, palette/audio calibration, ending refinements and a full
+natural adventure playthrough remain. See practice-presentation-recovery.md.

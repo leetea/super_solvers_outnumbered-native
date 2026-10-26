@@ -26,14 +26,25 @@ struct OriginalGameSettings: Codable, Equatable {
 }
 
 struct NativePractice {
+    enum Presentation { case introduction, questions, response, waitingForSound, continuePrompt }
+    enum AudioEvent: Equatable { case sound(Int), stop }
     let settings: OriginalGameSettings
     var generator: DecoderGenerator
     var drill: NativeDrill
-    private(set) var attempts = 1
+    private(set) var presentation = Presentation.introduction
+    private(set) var presentationTicks = 0
+    private(set) var attempts = 0
     private(set) var correctAnswers = 0
-    private(set) var resultAcknowledgement = ""
+    private(set) var elapsedSeconds = 0
+    private var questionTicks = 0
+    private var nextSecond = 240
     private(set) var resultSound = 40
+    private(set) var resultVariant = 2
     private var recordedCorrect = 0
+    private var countedProblem = false
+    private var introductionStarted = false
+    var acceptsAnswer: Bool { presentation == .questions && drill.phase == .asking }
+    var presentationBusy: Bool { presentation != .questions && presentation != .continuePrompt }
     init(settings: OriginalGameSettings,seed: UInt32) throws {
         guard settings.valid else { throw DrillError.invalidSettings }
         self.settings = settings
@@ -41,33 +52,78 @@ struct NativePractice {
         drill = try NativeDrill(tier: 0,nextRandom: { generator.nextRandomValue() },settings: settings,practice: true)
         self.generator = generator
     }
-    mutating func advance(irqTicks: Int) throws -> [Int] {
-        let before = drill.phase
-        _ = try drill.advance(irqTicks: irqTicks,nextRandom: { generator.nextRandomValue() })
-        var sounds: [Int] = []
-        // Original increments attempts when displaying a problem, correct
-        // answers at the end of the first240-tick acknowledgement wait.
-        if before != .between && drill.phase == .between { attempts = (attempts+1)%10_000 }
-        if drill.phase != .correctFeedback && drill.correct > recordedCorrect {
-            correctAnswers = (correctAnswers+drill.correct-recordedCorrect)%10_000
-            recordedCorrect = drill.correct; sounds.append(37)
-        }
-        if before != .finished && drill.phase == .finished {
-            if drill.correct == drill.questionCount { resultAcknowledgement = "All correct!"; resultSound = 40 }
-            else {
-                // The source makes two independent draws for this response.
-                resultSound = [28,34][generator.nextRandomValue()%2]
-                resultAcknowledgement = ["Keep practicing!","Try another set!"][generator.nextRandomValue()%2]
+    mutating func advance(irqTicks: Int,soundPlaying: Bool = false) throws -> [AudioEvent] {
+        guard irqTicks >= 0 else { return [] }
+        var ticks = irqTicks, events: [AudioEvent] = []
+        while ticks > 0 {
+            switch presentation {
+            case .introduction:
+                if !introductionStarted { events.append(.sound(23)); introductionStarted = true }
+                let consumed = min(ticks,20-presentationTicks%20)
+                ticks -= consumed; presentationTicks += consumed
+                if presentationTicks == 160 {
+                    events.append(.stop); presentation = .questions; presentationTicks = 0
+                } else if presentationTicks%20 == 0 { events.append(.sound(23)) }
+            case .questions:
+                if drill.phase == .asking {
+                    questionTicks += ticks
+                    updateTimer()
+                    return events
+                }
+                let before = drill.phase
+                // Both waits around the practice counter are120 IRQ ticks.
+                let boundary = before == .between && !countedProblem ? 120 : 0
+                let consumed = min(ticks,max(1,drill.ticksRemaining-boundary))
+                _ = try drill.advance(irqTicks: consumed,nextRandom: { generator.nextRandomValue() })
+                ticks -= consumed; questionTicks += consumed
+                if drill.phase == .asking { updateTimer() }
+                if before == .between && !countedProblem && drill.ticksRemaining <= 120 {
+                    attempts = (attempts+1)%10_000; countedProblem = true
+                }
+                if before != .between && drill.phase == .between { countedProblem = false }
+                if drill.phase != .correctFeedback && drill.correct > recordedCorrect {
+                    correctAnswers = (correctAnswers+drill.correct-recordedCorrect)%10_000
+                    recordedCorrect = drill.correct; events.append(.sound(37))
+                }
+                if drill.phase == .finished {
+                    if drill.correct == drill.questionCount { resultSound = 40; resultVariant = 2 }
+                    else {
+                        // Independent source draws: first sound, then animation.
+                        resultSound = [28,34][generator.nextRandomValue()%2]
+                        resultVariant = generator.nextRandomValue()%2
+                    }
+                    events.append(.stop); events.append(.sound(resultSound))
+                    presentation = .response; presentationTicks = 0
+                    // Playback begins when the caller receives these events.
+                    return events
+                }
+            case .response:
+                let consumed = min(ticks,OriginalPracticePresentation.duration(resultVariant)-presentationTicks)
+                ticks -= consumed; presentationTicks += consumed
+                if presentationTicks == OriginalPracticePresentation.duration(resultVariant) { presentation = .waitingForSound }
+            case .waitingForSound:
+                guard !soundPlaying else { return events }
+                presentation = .continuePrompt
+            case .continuePrompt: return events
             }
-            sounds.append(resultSound)
         }
-        return sounds
+        return events
     }
-    mutating func submit() -> Bool? { drill.submit(nextRandom: { generator.nextRandomValue() }) }
+    private mutating func updateTimer() {
+        // Source updates from the input poll, once per expired240-tick deadline;
+        // waits do not catch up every missed second when input resumes.
+        if questionTicks >= nextSecond {
+            elapsedSeconds = (elapsedSeconds+1)%60_000; nextSecond = questionTicks+240
+        }
+    }
+    mutating func submit() -> Bool? {
+        guard acceptsAnswer else { return nil }
+        return drill.submit(nextRandom: { generator.nextRandomValue() })
+    }
     mutating func nextSet() throws {
-        guard drill.phase == .finished else { return }
+        guard presentation == .continuePrompt else { return }
         drill = try NativeDrill(tier: 0,nextRandom: { generator.nextRandomValue() },settings: settings,practice: true)
-        attempts = (attempts+1)%10_000
-        recordedCorrect = 0; resultAcknowledgement = ""
+        presentation = .introduction; presentationTicks = 0; introductionStarted = false
+        countedProblem = false; recordedCorrect = 0
     }
 }

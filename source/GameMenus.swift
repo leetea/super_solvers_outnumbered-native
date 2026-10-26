@@ -174,7 +174,7 @@ extension NativeGameView {
         do {
             if event.keyCode == 53 { showPlayerMenu(); return }
             if event.keyCode == 36 {
-                if practice!.drill.phase == .finished { try practice!.nextSet() }
+                if practice!.presentation == .continuePrompt { try practice!.nextSet() }
                 else if let accepted = practice!.submit() { effect(accepted ? 6 : 8) }
             } else if event.keyCode == 51 || event.keyCode == 117 { practice!.drill.erase() }
             else if let characters = event.charactersIgnoringModifiers, characters.count == 1, let digit = Int(characters) { practice!.drill.digit(digit) }
@@ -251,16 +251,52 @@ extension NativeGameView {
     func drawPractice() throws {
         guard let practice else { return }
         canvas.draw(try content.bitmap("FASTLOAD.GRA.057"),x: 0,y: 0)
-        try drawDrill(practice.drill)
-        let ui = try content.font("MOCKET.DAT.1393"), small = try content.font("MOCKET.DAT.1396")
-        canvas.fill(0,160,320,40,1)
-        canvas.text("Drill for Skill",font: ui,x: 8,y: 163,color: 15)
-        canvas.text("Problems: \(practice.attempts)   Correct: \(practice.correctAnswers)",font: small,x: 8,y: 176,color: 15)
-        canvas.text("Esc / F2: Play Another Game",font: small,x: 8,y: 188,color: 15)
-        if practice.drill.phase == .finished {
-            canvas.fill(100,65,144,48,0)
-            canvas.text("\(practice.drill.correct) of \(practice.drill.questionCount) correct.",font: ui,x: 110,y: 70,color: 15)
-            canvas.text("Enter for another set.",font: small,x: 110,y: 92,color: 15)
+        if practice.presentation == .questions { try drawDrill(practice.drill) }
+        else { canvas.draw(try content.bitmap("DMOCKET.GRA.157c"),x: 0,y: 15) }
+        // Practice replaces the adventure footer with its original counter art.
+        canvas.fill(4,162,205,36,11); canvas.fill(5,163,203,34,0)
+        canvas.draw(try content.bitmap("DRILL.GRA.013"),x: 208,y: 162)
+        if practice.elapsedSeconds > 0 {
+            let minutes = practice.elapsedSeconds/60
+            for (place,digit) in String(minutes).reversed().enumerated() where minutes > 0 {
+                try sprite(64+Int(String(digit))!,x: (70-place*2)*4,y: 166,transparent: false)
+            }
+            canvas.text(":",font: try content.font("MOCKET.DAT.1396"),x: 290,y: 164,color: 14)
+            for (digit,x) in [(practice.elapsedSeconds%60/10,292),(practice.elapsedSeconds%10,300)] {
+                try sprite(64+digit,x: x,y: 166,transparent: false)
+            }
+        }
+        for (value,y) in [(practice.attempts,177),(practice.correctAnswers,188)] {
+            for (place,digit) in String(value).reversed().enumerated() {
+                try sprite(64+Int(String(digit))!,x: (75-place*2)*4,y: y,transparent: false)
+            }
+        }
+        if practice.presentation == .introduction {
+            let index = 10+(practice.presentationTicks/20)%2
+            canvas.draw(try content.bitmap(String(format: "DRILL.GRA.%03d",index)),x: 76,y: 28,transparent: true)
+        } else if practice.presentation != .questions {
+            canvas.draw(try content.bitmap("DRILL.GRA.012"),x: 76,y: 28,transparent: true)
+        }
+        if [.response,.waitingForSound,.continuePrompt].contains(practice.presentation) {
+            let base = canvas.pixels
+            let commands = OriginalPracticePresentation.scripts[practice.resultVariant]
+            var time = 0
+            func restore(_ command: OriginalEndingData.Command) {
+                canvas.restoreEndingRect(base,x: command.x*4,y: command.y,right: command.right*4+3,bottom: command.bottom)
+            }
+            for command in commands {
+                guard time <= practice.presentationTicks else { break }
+                if command.resource == -1 { restore(command) }
+                else if command.resource >= 0 {
+                    if command.restoreCommand > 0 { restore(commands[command.restoreCommand-1]) }
+                    try sprite(command.resource,x: command.x*4,y: command.y,transparent: command.flags & 64 != 0,flipped: command.flags & 32 != 0)
+                }
+                time += command.waitFrames*OriginalPracticePresentation.frameTicks
+            }
+        }
+        if practice.presentation == .continuePrompt {
+            canvas.text("\u{85}",font: try content.font("MOCKET.DAT.1393"),x: 105,y: 105,color: 15)
+            canvas.text("to Continue",font: try content.font("MOCKET.DAT.1396"),x: 164,y: 105,color: 15)
         }
     }
 }

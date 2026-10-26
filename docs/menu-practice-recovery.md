@@ -93,3 +93,12 @@ transition, ending, palette and complete-playthrough fidelity work still prevent
 claiming a complete game. The original ZIP and local MKV are never modified.
 
 A display/capture discrepancy remains explicitly unresolved: some computer-use window captures omit fixed text or labels on repeated frames, while a temporary diagnostic build writes identical correct native canvas PNGs before drawing. A direct CoreGraphics drawing trial did not resolve the captures and was reverted; diagnostic frame writing is removed from shipping source. verification/diagnostic-practice-canvas.png and diagnostic-missing-text-capture.png retain the distinction. This does not establish whether the discrepancy is in capture, background-window presentation or another display stage. No pixel-parity or fully resolved GUI claim is made.
+
+
+## Superseding0.13 presentation recovery
+
+The earlier pending-practice-animation statements above are historical.
+practice-presentation-recovery.md records the implemented original introduction,
+three result scripts, sound wait, counter panel and timer. Help, score history,
+new-user guidance and music have also landed in0.10..0.12; File/sign-in,
+transitions and full-game verification remain incomplete.

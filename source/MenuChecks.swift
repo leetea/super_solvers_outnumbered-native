@@ -34,7 +34,9 @@ func nativeMenuChecks(root: URL,output: URL) throws -> [String:Bool] {
     let expectedDecoder = expectedRNG.makePuzzle(difficulty: 3)
     checks["new_game_preserves_mutated_decoder_pools_after_srand"] = continued.decoder == expectedDecoder && continued.generator.randomState != seed
     var practice = try NativePractice(settings: .defaults(tier: 0),seed: 1)
-    checks["practice_first_problem_counts_at_entry"] = practice.attempts == 1 && practice.correctAnswers == 0 && practice.drill.phase == .between
+    checks["practice_intro_starts_before_first_problem"] = practice.attempts == 0 && practice.correctAnswers == 0 && practice.presentation == .introduction
+    let intro = try practice.advance(irqTicks: 160)
+    checks["practice_intro_eight_twenty_tick_frames_then_stop"] = intro == Array(repeating: .sound(23),count: 8)+[.stop] && practice.presentation == .questions && practice.attempts == 0
     for index in 0..<5 {
         _ = try practice.advance(irqTicks: 240)
         for c in String(practice.drill.question.expected) { practice.drill.digit(Int(String(c))!) }
@@ -43,12 +45,59 @@ func nativeMenuChecks(root: URL,output: URL) throws -> [String:Bool] {
         _ = try practice.advance(irqTicks: 239)
         let before = practice.correctAnswers
         let sounds = try practice.advance(irqTicks: 1)
-        checks["practice_problem_\(index)_correct_count_after_first_wait"] = before == index && practice.correctAnswers == index+1 && sounds == [37]
+        checks["practice_problem_\(index)_correct_count_after_first_wait"] = before == index && practice.correctAnswers == index+1 && sounds == [.sound(37)]
         _ = try practice.advance(irqTicks: 240)
     }
     checks["practice_set_finishes_without_game_rewards"] = practice.attempts == 5 && practice.correctAnswers == 5 && practice.drill.phase == .finished && !practice.drill.entitledToCode && practice.drill.capturedSymbol == nil && practice.resultSound == 40
+    let perfectResponse = practice
     try practice.nextSet()
-    checks["practice_enter_another_set_keeps_running_counters"] = practice.attempts == 6 && practice.correctAnswers == 5 && practice.drill.answered == 0 && practice.drill.phase == .between
+    checks["practice_enter_cannot_skip_response"] = practice.presentation == .response && practice.drill.answered == 5
+    _ = try practice.advance(irqTicks: 2131,soundPlaying: true)
+    checks["practice_perfect_response_waits_for_sound"] = practice.presentation == .waitingForSound
+    _ = try practice.advance(irqTicks: 1,soundPlaying: false)
+    checks["practice_finished_sound_reveals_continue_prompt"] = practice.presentation == .continuePrompt
+    try practice.nextSet()
+    checks["practice_enter_another_set_keeps_running_counters"] = practice.attempts == 5 && practice.correctAnswers == 5 && practice.drill.answered == 0 && practice.presentation == .introduction
+    _ = try practice.advance(irqTicks: 279)
+    checks["practice_counter_waits_120_ticks_after_intro"] = practice.attempts == 5
+    _ = try practice.advance(irqTicks: 1)
+    checks["practice_counter_advances_at_source_boundary"] = practice.attempts == 6
+    checks["practice_original_script_counts_durations"] = OriginalPracticePresentation.scripts.map(\.count) == [21,25,62] && (0..<3).map { OriginalPracticePresentation.duration($0) } == [900,1020,2130]
+    checks["practice_original_script_restore_and_mirror"] = OriginalPracticePresentation.scripts.allSatisfy { commands in
+        commands.enumerated().allSatisfy { i,c in c.restoreCommand <= i && c.resource >= 0 && [64,96].contains(c.flags) }
+    } && OriginalPracticePresentation.scripts[0][12].flags == 96
+    var timerPractice = try NativePractice(settings: .defaults(tier: 0),seed: 1)
+    _ = try timerPractice.advance(irqTicks: 160)
+    checks["practice_intro_does_not_increment_timer"] = timerPractice.elapsedSeconds == 0
+    _ = try timerPractice.advance(irqTicks: 240)
+    _ = try timerPractice.advance(irqTicks: 239)
+    checks["practice_timer_first_source_deadline"] = timerPractice.elapsedSeconds == 1
+    _ = try timerPractice.advance(irqTicks: 1)
+    checks["practice_timer_next_source_deadline"] = timerPractice.elapsedSeconds == 2
+    var responseFixtures = [2:perfectResponse]
+    var variants = Set<Int>(), sounds = Set<Int>()
+    for seed in UInt32(1)...32 {
+        var response = try NativePractice(settings: .defaults(tier: 0),seed: seed)
+        _ = try response.advance(irqTicks: 160)
+        for index in 0..<5 {
+            _ = try response.advance(irqTicks: 240)
+            let answer = index == 4 ? (response.drill.question.expected+1)%1000 : response.drill.question.expected
+            for digit in String(answer) { response.drill.digit(Int(String(digit))!) }
+            _ = response.submit()
+            let before = response.generator
+            _ = try response.advance(irqTicks: index == 4 ? 1200 : 480)
+            if index == 4 {
+                var expected = before
+                let sound = [28,34][expected.nextRandomValue()%2], variant = expected.nextRandomValue()%2
+                checks["practice_imperfect_seed_\(seed)_two_source_draws"] = response.generator.randomState == expected.randomState && response.resultSound == sound && response.resultVariant == variant
+            }
+        }
+        responseFixtures[response.resultVariant] = response
+        variants.insert(response.resultVariant); sounds.insert(response.resultSound)
+        _ = try response.advance(irqTicks: OriginalPracticePresentation.duration(response.resultVariant)+1)
+        checks["practice_imperfect_seed_\(seed)_response_complete"] = response.presentation == .continuePrompt && response.correctAnswers == 4 && response.attempts == 5
+    }
+    checks["practice_imperfect_both_sounds_and_scripts_reached"] = variants == [0,1] && sounds == [28,34]
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-menus-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
     let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
@@ -67,6 +116,13 @@ func nativeMenuChecks(root: URL,output: URL) throws -> [String:Bool] {
     for _ in 0..<100 { view.step() }
     checks["practice_does_not_tick_or_modify_suspended_adventure"] = try encoder.encode(view.session!) == snapshot && Data(contentsOf: view.saves.file(first.id)) == saved
     try view.render(); try view.canvas.writePNG(to: output.appendingPathComponent("native-practice-question.png"))
+    let questionPixels = view.canvas.pixels
+    var blankPractice = try NativePractice(settings: .defaults(tier: 0),seed: 1)
+    _ = try blankPractice.advance(irqTicks: 160)
+    let activePractice = view.practice; view.practice = blankPractice
+    try view.render()
+    checks["practice_question_visible_above_original_screen_art"] = view.canvas.pixels != questionPixels
+    view.practice = activePractice; try view.render()
     let firstPixels = view.canvas.pixels
     try view.render()
     checks["practice_repaint_preserves_static_labels"] = view.canvas.pixels == firstPixels
@@ -75,6 +131,24 @@ func nativeMenuChecks(root: URL,output: URL) throws -> [String:Bool] {
     _ = view.practice!.submit()
     for _ in 0..<30 { view.step() }
     checks["practice_correct_answer_no_adventure_score_clue_or_energy_award"] = view.session.score == 500 && view.session.energy == 7 && view.session.decoder.capturedCount == 0 && view.session.clock.elapsedMinutes == 21 && view.practice!.correctAnswers == 1
+    let suspendedPractice = view.practice
+    for variant in 0..<3 {
+        view.practice = responseFixtures[variant]!
+        try view.render()
+        let first = view.canvas.pixels
+        _ = try view.practice!.advance(irqTicks: 300)
+        try view.render()
+        checks["practice_animation_\(variant)_changes_original_pose"] = view.canvas.pixels != first
+        try view.canvas.writePNG(to: output.appendingPathComponent("native-practice-response-\(variant).png"))
+        let animated = view.canvas.pixels; try view.render()
+        checks["practice_animation_\(variant)_repaint_no_trails"] = view.canvas.pixels == animated
+        _ = try view.practice!.advance(irqTicks: 3000)
+        try view.render()
+        checks["practice_animation_\(variant)_continue_prompt_after_end"] = view.practice!.presentation == .continuePrompt
+        try view.canvas.writePNG(to: output.appendingPathComponent("native-practice-continue-\(variant).png"))
+    }
+    checks["practice_response_render_keeps_adventure_file_unchanged"] = try Data(contentsOf: view.saves.file(first.id)) == saved
+    view.practice = suspendedPractice
     view.showPlayerMenu(); try view.render()
     try view.canvas.writePNG(to: output.appendingPathComponent("native-player-menu.png"))
     checks["practice_escape_returns_menu_and_keeps_game_saved"] = view.screen == .menu && view.practice == nil && view.session.score == 500 && view.session.clock.elapsedMinutes == 21

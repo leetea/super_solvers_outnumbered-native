@@ -193,6 +193,7 @@ extension NativeGameView {
     }
     func drawDrill(_ drill: NativeDrill) throws {
         canvas.draw(try content.bitmap("DMOCKET.GRA.157c"),x: 0,y: 15)
+        if drill.practice == true { canvas.draw(try content.bitmap("DRILL.GRA.012"),x: 76,y: 28,transparent: true) }
         let font = try content.font("MOCKET.DAT.1394"), small = try content.font("MOCKET.DAT.1396"), ui = try content.font("MOCKET.DAT.1393")
         if drill.phase == .finished && drill.practice != true {
             if let symbol = drill.capturedSymbol { try sprite(Int(symbol)+78,x: 156,y: 65,transparent: false) }
@@ -209,6 +210,6 @@ extension NativeGameView {
             if drill.phase == .correctFeedback || drill.phase == .correctPause { canvas.text(drill.acknowledgement,font: small,x: 162-small.width(of: drill.acknowledgement)/2,y: 104,color: 15) }
             if drill.phase == .wrongFeedback { canvas.text("That's incorrect.",font: small,x: 120,y: 104,color: 15) }
         }
-        canvas.text("\u{84} to Explore TV Station",font: ui,x: 8,y: 184,color: 15)
+        if drill.practice != true { canvas.text("\u{84} to Explore TV Station",font: ui,x: 8,y: 184,color: 15) }
     }
 }

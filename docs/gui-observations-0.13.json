@@ -1,0 +1,27 @@
+{
+  "milestone": "0.13",
+  "verificationApp": "/private/tmp/Outnumbered-Messages-Final.app",
+  "temporaryPlayers": "/private/tmp/outnumbered-013-gui-players",
+  "codeIdentity": "gui-0.13-code-identity.json",
+  "headlessCheckCount": 469,
+  "observations": [
+    "Native practice setup and static introduction observed with Problems0/Correct0.",
+    "Final build five-question set answered8,17,0,11,7; Correct advanced to5 and Problems to5.",
+    "Original character standing pose and Enter-to-Continue glyph/text appeared after the perfect result.",
+    "Enter restarted the next set, preserving the counters.",
+    "Native question/timer/counter display and feedback observed.",
+    "Final next-set display showed Problems6/Correct5 with the next arithmetic problem."
+  ],
+  "screenshots": [
+    "gui-practice-perfect-final-0.13.png",
+    "gui-practice-next-set-final-0.13.png"
+  ],
+  "limits": [
+    "The final-pose screenshots do not establish frame-by-frame native-window animation or perceptual audio parity.",
+    "All three result timelines and changing poses are separately covered by headless rendering checks.",
+    "Earlier prefinal perfect-set screenshot is diagnostic; final executable adds checks and version metadata.",
+    "No full natural adventure playthrough claim.",
+    "Occasional missing-static-text captures remain documented."
+  ],
+  "originalAssetsModified": false
+}

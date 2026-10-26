@@ -1,4 +1,4 @@
-# Outnumbered Native Development Build 0.12
+# Outnumbered Native Development Build 0.13
 
 Open `Outnumbered Native Development.app` on an Apple Silicon Mac with macOS12 or later. This is a playable development milestone toward the complete game, not the finished game.
 
@@ -8,7 +8,7 @@ From the title screen, Return opens the player menu. Create or select a player, 
 
 Choose **Game → Reference Telly Drill** (Command-D) to play the recording's six questions. Answers are **19,12,22,7,22,3**. Correct answers earn50 each; at least five correct answers earn a code piece and100 more. Feedback pauses are automatic, and the game clock keeps running. This checkpoint uses an isolated native session.
 
-The app includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, all ten activity families, decoder logic, recharge, LiveWire, the calculator and native saves. It now includes the original scripted hideout reveal, progressive bonuses, win/loss outcomes, lifetime points and replay. Separate custom game/practice settings, player switching, practice counters and unfinished-game continuation are now connected. Original opening/menu/practice animations, detailed ending/transition effects, collision presentation, palette and full-playthrough validation remain incomplete. This is not a complete or pixel-exact game.
+The app includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, all ten activity families, decoder logic, recharge, LiveWire, the calculator and native saves. It now includes the original scripted hideout reveal, progressive bonuses, win/loss outcomes, lifetime points and replay. Separate custom game/practice settings, player switching, practice counters and unfinished-game continuation are now connected. Original opening/menu animations, detailed ending/transition effects, collision presentation, palette and full-playthrough validation remain incomplete. This is not a complete or pixel-exact game.
 
 Native player files are separate from DOS assets:
 
@@ -73,3 +73,17 @@ opening credits remain presentation gaps; see music-messages-recovery.md.
 The complete-game goal remains active, with original practice animations,
 transitions/collisions, timed effects, palette/sound calibration, ending refinements
 and full natural-playthrough verification still required.
+
+
+Milestone0.13 restores the original Drill for Skill introduction and all three
+result animations (108 recovered sprite commands), their sounds and the
+sound-completion wait before the original Enter-to-continue prompt. The source
+counter panel/digits,120-tick problem-count boundary and independent practice
+timer replace the previous native footer. Running counters survive another set;
+practice still awards no adventure rewards and never writes its suspended save.
+469 native checks pass, including both imperfect animation/sound selections,
+exact two-draw result RNG consumption, timer/counter boundaries, sound waiting,
+repeated sets, visible questions and deterministic animation repainting.
+Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
+timed activities, palette/audio calibration, ending refinements and a full
+natural adventure playthrough remain. See practice-presentation-recovery.md.

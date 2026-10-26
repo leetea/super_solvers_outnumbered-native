@@ -21,8 +21,10 @@ documented history, not backdated Git commits.
 
 | 0.12 | Independent music/sound controls and original new-user guidance/state |382 checks; native window message/options flow; extracted app and source rebuild verified |
 
-The full-game goal is **not complete**. Next are original music/history,
-music and practice presentation, followed by transitions,
+| 0.13 | Original practice introduction/result scripts, sound wait, counters and timer |469 checks; native practice window flow; portable app/source and repository rebuild checks |
+
+The full-game goal is **not complete**. Next are full natural-playthrough validation,
+opening/File presentation and transitions,
 collision presentation, effects, palette and complete-playthrough validation. Exact bonus sliding,
 rank-tower animation and midnight meter flashing remain presentation gaps.
 
@@ -50,3 +52,17 @@ opening credits remain presentation gaps; see music-messages-recovery.md.
 The complete-game goal remains active, with original practice animations,
 transitions/collisions, timed effects, palette/sound calibration, ending refinements
 and full natural-playthrough verification still required.
+
+
+Milestone0.13 restores the original Drill for Skill introduction and all three
+result animations (108 recovered sprite commands), their sounds and the
+sound-completion wait before the original Enter-to-continue prompt. The source
+counter panel/digits,120-tick problem-count boundary and independent practice
+timer replace the previous native footer. Running counters survive another set;
+practice still awards no adventure rewards and never writes its suspended save.
+469 native checks pass, including both imperfect animation/sound selections,
+exact two-draw result RNG consumption, timer/counter boundaries, sound waiting,
+repeated sets, visible questions and deterministic animation repainting.
+Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
+timed activities, palette/audio calibration, ending refinements and a full
+natural adventure playthrough remain. See practice-presentation-recovery.md.
