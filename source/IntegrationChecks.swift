@@ -72,7 +72,7 @@ func nativeIntegrationChecks(root: URL) throws {
     var malformed = session
     malformed.returnPosition = NativePosition(scene: -1,playerUnit: 0,cameraUnit: 0,facing: 1)
     checks["invalid_saved_return_position_rejected"] = !malformed.valid
-    let view = try NativeGameView(root: root,saveDirectory: directory.appendingPathComponent("render-profile"))
+    let view = try NativeGameView(root: root,saveDirectory: directory.appendingPathComponent("render-profile"),automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false; view.referenceQuestion(); try view.render()
     let output = URL(fileURLWithPath: ProcessInfo.processInfo.environment["OUTNUMBERED_CHECK_OUTPUT"] ?? FileManager.default.temporaryDirectory.path)
     try FileManager.default.createDirectory(at: output,withIntermediateDirectories: true)
@@ -120,6 +120,7 @@ func nativeIntegrationChecks(root: URL) throws {
     checks.merge(try nativeMenuChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeHelpChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeScoreChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeTutorialChecks(root: root,output: output)) { _,new in new }
     let report: [String:Any] = ["passed": checks.values.allSatisfy { $0 },"checks": checks,"checkCount": checks.count,"guiVerified": false,"completeGame": false,"reference": "Local OutNumbered Gameplay.mkv weather and drill checkpoints; original static data/code"]
     let data = try JSONSerialization.data(withJSONObject: report,options: [.prettyPrinted,.sortedKeys])
     try data.write(to: output.appendingPathComponent("native-integration-checks.json"))

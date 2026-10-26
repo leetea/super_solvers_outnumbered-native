@@ -5,23 +5,26 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.11
+## Current verified milestone: 0.12
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
 and native saves are connected. Player menus now expose ordinary/custom games,
 unfinished-game continuation, separate custom settings and Drill for Skill.
+Music and master Sound have independent source-derived gates. Original new-user
+guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**353 integration checks pass.** The app ZIP passes strict signature verification
+**382 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.11.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.12.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
-[score-table recovery](docs/score-history-recovery.md).
+[score-table recovery](docs/score-history-recovery.md) and
+[music/message recovery](docs/music-messages-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
-Music, original menu/practice animations,
+Original opening/menu/practice animations,
 detailed encounter/transition effects, palette and full-playthrough validation
 remain unfinished. See [the full plan](docs/PLAN.md),
 [project context](PROJECT_CONTEXT.md) and [milestones](MILESTONES.md).
@@ -55,6 +58,10 @@ into a new game. Reference checkpoints are isolated from player saves.
 In normal play, a correct decoder choice runs the ending and saves the winning
 result once. A wrong hideout choice or midnight loses without adding lifetime
 points. Replay retains earned rank and resets game progress.
+
+![Native original guidance](docs/screenshots/new-user-guidance.png)
+
+![Music off with sound on](docs/screenshots/music-sound-options.png)
 
 ![Native high-game scores](docs/screenshots/high-game-scores.png)
 
@@ -99,3 +106,16 @@ Arrow keys page lifetime rows when native profiles exceed the DOS ten slots.
 Music/new-user options, original practice animations, full File/sign-in UI,
 transitions/collision, timed effects and complete playthrough remain unfinished.
 See score-history-recovery.md for original evidence and native adaptations.
+
+
+Milestone0.12 connects independent Music and master Sound controls, opening
+theme requests and all18 original new-user message texts. Native session flags
+preserve original unseen/queued/acknowledged states; Yes resets them, No preserves
+them. Source-derived room, challenge, collision, decoder, energy, clock and idle
+input hooks display guidance through accessible macOS dialogs with readable key
+names. Practice message state remains separate from the suspended adventure.
+382 native checks pass. Native dialog pixels, exact settled-actor timing and
+opening credits remain presentation gaps; see music-messages-recovery.md.
+The complete-game goal remains active, with original practice animations,
+transitions/collisions, timed effects, palette/sound calibration, ending refinements
+and full natural-playthrough verification still required.

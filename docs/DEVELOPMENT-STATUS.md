@@ -1,4 +1,4 @@
-# Native reimplementation 0.11 — October 25, 2026
+# Native reimplementation 0.12 — October 25, 2026
 
 The complete-game goal remains active. This turn made concrete implementation progress; it was not a wait or a blocked turn.
 
@@ -36,7 +36,7 @@ Implemented in the development app:
 ## Gaps that still prevent completion
 
 1. Complete original menu/practice presentation and campaign RNG consumption. New-game question selection, eligibility, template bands and seed/variant choices now follow recovered source rules; all3,200 question cases compile and render. Data generation is compiled ahead of time for the recovered finite seed/variant domain. Original timed drawing effects and their random draws still prevent a complete campaign stream identity claim. Pre-0.7 saves use a marked migration because they lack historical startup choices.
-2. Original timed activity effects and music/menu presentation. Calculator arithmetic is implemented; exact original dialog/pressed-button/digit rendering and F3 option presentation remain incomplete.
+2. Original timed activity effects and menu presentation. Calculator arithmetic is implemented; exact original dialog/pressed-button/digit rendering and F3 option presentation remain incomplete.
 3. Detailed collision knockback/impact animations, portrait/code-capture transitions, queued input during feedback and full encounter sound/animation comparison. Telly/drill/zap/capture now run, but their native integration still needs broader runtime validation. No speculative door/jump sounds are substituted.
 4. Detailed scrolling/door/elevator animations, exact HUD digits/meters, transparent/mirrored driver semantics, sprite occlusion and full-frame video comparison. Current room entry/exit/elevator changes are immediate native transitions.
 5. Complete original ending presentation and remaining session/menu lifecycle. Native reveal, wrong-choice/midnight losses, bonus arithmetic, persistent lifetime/rank updates and replay now work. Original door/scroll transitions, bonus sliding, rank-tower animation and midnight meter-flash pixels remain incomplete; core profile/game/custom/practice choices now work; remaining original menu features/presentation are documented below.
@@ -98,3 +98,16 @@ Arrow keys page lifetime rows when native profiles exceed the DOS ten slots.
 Music/new-user options, original practice animations, full File/sign-in UI,
 transitions/collision, timed effects and complete playthrough remain unfinished.
 See score-history-recovery.md for original evidence and native adaptations.
+
+
+Milestone0.12 connects independent Music and master Sound controls, opening
+theme requests and all18 original new-user message texts. Native session flags
+preserve original unseen/queued/acknowledged states; Yes resets them, No preserves
+them. Source-derived room, challenge, collision, decoder, energy, clock and idle
+input hooks display guidance through accessible macOS dialogs with readable key
+names. Practice message state remains separate from the suspended adventure.
+382 native checks pass. Native dialog pixels, exact settled-actor timing and
+opening credits remain presentation gaps; see music-messages-recovery.md.
+The complete-game goal remains active, with original practice animations,
+transitions/collisions, timed effects, palette/sound calibration, ending refinements
+and full natural-playthrough verification still required.

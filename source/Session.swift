@@ -46,11 +46,13 @@ struct NativeSession: Codable {
     var runID: UUID?
     var activeEnding: NativeEnding?
     var gameSettings: OriginalGameSettings?
+    var newUserMessages: NativeNewUserMessages?
     var outcome = "active"
     var rank: VerifiedRank { VerifiedRank.forLifetimePoints(lifetimePoints) }
     init(profileID: UUID, seed: UInt32, lifetimePoints: Int = 0, settings: OriginalGameSettings? = nil, previousGenerator: DecoderGenerator? = nil) {
         formatVersion = 1; self.profileID = profileID; self.lifetimePoints = lifetimePoints
         runID = UUID()
+        newUserMessages = NativeNewUserMessages(enabled: lifetimePoints < 5000)
         var generator = previousGenerator ?? DecoderGenerator(seed: seed)
         let tier = VerifiedRank.allCases.firstIndex(of: VerifiedRank.forLifetimePoints(lifetimePoints))! >> 1
         let settings = settings ?? .defaults(tier: tier)
@@ -74,6 +76,7 @@ struct NativeSession: Codable {
         assignedChallenges.allSatisfy { (0..<10).contains($0.key) && $0.key == $0.value.hotspot } &&
         (questionSetup == nil || questionSetup!.valid) &&
         (gameSettings == nil || gameSettings!.valid) &&
+        (newUserMessages == nil || newUserMessages!.valid) &&
         (activeEnding == nil || (activeEnding!.valid && runID != nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil)) &&
         (telly == nil || telly!.hasValidPersistenceState) &&
         (activeDrill == nil || activeDrill!.valid) && (activeZap == nil || activeZap!.valid) &&

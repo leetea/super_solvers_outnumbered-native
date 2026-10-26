@@ -28,7 +28,7 @@ func nativeEnergyLiveWireChecks(root: URL, output: URL) throws -> [String: Bool]
 
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-energy-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
-    let view = try NativeGameView(root: root,saveDirectory: directory)
+    let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false
     view.referenceEnergy(); try view.render()
     let machineBefore = view.canvas.pixels

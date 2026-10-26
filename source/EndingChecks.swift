@@ -37,7 +37,7 @@ func nativeEndingChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["ending_all_tiers_preserve_uint16_score_and_lifetime_cap"] = allTiers
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-ending-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
-    let view = try NativeGameView(root: root,saveDirectory: directory)
+    let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false
     view.referenceEnding()
     checks["video_checkpoint_enters_equipment_reveal_without_early_win"] = view.session.activeEnding?.room == 3 && view.session.outcome == "active" && view.screen == .ending && view.session.score == 2650
@@ -84,7 +84,7 @@ func nativeEndingChecks(root: URL,output: URL) throws -> [String:Bool] {
     // Exercise normal autosave/profile code as well as the isolated checkpoint.
     // Every file is created under this test's temporary directory.
     let normalDirectory = directory.appendingPathComponent("normal-resume")
-    let normal = try NativeGameView(root: root,saveDirectory: normalDirectory)
+    let normal = try NativeGameView(root: root,saveDirectory: normalDirectory,automaticallyPresentMessages: false)
     normal.timer?.invalidate(); normal.zapTimer?.invalidate(); normal.soundEnabled = false
     let normalProfile = try normal.profileStore.create(name: "Resume test")
     normal.session = NativeSession(profileID: normalProfile.id,seed: 6908,lifetimePoints: 52595)
@@ -93,7 +93,7 @@ func nativeEndingChecks(root: URL,output: URL) throws -> [String:Bool] {
     let normalTimeline = EndingTimeline(normal.session.activeEnding!,data: data)
     let halfway = normalTimeline.events.first { if case .bonus("Time Left",_) = $0.action { return true }; return false }!.ticks
     try normal.advanceEnding(halfway); normal.save()
-    let reopened = try NativeGameView(root: root,saveDirectory: normalDirectory)
+    let reopened = try NativeGameView(root: root,saveDirectory: normalDirectory,automaticallyPresentMessages: false)
     reopened.timer?.invalidate(); reopened.zapTimer?.invalidate(); reopened.soundEnabled = false; reopened.begin()
     checks["normal_ending_autosave_resumes_at_saved_tally"] = reopened.screen == .ending && reopened.session.score == 5200 && reopened.session.clock.pauseDepth == 1 && reopened.session.activeEnding?.elapsedTicks == halfway
     try reopened.advanceEnding(normalTimeline.duration)
@@ -103,12 +103,12 @@ func nativeEndingChecks(root: URL,output: URL) throws -> [String:Bool] {
     var interrupted = reopened.session!
     interrupted.activeEnding?.committed = false; interrupted.lifetimePoints = 52595
     try reopened.saves.save(interrupted)
-    let afterCommit = try NativeGameView(root: root,saveDirectory: normalDirectory)
+    let afterCommit = try NativeGameView(root: root,saveDirectory: normalDirectory,automaticallyPresentMessages: false)
     afterCommit.timer?.invalidate(); afterCommit.zapTimer?.invalidate(); afterCommit.soundEnabled = false; afterCommit.begin()
     try afterCommit.commitEndingResult()
     checks["restart_between_profile_and_session_commit_no_duplicate_award"] = afterCommit.screen == .results && afterCommit.session.lifetimePoints == 64275 && afterCommit.profileStore.document.profiles.first?.lifetimePoints == 64275 && afterCommit.session.activeEnding?.committed == true
     try afterCommit.beginNextGame()
-    let next = try NativeGameView(root: root,saveDirectory: normalDirectory)
+    let next = try NativeGameView(root: root,saveDirectory: normalDirectory,automaticallyPresentMessages: false)
     next.timer?.invalidate(); next.zapTimer?.invalidate(); next.soundEnabled = false; next.begin()
     checks["normal_replay_persists_new_session_and_earned_rank"] = next.screen == .world && next.session.rank == .pro && next.session.lifetimePoints == 64275 && next.session.score == 0 && next.session.energy == 12 && next.session.activeEnding == nil && next.session.clock.pauseDepth == 0 && next.session.valid
     return checks

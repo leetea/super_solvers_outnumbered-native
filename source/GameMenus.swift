@@ -103,6 +103,8 @@ extension NativeGameView {
                 try profileStore.select(profiles[picker.indexOfSelectedItem].id)
             } else { return }
             session = nil; practice = nil; referenceMode = false; screen = .menu
+            menuMessages = NativeNewUserMessages(enabled: (selectedProfile?.lifetimePoints ?? 0) < 5000)
+            if menuMessages.enabled { showNewUserMessage(17,welcome: true) }
             status = ""; held.removeAll()
         } catch { present(error) }
     }
@@ -110,7 +112,12 @@ extension NativeGameView {
         guard let profile = selectedProfile else { choosePlayer(); return nil }
         let tier = VerifiedRank.allCases.firstIndex(of: VerifiedRank.forLifetimePoints(profile.lifetimePoints ?? 0))! >> 1
         let current = (practice ? profile.practiceSettings : profile.customGameSettings) ?? .defaults(tier: tier)
-        modalDepth += 1; defer { modalDepth -= 1 }
+        let previousContext = tutorialPracticeContext; tutorialPracticeContext = practice
+        let (tutorialTimer,monitor) = settingsTutorialTimer(practice: practice)
+        modalDepth += 1; defer {
+            tutorialTimer.invalidate(); if let monitor { NSEvent.removeMonitor(monitor) }
+            tutorialPracticeContext = previousContext; modalDepth -= 1
+        }
         return NativeSettingsPanel(settings: current,tier: tier,practice: practice).run()
     }
     @objc func playGame() { playGame(custom: false) }
@@ -137,7 +144,9 @@ extension NativeGameView {
             let seed: Int
             if previous != nil { seed = previous!.nextRandomValue() }
             else { seed = Int.random(in: 0...65535) }
+            let messages = session?.profileID == profile.id && !referenceMode ? session?.newUserMessages : menuMessages
             session = NativeSession(profileID: profile.id,seed: UInt32(seed),lifetimePoints: profile.lifetimePoints ?? 0,settings: settings,previousGenerator: previous)
+            session.newUserMessages = messages ?? menuMessages
             referenceMode = false; practice = nil; screen = .world; held.removeAll(); status = ""
             save(); needsDisplay = true
         } catch { present(error) }
@@ -146,6 +155,7 @@ extension NativeGameView {
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
         save()
+        preparePracticeMessages()
         guard let profile = selectedProfile, let settings = configure(practice: true) else { return }
         do {
             try profileStore.saveSettings(profileID: profile.id,settings: settings,practice: true)
@@ -156,6 +166,7 @@ extension NativeGameView {
         // Practice has its own stream and counters. The suspended adventure
         // and its save, score, clock, decoder and energy are never repurposed.
         practice = try NativePractice(settings: settings,seed: seed)
+        practiceIRQ = 0; preparePracticeMessages()
         held.removeAll(); screen = .practice; needsDisplay = true
     }
     func practiceKey(_ event: NSEvent) {
@@ -170,22 +181,35 @@ extension NativeGameView {
         } catch { present(error) }
         needsDisplay = true
     }
-    @objc func toggleSound() { soundEnabled.toggle(); if !soundEnabled { sound?.stop() }; needsDisplay = true }
+    func setMusicEnabled(_ enabled: Bool) {
+        if !enabled { sound?.stop(); lastSoundIndex = nil }
+        musicEnabled = enabled; needsDisplay = true
+    }
+    func setSoundEnabled(_ enabled: Bool) {
+        if !enabled { sound?.stop(); lastSoundIndex = nil }
+        soundEnabled = enabled; needsDisplay = true
+    }
+    @objc func toggleSound() { setSoundEnabled(!soundEnabled) }
     @objc func showOptions() {
         guard session?.activeZap == nil, session?.activeFountain == nil, screen != .ending else { return }
         modalDepth += 1; defer { modalDepth -= 1 }
         let alert = NSAlert(); alert.messageText = "Options"
-        let container = NSView(frame: NSRect(x: 0,y: 0,width: 260,height: 64))
+        let container = NSView(frame: NSRect(x: 0,y: 0,width: 260,height: 128))
+        let messages = NSButton(title: "New User Messages…",target: self,action: #selector(showNewUserOptions))
+        messages.frame = NSRect(x: 0,y: 100,width: 260,height: 26); messages.isHidden = screen == .practice; container.addSubview(messages)
+        let music = NSButton(checkboxWithTitle: "Music",target: nil,action: nil)
+        music.frame = NSRect(x: 0,y: 68,width: 260,height: 26); music.state = musicEnabled ? .on : .off
+        container.addSubview(music)
         let sound = NSButton(checkboxWithTitle: "Sound",target: nil,action: nil)
         sound.frame = NSRect(x: 0,y: 34,width: 260,height: 26); sound.state = soundEnabled ? .on : .off
         let calculator = NSButton(checkboxWithTitle: "Use Calculator",target: nil,action: nil)
         calculator.frame = NSRect(x: 0,y: 0,width: 260,height: 26)
-        calculator.state = session?.calculatorEnabled == false ? .off : .on; calculator.isEnabled = session != nil
+        calculator.state = session?.calculatorEnabled == false ? .off : .on; calculator.isEnabled = session != nil; calculator.isHidden = screen == .practice
         container.addSubview(sound); container.addSubview(calculator); alert.accessoryView = container
         alert.addButton(withTitle: "OK"); alert.addButton(withTitle: "Cancel")
         if alert.runModal() == .alertFirstButtonReturn {
-            soundEnabled = sound.state == .on
-            if !soundEnabled { self.sound?.stop() }
+            setMusicEnabled(music.state == .on)
+            setSoundEnabled(sound.state == .on)
             if session != nil && usesCalculator != (calculator.state == .on) {
                 let sender = NSMenuItem(); toggleCalculator(sender)
             }

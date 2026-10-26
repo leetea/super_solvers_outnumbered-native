@@ -25,7 +25,7 @@ Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers O
 - `work/reimplementation/`: expanded native source, original resource catalog, decoded images/fonts/audio, question VM recovery, references and static evidence.
 - `work/reimplementation/reference-media/source.json`: local video identity and measured tracks. Derived PNG frames and mono PCM are analysis copies only.
 - `work/reimplementation/REFERENCE-OVERRIDE.md`: local-video replacement instruction and workspace migration.
-- `outputs/Outnumbered Native Development.app`: current0.11 playable milestone. Command-R opens the local rainfall checkpoint; Command-D opens its six-question Telly drill. Command-4 opens an original-selected Junior question (answer165); Command-5 runs the ending checkpoint to Game11680/Total64275 and replay. These are isolated reference sessions. All ten activity families and3,200 recovered cases have native visual context. Core player/custom/practice menus are integrated; music/history, exact presentation, timed effects, detailed transitions and complete-game fidelity remain unresolved. This is separate from the preserved first prototype.
+- `outputs/Outnumbered Native Development.app`: current0.12 playable milestone. Command-R opens the local rainfall checkpoint; Command-D opens its six-question Telly drill. Command-4 opens an original-selected Junior question (answer165); Command-5 runs the ending checkpoint to Game11680/Total64275 and replay. These are isolated reference sessions. All ten activity families and3,200 recovered cases have native visual context. Core player/custom/practice menus are integrated; music/history, exact presentation, timed effects, detailed transitions and complete-game fidelity remain unresolved. This is separate from the preserved first prototype.
 - `work/reimplementation/DEVELOPMENT-STATUS.md`: implemented behavior, verification, known approximations and next work. Treat this alongside this checklist when continuing.
 
 Current workspace is `.`. Earlier work was copied from the previous Codex directory without modifying that directory; compiler caches were omitted.
@@ -82,3 +82,16 @@ Arrow keys page lifetime rows when native profiles exceed the DOS ten slots.
 Music/new-user options, original practice animations, full File/sign-in UI,
 transitions/collision, timed effects and complete playthrough remain unfinished.
 See score-history-recovery.md for original evidence and native adaptations.
+
+
+Milestone0.12 connects independent Music and master Sound controls, opening
+theme requests and all18 original new-user message texts. Native session flags
+preserve original unseen/queued/acknowledged states; Yes resets them, No preserves
+them. Source-derived room, challenge, collision, decoder, energy, clock and idle
+input hooks display guidance through accessible macOS dialogs with readable key
+names. Practice message state remains separate from the suspended adventure.
+382 native checks pass. Native dialog pixels, exact settled-actor timing and
+opening credits remain presentation gaps; see music-messages-recovery.md.
+The complete-game goal remains active, with original practice animations,
+transitions/collisions, timed effects, palette/sound calibration, ending refinements
+and full natural-playthrough verification still required.

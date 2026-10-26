@@ -38,7 +38,7 @@ func nativeEncounterChecks(root: URL, output: URL) throws -> [String: Bool] {
 
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-encounters-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
-    let view = try NativeGameView(root: root,saveDirectory: directory)
+    let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false; view.referenceDrill()
     for (index,answer) in [19,12,22,7,22,3].enumerated() {
         var limit = 0

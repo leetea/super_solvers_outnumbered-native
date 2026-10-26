@@ -31,6 +31,7 @@ extension NativeGameView {
                 enemy.collideWithPlayer()
             }
             if let collision {
+                queueTutorial(collision.timePenaltyMinutes > 0 ? 1 : 2)
                 if collision.energyCost > 0 { session.energy = VerifiedEnergy.applying(-collision.energyCost,to: session.energy)! }
                 session.clock.applyMinutePenalty(collision.timePenaltyMinutes)
                 for sound in collision.sounds { effect(sound) }
@@ -83,6 +84,7 @@ extension NativeGameView {
     }
     func beginFountain(_ object: OriginalWorldObject) {
         let machineUnit = session.position.scene*38+object.startUnit
+        if session.pendingRecharge == 0 { queueTutorial(4) }
         session.activeFountain = NativeFountain(initialPlayerUnit: session.position.playerUnit,targetPlayerUnit: machineUnit+1,machineWorldUnit: machineUnit,initialFacing: session.position.facing,credits: session.pendingRecharge)
         held.removeAll(); status = ""; jumpStep = nil
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
@@ -123,7 +125,7 @@ extension NativeGameView {
             let collision = OriginalCollisionEffect.forActor(1,sameFacing: session.position.facing == wire.facing)!
             session.energy = VerifiedEnergy.applying(-collision.energyCost,to: session.energy)!
             for sound in collision.sounds { effect(sound) }
-            wire.collideWithPlayer()
+            wire.collideWithPlayer(); queueTutorial(6)
         }
         session.liveWire = wire
     }

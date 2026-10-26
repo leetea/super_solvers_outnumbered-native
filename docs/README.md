@@ -1,4 +1,4 @@
-# Outnumbered Native Development Build 0.11
+# Outnumbered Native Development Build 0.12
 
 Open `Outnumbered Native Development.app` on an Apple Silicon Mac with macOS12 or later. This is a playable development milestone toward the complete game, not the finished game.
 
@@ -8,7 +8,7 @@ From the title screen, Return opens the player menu. Create or select a player, 
 
 Choose **Game → Reference Telly Drill** (Command-D) to play the recording's six questions. Answers are **19,12,22,7,22,3**. Correct answers earn50 each; at least five correct answers earn a code piece and100 more. Feedback pauses are automatic, and the game clock keeps running. This checkpoint uses an isolated native session.
 
-The app includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, all ten activity families, decoder logic, recharge, LiveWire, the calculator and native saves. It now includes the original scripted hideout reveal, progressive bonuses, win/loss outcomes, lifetime points and replay. Separate custom game/practice settings, player switching, practice counters and unfinished-game continuation are now connected. Original music, exact menu/practice animations, detailed ending/transition effects, collision presentation, palette and full-playthrough validation remain incomplete. This is not a complete or pixel-exact game.
+The app includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, all ten activity families, decoder logic, recharge, LiveWire, the calculator and native saves. It now includes the original scripted hideout reveal, progressive bonuses, win/loss outcomes, lifetime points and replay. Separate custom game/practice settings, player switching, practice counters and unfinished-game continuation are now connected. Original opening/menu/practice animations, detailed ending/transition effects, collision presentation, palette and full-playthrough validation remain incomplete. This is not a complete or pixel-exact game.
 
 Native player files are separate from DOS assets:
 
@@ -60,3 +60,16 @@ Arrow keys page lifetime rows when native profiles exceed the DOS ten slots.
 Music/new-user options, original practice animations, full File/sign-in UI,
 transitions/collision, timed effects and complete playthrough remain unfinished.
 See score-history-recovery.md for original evidence and native adaptations.
+
+
+Milestone0.12 connects independent Music and master Sound controls, opening
+theme requests and all18 original new-user message texts. Native session flags
+preserve original unseen/queued/acknowledged states; Yes resets them, No preserves
+them. Source-derived room, challenge, collision, decoder, energy, clock and idle
+input hooks display guidance through accessible macOS dialogs with readable key
+names. Practice message state remains separate from the suspended adventure.
+382 native checks pass. Native dialog pixels, exact settled-actor timing and
+opening credits remain presentation gaps; see music-messages-recovery.md.
+The complete-game goal remains active, with original practice animations,
+transitions/collisions, timed effects, palette/sound calibration, ending refinements
+and full natural-playthrough verification still required.

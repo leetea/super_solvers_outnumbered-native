@@ -51,7 +51,7 @@ func nativeMenuChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["practice_enter_another_set_keeps_running_counters"] = practice.attempts == 6 && practice.correctAnswers == 5 && practice.drill.answered == 0 && practice.drill.phase == .between
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-menus-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
-    let view = try NativeGameView(root: root,saveDirectory: directory)
+    let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false
     let first = try view.profileStore.create(name: "Practice player"), second = try view.profileStore.create(name: "Other player")
     try view.profileStore.select(first.id)

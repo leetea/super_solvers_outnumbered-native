@@ -26,7 +26,7 @@ func nativeHelpChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["practice_help_uses_original_drill_only_topic"] = browser.availableTopics == [7] && browser.topic == 7 && browser.activate(book: book)
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-help-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
-    let view = try NativeGameView(root: root,saveDirectory: directory)
+    let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false
     func key(_ code: UInt16) {
         view.keyDown(with: NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "",charactersIgnoringModifiers: "",isARepeat: false,keyCode: code)!)

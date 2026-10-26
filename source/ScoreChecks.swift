@@ -18,7 +18,7 @@ func nativeScoreChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["original_score_comma_format"] = [0,999,1000,65535,999999,1000000,9999999].map(OriginalScoreTable.formatted) == ["0","999","1,000","65,535","999,999","1,000,000","9,999,999"]
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-scores-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
-    let view = try NativeGameView(root: root,saveDirectory: directory)
+    let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false
     let profile = try view.profileStore.create(name: "Player")
     let run = UUID()

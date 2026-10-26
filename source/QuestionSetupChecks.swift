@@ -61,7 +61,7 @@ func nativeQuestionSetupChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["complete_3200_case_matrix_has_post_generation_rng"] = bank.cases.count == 3200 && keys.count == 3200 && bank.cases.allSatisfy { $0.post_generation_rng_state != nil }
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-question-setup-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
-    let view = try NativeGameView(root: root,saveDirectory: directory)
+    let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false
     view.referenceJuniorQuestions(); try view.render()
     checks["native_interaction_uses_startup_selected_junior_question"] = view.screen == .question && view.session.activeChallenge?.answer == 165 && view.session.generator.randomState == 2613937339

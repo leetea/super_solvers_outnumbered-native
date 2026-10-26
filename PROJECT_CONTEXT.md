@@ -77,3 +77,16 @@ Arrow keys page lifetime rows when native profiles exceed the DOS ten slots.
 Music/new-user options, original practice animations, full File/sign-in UI,
 transitions/collision, timed effects and complete playthrough remain unfinished.
 See score-history-recovery.md for original evidence and native adaptations.
+
+
+Milestone0.12 connects independent Music and master Sound controls, opening
+theme requests and all18 original new-user message texts. Native session flags
+preserve original unseen/queued/acknowledged states; Yes resets them, No preserves
+them. Source-derived room, challenge, collision, decoder, energy, clock and idle
+input hooks display guidance through accessible macOS dialogs with readable key
+names. Practice message state remains separate from the suspended adventure.
+382 native checks pass. Native dialog pixels, exact settled-actor timing and
+opening credits remain presentation gaps; see music-messages-recovery.md.
+The complete-game goal remains active, with original practice animations,
+transitions/collisions, timed effects, palette/sound calibration, ending refinements
+and full natural-playthrough verification still required.

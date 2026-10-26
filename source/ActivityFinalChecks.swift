@@ -47,7 +47,7 @@ func nativeFinalActivityChecks(root: URL,output: URL) throws -> [String:Bool] {
     }
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-final-activities-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
-    let view = try NativeGameView(root: root,saveDirectory: directory)
+    let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false
     for (name,id,hotspot,scene,answer) in [("spinner",9120,3,12,100),("music",9050,4,15,106),("supplies",9040,7,14,29)] {
         view.activityCheckpoint(id: id,hotspot: hotspot,scene: scene)

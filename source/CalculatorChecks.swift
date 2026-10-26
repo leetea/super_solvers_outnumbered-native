@@ -63,7 +63,7 @@ func nativeCalculatorChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["calculator_partial_expression_persistence"] = restored.valid && restored.left == 832 && restored.entry == "123" && restored.phase == .second
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-calculator-"+UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
-    let view = try NativeGameView(root: root,saveDirectory: directory)
+    let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false; view.referenceQuestion()
     // Exercise real NSView key routing, including the shifted-character path
     // used by '=' and the original alternate E key.

@@ -186,7 +186,8 @@ enum OriginalSoundPolicy {
     // DS:4506 signed-word priorities. Slot51 reads the following original word
     //0x460c; its valid impact stream is retained, not treated as silence.
     static let priorities = [1,1,1,3,2,2,5,5,5,5,4,4,4,4,5,5,5,2,4,5,3,5,5,5,5,1,1,1,1,1,1,1,1,1,1,5,5,1,4,1,1,1,1,1,1,1,1,3,4,4,0,17932]
-    static func accepts(incoming: Int,current: Int?,playing: Bool) -> Bool {
+    static func accepts(incoming: Int,current: Int?,playing: Bool,soundEnabled: Bool = true,musicEnabled: Bool = true) -> Bool {
+        guard soundEnabled, incoming >= 6 || musicEnabled else { return false }
         guard priorities.indices.contains(incoming) else { return false }
         guard playing, let current, priorities.indices.contains(current) else { return true }
         return priorities[current] < priorities[incoming]

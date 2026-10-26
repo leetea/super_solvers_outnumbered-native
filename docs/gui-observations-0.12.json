@@ -1,0 +1,54 @@
+{
+  "milestone": "0.12",
+  "app": "/private/tmp/Outnumbered-Messages-Final.app",
+  "temporaryPlayers": "/private/tmp/outnumbered-012-final-gui-players",
+  "codeIdentity": "gui-0.12-code-identity.json",
+  "observedMessageIDs": [
+    0,
+    13,
+    15,
+    16,
+    17
+  ],
+  "observations": [
+    "A legacy-shaped native save with no newUserMessages field loaded through Continue Game in the final corrected build",
+    "Search guidance0 and decoder guidance13 display original text with readable key names",
+    "Music can be Off while Sound remains On in the final corrected app",
+    "No disables messages while retaining acknowledged0/13; Yes enables and clears all18 flags",
+    "Resetting while the clock is still9:02 does not replay the search notice without a new clock update",
+    "Idle customized-game and practice settings show original messages15/16 after the recovered nominal delay",
+    "Final practice setup guidance leaves the suspended adventure file byte-for-byte unchanged",
+    "Creating a temporary trainee shows original welcome17",
+    "An ordinary newly created game advances from9:00 to9:02 and automatically shows search guidance0; this last check did not use the saved-time fixture"
+  ],
+  "practiceFilePreservation": {
+    "beforeSHA256": "e7520e594540060f0aa38f95fc35487cf23c5792f21b56f8d9d442c0eadb16ac",
+    "afterSHA256": "e7520e594540060f0aa38f95fc35487cf23c5792f21b56f8d9d442c0eadb16ac",
+    "adventureFileIdentical": true,
+    "observedMessage": 16
+  },
+  "ordinaryNewGameClock": {
+    "elapsedMinutesAfterGuidance": 2,
+    "score": 0,
+    "energy": 12,
+    "searchAcknowledged": true
+  },
+  "screenshots": [
+    "gui-legacy-new-user-search-fixed.png",
+    "gui-new-user-decoder-fixed.png",
+    "gui-options-music-off-sound-on-fixed.png",
+    "gui-reset-world-no-repeat-fixed.png",
+    "gui-new-user-custom-settings-fixed.png",
+    "gui-new-user-practice-settings-fixed.png",
+    "gui-new-user-welcome-fixed.png",
+    "gui-new-game-before-search.png",
+    "gui-new-game-search-actual-clock.png"
+  ],
+  "candidateFinding": "Window verification found an unnecessary adventure re-save during practice guidance. The final code skips that write, and both headless and window file-preservation checks pass.",
+  "limits": [
+    "Native macOS dialogs are accessible equivalents, not original DOS dialog pixels",
+    "All18 texts/state rules are checked; native window observations cover IDs0/13/15/16/17, not every collision/challenge popup",
+    "Music gate/priority checks and checkbox observations do not establish perceptual audio parity",
+    "Exact settled-actor timing, original practice/opening presentation and full natural playthrough remain unfinished"
+  ]
+}

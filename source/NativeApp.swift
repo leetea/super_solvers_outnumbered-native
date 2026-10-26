@@ -33,6 +33,16 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var status = ""
     var sound: NSSound?
     var soundEnabled = true
+    var musicEnabled = true
+    let automaticallyPresentMessages: Bool
+    var messagePresenter: ((Int,String) -> Void)?
+    var menuMessages = NativeNewUserMessages(enabled: true)
+    var practiceMessages = NativeNewUserMessages(enabled: true)
+    var tutorialPracticeContext = false
+    var practiceIRQ: UInt64 = 0
+    var practiceMessagesProfileID: UUID?
+    var tutorialLastMinute: Int?
+    var tutorialLastEnergy: Int?
     var lastSoundIndex: Int?
     var lastError: String?
     var referenceMode = false
@@ -50,7 +60,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         }
         return true
     }
-    init(root: URL, saveDirectory: URL = NativeProfileStore.defaultDirectory) throws {
+    init(root: URL, saveDirectory: URL = NativeProfileStore.defaultDirectory,automaticallyPresentMessages: Bool = true) throws {
+        self.automaticallyPresentMessages = automaticallyPresentMessages
         content = OriginalContent(root: root)
         world = try OriginalWorld(resource: Data(contentsOf: root.appendingPathComponent("catalog/decoded/MOCKET.DAT.1388.bin")))
         let coordinates = try JSONDecoder().decode(MapCoordinates.self, from: Data(contentsOf: root.appendingPathComponent("map_coordinates.json")))
@@ -62,6 +73,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         profileStore = try NativeProfileStore(directory: saveDirectory)
         saves = NativeSessionStore(directory: saveDirectory)
         super.init(frame: NSRect(x: 0, y: 0, width: 960, height: 600))
+        if let id = profileStore.document.selectedProfileID,let profile = profileStore.document.profiles.first(where: { $0.id == id }) { menuMessages = NativeNewUserMessages(enabled: (profile.lifetimePoints ?? 0) < 5000) }
         setAccessibilityLabel("Outnumbered native game")
         timer = Timer.scheduledTimer(withTimeInterval: Double(OriginalWorld.frameIRQTicks)*VerifiedClock.pitDivisor/VerifiedClock.pitInputHz, repeats: true) { [weak self] _ in self?.step() }
         zapTimer = Timer.scheduledTimer(withTimeInterval: 1.0/60,repeats: true) { [weak self] _ in self?.pulseZap() }
@@ -80,6 +92,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
             screen = session.activeDrill != nil ? .drill : (session.activeChallenge == nil ? .world : .question)
             if let ending = session.activeEnding { screen = ending.elapsedTicks >= EndingTimeline(ending,data: endingData).duration ? .results : .ending }
+            tutorialLastMinute = nil; tutorialLastEnergy = nil
             status = ""; referenceMode = false
             practice = nil
             needsDisplay = true
@@ -122,8 +135,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let alert = NSAlert(); alert.messageText = "Outnumbered"; alert.informativeText = message; alert.runModal()
     }
     func effect(_ index: Int) {
-        guard soundEnabled else { return }
-        guard OriginalSoundPolicy.accepts(incoming: index,current: lastSoundIndex,playing: sound?.isPlaying == true) else { return }
+        guard OriginalSoundPolicy.accepts(incoming: index,current: lastSoundIndex,playing: sound?.isPlaying == true,soundEnabled: soundEnabled,musicEnabled: musicEnabled) else { return }
         sound?.stop()
         sound = NSSound(contentsOf: content.root.appendingPathComponent(String(format: "audio/effect-%02d.wav", index)), byReference: false)
         sound?.play()
@@ -131,12 +143,17 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     func step() {
         tick += 1
-        guard modalDepth == 0, screen != .menu, screen != .title, screen != .scores else { return }
+        guard modalDepth == 0 else { return }
+        if screen == .title { effect(0); return }
+        guard screen != .menu, screen != .scores else { return }
         if screen == .help && !helpPausesAdventure { return }
         if screen == .practice {
+            practiceIRQ += UInt64(OriginalWorld.frameIRQTicks)
             let phase = practice?.drill.phase, attempts = practice?.attempts, correct = practice?.correctAnswers
             do { for index in try practice?.advance(irqTicks: OriginalWorld.frameIRQTicks) ?? [] { effect(index) } }
             catch { present(error) }
+            if phase != practice?.drill.phase && practice?.drill.phase == .asking { scheduleTutorial(8,ticks: 720) }
+            processTutorials()
             if phase != practice?.drill.phase || attempts != practice?.attempts || correct != practice?.correctAnswers { needsDisplay = true }
             return
         }
@@ -149,6 +166,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         // Original IRQ time continues while questions/decoder pause displayed
         // game minutes. Resume restores the remaining minute deadline.
         if screen != .title { session.clock.pollAfterIRQTicks(UInt64(OriginalWorld.frameIRQTicks)) }
+        processTutorials()
         if screen == .world && session.outcome == "active" {
             if session.clock.expired { startEnding(room: session.decoder.hideoutRoom,reason: .midnight); return }
             updateTelly()
@@ -167,16 +185,18 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if screen == .drill && session.outcome == "active" {
             do {
                 var drill = session.activeDrill!, generator = session.generator
+                let previousPhase = drill.phase
                 let award = try drill.advance(irqTicks: OriginalWorld.frameIRQTicks,nextRandom: { generator.nextRandomValue() })
                 session.score = VerifiedScore.adding(award,to: session.score)
                 session.generator = generator; session.activeDrill = drill
+                if previousPhase != drill.phase && drill.phase == .asking { scheduleTutorial(8,ticks: 720) }
                 if drill.phase == .finished {
                     finishDrill()
                     if drill.rewardApplied {
                         let remaining = max(0,session.activeDrill!.resultTicksRemaining-OriginalWorld.frameIRQTicks)
                         session.activeDrill?.resultTicksRemaining = remaining
                     }
-                    if session.activeDrill?.resultTicksRemaining == 0 { session.activeDrill = nil; screen = .world; save() }
+                    if session.activeDrill?.resultTicksRemaining == 0 { let captured = session.activeDrill?.capturedSymbol != nil; session.activeDrill = nil; screen = .world; save(); if captured { showNewUserMessage(3) } }
                 }
                 if session.clock.expired { startEnding(room: session.decoder.hideoutRoom,reason: .midnight); return }
             } catch { present(error) }
@@ -210,7 +230,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                     session.position = NativePosition(scene: room, playerUnit: 5, cameraUnit: 0, facing: 1)
                     clearTelly()
                     attemptLiveWire()
-                    save(); return
+                    save(); showNewUserMessage(5); return
                 } else if scene >= 10, let prior = session.returnPosition {
                     session.position = prior; session.returnPosition = nil; clearTelly(); session.liveWire?.clear(); save(); return
                 }
@@ -251,13 +271,18 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if session.attempts[challenge.hotspot] == nil { session.attempts[challenge.hotspot] = RoomAttempt() }
         session.clock.pause(); screen = .question; held.removeAll(); status = ""
         save(); needsDisplay = true
+        showNewUserMessage(usesCalculator ? 10 : 9)
     }
     func leaveQuestion() {
         attemptLiveWire()
+        let result = session.activeChallenge.flatMap { session.attempts[$0.hotspot]?.result }
         session.activeChallenge = nil; session.clock.resume(); screen = .world; status = ""; save()
+        if result == .correct { showNewUserMessage(7) }
+        else if result == .failed { showNewUserMessage(14) }
     }
     override func keyDown(with event: NSEvent) {
         let key = event.keyCode
+        if [.practice,.drill].contains(screen) { cancelTutorialTimer() }
         if screen == .ending { return }
         if key == 120 { showPlayerMenu(); return }
         if key == 99 { showOptions(); return }
@@ -287,7 +312,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             if key == 126 && !event.isARepeat && session.outcome == "active" { interact() }
             else if key == 49 && !event.isARepeat && jumpStep == nil && session.outcome == "active" {
                 beginZap()
-            } else if key == 48 { sound?.stop(); lastSoundIndex = nil; screen = .decoder; session.clock.pause(); held.removeAll() }
+            } else if key == 48 { sound?.stop(); lastSoundIndex = nil; screen = .decoder; session.clock.pause(); held.removeAll(); showNewUserMessage(13) }
             else if key == 53 { showPlayerMenu() }
         case .question:
             guard let challenge = session.activeChallenge else { return }
@@ -306,7 +331,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             } else if key == 36 {
                 var drill = session.activeDrill!, generator = session.generator
                 if let accepted = drill.submit(nextRandom: { generator.nextRandomValue() }) { effect(accepted ? 6 : 8) }
-                session.generator = generator; session.activeDrill = drill; save()
+                session.generator = generator; session.activeDrill = drill
+                save()
             } else if key == 51 || key == 117 { session.activeDrill?.erase() }
             else if let chars = event.charactersIgnoringModifiers, chars.count == 1, let digit = Int(chars) { session.activeDrill?.digit(digit) }
         case .decoder:
