@@ -134,3 +134,6 @@ repeated sets, visible questions and deterministic animation repainting.
 Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
 timed activities, palette/audio calibration, ending refinements and a full
 natural adventure playthrough remain. See practice-presentation-recovery.md.
+
+
+Latest verification milestone: [0.14 ordinary win and restart](docs/ordinary-playthrough-0.14.md). The application binary and 469-check package remain version 0.13; 0.14 records additional ordinary native-window evidence.

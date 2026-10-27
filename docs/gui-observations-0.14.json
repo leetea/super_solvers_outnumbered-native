@@ -1,0 +1,139 @@
+{
+  "candidateMilestone": "0.14",
+  "publishedBinaryMilestone": "0.13",
+  "profile": "Full Game Check",
+  "ordinaryReplayAfterMidnightLoss": true,
+  "fixturesOrSaveEditsUsed": false,
+  "roomAnswers": [
+    {
+      "room": "News",
+      "answer": 3,
+      "scoreAfter": 600
+    },
+    {
+      "room": "Game Show Spinner",
+      "answer": 5,
+      "scoreAfter": 900
+    },
+    {
+      "room": "Sound",
+      "answer": 1,
+      "scoreAfter": 1200
+    },
+    {
+      "room": "Equipment",
+      "answer": 98,
+      "scoreAfter": 1500
+    },
+    {
+      "room": "Cartoon",
+      "answer": 56,
+      "scoreAfter": 1800
+    }
+  ],
+  "captures": [
+    {
+      "piece": "On Air",
+      "answers": [
+        7,
+        8,
+        2,
+        6
+      ],
+      "correct": 4,
+      "scoreAfter": 300
+    },
+    {
+      "piece": "book",
+      "answers": [
+        6,
+        2,
+        3,
+        8
+      ],
+      "correct": 3,
+      "mistake": "11 minus 9 misread; submitted 3, correction displayed 2",
+      "scoreAfter": 2050
+    },
+    {
+      "piece": "gramophone",
+      "problems": [
+        "15-3",
+        "2+2",
+        "7+4",
+        "1+10"
+      ],
+      "answers": [
+        12,
+        4,
+        11,
+        11
+      ],
+      "correct": 4,
+      "scoreAfter": 2350
+    },
+    {
+      "piece": "microphone",
+      "problems": [
+        "16-12",
+        "13-12",
+        "7-1",
+        "6-2"
+      ],
+      "answers": [
+        4,
+        1,
+        6,
+        4
+      ],
+      "correct": 4,
+      "scoreAfter": 2650
+    }
+  ],
+  "decision": {
+    "matchRule": "same pictures and same pattern",
+    "selectedRoom": "News",
+    "allFiveRoomCluesVisible": true,
+    "allFourSecretPiecesVisible": true,
+    "clock": "10:44 PM",
+    "energy": 8,
+    "score": 2650,
+    "winningSequenceObserved": true
+  },
+  "status": "Ordinary win, normal quit/relaunch, lifetime/history persistence and fresh replay verified. Complete-game fidelity work remains.",
+  "result": {
+    "gameScore": 6350,
+    "lifetimeTotal": 6350,
+    "rank": "Junior",
+    "expectedCalculation": "2650 + 8*100 + 76*25 + 1000 = 6350",
+    "windowVerified": true
+  },
+  "persistenceAndReplay": {
+    "normalQuitMenuUsed": true,
+    "relaunchVerified": true,
+    "lifetimeAfterRelaunch": 6350,
+    "rankAfterRelaunch": "Junior",
+    "highScoreEntries": 1,
+    "highScore": 6350,
+    "highScorePreWinRank": "Trainee",
+    "playGameStartsFreshAfterCompletedWin": true,
+    "newRunID": "50646368-E593-49B0-A5B1-AB844EA36320",
+    "winningRunID": "746D29F4-C0AC-49A5-BF95-03A4CD412CDE",
+    "freshScore": 0,
+    "freshCompletedRooms": 0,
+    "lifetimePreserved": 6350,
+    "emptyDecoderWindowVerified": true,
+    "notes": "Relaunch opens title/player menu. Selecting Play Game starts a new game because the saved outcome was won; it does not restore the finished results screen."
+  },
+  "screenshots": {
+    "gui-natural-code-three-0.14.png": "b5d1aab33514c19de19057e9b896b35b6b038754d7730ddd01ba36c04e38e39f",
+    "gui-natural-code-four-0.14.png": "413e477d2cf7c6f1acd2ca47a030e034a187686430f89cd277ff7770a10c79c8",
+    "gui-natural-decoder-complete-0.14.png": "5839655312ed040dbe066287e09e971b197543ae6ef6f76e0a09a6e0b3b68921",
+    "gui-natural-win-start-0.14.png": "bd5f11d667faffb261d9a1555190ea21e7ab5b6828e201d9bef11ae58a71194f",
+    "gui-natural-win-results-0.14.png": "ea3bbf1dbcd39c9f2b16df4505c5cdc1716e3d9d18016ef17dc9e0a5ed0fc905",
+    "gui-natural-win-restored-0.14.png": "71b850310697d269993ee5e7165a7043f5cddbc470cef47d848ec67b30876896",
+    "gui-natural-lifetime-restored-0.14.png": "7f590c13a3abfaf7f74747eb27d7f8d87093b694673dbe37d783e4d0885206b5",
+    "gui-natural-high-score-restored-0.14.png": "3eb29724c3722d4146560994500a3aa4e46947c04eb7950b6eee77ad9c3823ee"
+  },
+  "screenshotsNote": "gui-natural-win-restored is the fresh replay world, not a restored result. Earlier filename retained for provenance."
+}

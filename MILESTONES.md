@@ -23,7 +23,9 @@ documented history, not backdated Git commits.
 
 | 0.13 | Original practice introduction/result scripts, sound wait, counters and timer |469 checks; native practice window flow; portable app/source and repository rebuild checks |
 
-The full-game goal is **not complete**. Next are full natural-playthrough validation,
+| 0.14 | Ordinary adventure win, persisted score/rank and fresh replay verified | Unchanged 0.13 app; all five rooms, four natural Telly captures, News Room decision, 6,350 total; normal quit/relaunch and score tables verified |
+
+The full-game goal is **not complete**. The ordinary winning loop is now verified. Next are
 opening/File presentation and transitions,
 collision presentation, effects, palette and complete-playthrough validation. Exact bonus sliding,
 rank-tower animation and midnight meter flashing remain presentation gaps.
