@@ -1,0 +1,60 @@
+{
+  "milestone": "0.23.0",
+  "completeGame": false,
+  "testDataDirectory": "isolated temporary native profile copy; real user files untouched",
+  "referenceFixtures": {
+    "spinner": {
+      "answer": 100,
+      "score": 300,
+      "captures": [
+        "gui-spinner-moving-0.23.png",
+        "gui-spinner-ready-0.23.png",
+        "gui-spinner-answer-0.23.png"
+      ]
+    },
+    "music": {
+      "answer": 106,
+      "score": 300,
+      "captures": [
+        "gui-music-flash-a-0.23.png",
+        "gui-music-flash-b-0.23.png",
+        "gui-music-ready-0.23.png",
+        "gui-music-answer-0.23.png"
+      ]
+    },
+    "equipment": {
+      "answer": 29,
+      "score": 300,
+      "captures": [
+        "gui-equipment-rotating-0.23.png",
+        "gui-equipment-ready-0.23.png",
+        "gui-equipment-answer-0.23.png"
+      ]
+    }
+  },
+  "ordinaryPlay": {
+    "startedThrough": "F2, Play Game, New Game in copied Full Game Check profile",
+    "route": "Initial hallway96 to Game Show door130; staged entrance; room12 player5 then prize hotspot2",
+    "question": "Prize B61 decreased by Prize A44",
+    "answer": 17,
+    "score": 300,
+    "decoder": "Game Show room clues visible",
+    "captures": [
+      "gui-prize-ordinary-flashing-0.23.png",
+      "gui-prize-ordinary-ready-0.23.png",
+      "gui-prize-ordinary-answer-0.23.png",
+      "gui-prize-ordinary-clues-0.23.png"
+    ],
+    "limits": [
+      "The pre-panel capture shows the final black-price hold; its filename does not prove a colored flash.",
+      "This is a normal activity path, not a fresh full winning playthrough."
+    ]
+  },
+  "identity": "gui-0.23-code-identity.json",
+  "quit": "Application menu Quit normally, separate session retained",
+  "limits": [
+    "No auditory/perceptual sound claim.",
+    "No original-frame/IRQ synchronization claim.",
+    "Detailed palette/masks remain open."
+  ]
+}

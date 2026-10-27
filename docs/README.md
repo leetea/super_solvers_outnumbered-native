@@ -1,4 +1,4 @@
-# Outnumbered Native Development Build 0.22
+# Outnumbered Native Development Build 0.23
 
 Open `Outnumbered Native Development.app` on an Apple Silicon Mac with macOS12 or later. This is a playable development milestone toward the complete game, not the finished game.
 
@@ -113,3 +113,6 @@ All740 native checks pass. Final native-window reference drill confirmed the int
 
 
 Milestone0.22 restores timed bar growth, measurement needles, line-series plotting and cassette arrivals with their original waits and sound requests/stops. The question panel and input appear after the sequence. Partial native saves preserve animation/sound progress; older ready-to-answer saves retain their state.771 checks pass, including1280 endpoint comparisons and frozen actor/RNG validation. The local video corroborates plotting and needle order. Native windows separately verified plot/bar animations and answers, plus an ordinary Cartoon cassette activity159→300points and room clues. Remaining prize/TV/spinner/music/equipment effects, input buffering, opening and other documented fidelity gaps keep the complete-game goal active. See activity-timing-recovery.md.
+
+
+Milestone0.23 restores prize price/outline flashes and their original retry-based random consumption, spinner highlights, Great Eight music-header flashes and Equipment List header cycles. Native saves retain the initial random stream and applied checkpoint cursor; repainting cannot advance it, and future phases do not consume it early. Question/input appear only after the recovered waits.800 native checks pass, including1280 endpoint comparisons, exact54-draw prize fixture/next-draw validation, partial restore and prior0.22 compatibility. Native windows separately verify spinner/music/equipment answers and a normal new-game prize activity17→300points with Game Show clues. The TV static effect remains pending because its command23 aliases a bounded-range helper with unresolved caller arguments. Opening/File/sign-in, queued input, driver masks/palette/audio, ending refinements and a fresh complete playthrough still prevent complete-game status. See activity-effects-recovery.md.

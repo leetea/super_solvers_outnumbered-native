@@ -1,15 +1,21 @@
 import Foundation
 
-//Native data schedules translated from TEMPLATE8502/8508/8514/8518/8520.
-//They neither execute DOS drawing modules nor consume random values.
+//Native data schedules translated from original activity modules.
+//Random checkpoints are applied only when their source phase is reached.
 struct NativeActivityPlan {
     struct Frame { let at: Int;let marks: [Int];let completed: Int }
     struct Sound: Equatable { let at: Int;let index: Int? } //nil is original stop
-    static let hotspots: Set<Int> = [1,5,8,9]
+    struct RandomStep { let at: Int;let state: UInt32;let drawCount: Int }
+    static let hotspots: Set<Int> = [1,2,3,4,5,7,8,9]
     let frames: [Frame]
     let sounds: [Sound]
     let duration: Int
-    init(_ challenge: OriginalChallenge) throws {
+    let randomSteps: [RandomStep]
+    init(frames: [Frame],sounds: [Sound],duration: Int,randomSteps: [RandomStep] = []) {
+        self.frames = frames;self.sounds = sounds;self.duration = duration;self.randomSteps = randomSteps
+    }
+    init(_ challenge: OriginalChallenge,randomState: UInt32? = nil) throws {
+        if [2,3,4,7].contains(challenge.hotspot) { self = try Self.effects(challenge,randomState: randomState);return }
         guard Self.hotspots.contains(challenge.hotspot) else { throw ContentError.invalid("No recovered activity timeline") }
         var frames: [Frame] = [],sounds: [Sound] = [],time = 0
         func frame(_ marks: [Int],_ completed: Int = 0) { frames.append(Frame(at: time,marks: marks,completed: completed)) }
@@ -57,7 +63,7 @@ struct NativeActivityPlan {
             }
         default: break
         }
-        self.frames = frames;self.sounds = sounds;duration = time
+        self.frames = frames;self.sounds = sounds;duration = time;randomSteps = []
     }
     func frame(at ticks: Int) -> Frame { frames.last(where: { $0.at <= ticks })! }
 }
@@ -66,19 +72,24 @@ struct NativeActivityPresentation: Codable {
     let challengeID: Int,seed: Int,variant: Int,hotspot: Int
     var elapsedIRQTicks = 0
     var appliedSoundCount = 0
-    init(_ challenge: OriginalChallenge) {
+    var initialRandomState: UInt32?
+    var appliedRandomCount: Int?
+    init(_ challenge: OriginalChallenge,randomState: UInt32? = nil) {
+        initialRandomState = randomState;appliedRandomCount = 0
         challengeID = challenge.id;seed = challenge.seed;variant = challenge.variant;hotspot = challenge.hotspot
     }
     func valid(for challenge: OriginalChallenge) -> Bool {
         guard challengeID == challenge.id,seed == challenge.seed,variant == challenge.variant,hotspot == challenge.hotspot,
-              let plan = try? NativeActivityPlan(challenge) else { return false }
+              let plan = try? NativeActivityPlan(challenge,randomState: initialRandomState) else { return false }
         return (0...plan.duration).contains(elapsedIRQTicks) &&
-            appliedSoundCount == plan.sounds.prefix(while: { $0.at <= elapsedIRQTicks }).count
+            appliedSoundCount == plan.sounds.prefix(while: { $0.at <= elapsedIRQTicks }).count &&
+            (appliedRandomCount ?? 0) == (plan.randomSteps.last(where: { $0.at <= elapsedIRQTicks })?.drawCount ?? 0)
     }
     mutating func advance(irqTicks: Int,plan: NativeActivityPlan) -> [NativeActivityPlan.Sound] {
         elapsedIRQTicks = min(plan.duration,elapsedIRQTicks+max(0,irqTicks))
         let end = plan.sounds.prefix(while: { $0.at <= elapsedIRQTicks }).count
         let result = Array(plan.sounds[appliedSoundCount..<end]);appliedSoundCount = end
+        appliedRandomCount = plan.randomSteps.last(where: { $0.at <= elapsedIRQTicks })?.drawCount ?? 0
         return result
     }
 }

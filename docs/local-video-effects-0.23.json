@@ -1,0 +1,25 @@
+{
+  "input": "local-inputs/OutNumbered Gameplay.mkv",
+  "sha256": "6960fb011e044a141e75e734e35140ff5c6c62e8e3440bf78f96d27baf957205",
+  "method": "Contact sheet from258s for12s, fps2,640x400 tiles; locally inspected",
+  "observations": [
+    {
+      "nominalSeconds": 264.5,
+      "description": "C price46 purple while A ellipse red, supporting original unequal price/outline index ordering"
+    },
+    {
+      "nominalSeconds": 265,
+      "description": "A90/D33 visible during partial final price reveal; B/C not yet visible"
+    },
+    {
+      "nominalSeconds": 265.5,
+      "description": "A90/B52/C46/D33 then question908-90"
+    }
+  ],
+  "limits": [
+    "Nominal0.5second bins, no exact framePTS or IRQ match.",
+    "Different native/gameplay seeds; no full campaign stream parity claim.",
+    "Prize background palette still differs.",
+    "No sound-listening claim."
+  ]
+}

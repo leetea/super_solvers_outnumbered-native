@@ -26,6 +26,7 @@ documented history, not backdated Git commits.
 | 0.20 | Original room-camera pan lifecycle and recharge pose/scroll/auxiliary updates | 713 checks; local-video pan evidence; ordinary room camera and empty recharge with continued Telly/projectile motion |
 | 0.21 | Original adventure Telly introduction, seven-frame code card, capture/rejection waits and persisted presentation | 740 checks; native-window reference drill shows card at900, return at1000 and lightning secret; rejection animation/message observed; original card sequence corroborated from local video; fresh ordinary full adventure remains pending |
 | 0.22 | Timed bars, measurement needles, line plots and cassette arrivals; deferred question input and persisted sound cursors | 771 checks including1280 endpoint comparisons; native plot/bar fixtures and ordinary Cartoon cassette159→300/clues; measurement source/video/headless evidence; remaining activity effects and final full adventure pending |
+| 0.23 | Original prize RNG/price/outline effects, spinner highlight cycle, music flashes and equipment headers; persisted per-phase RNG | 800 checks including1280 endpoints and exact54-draw prize fixture; native spinner/music/equipment answers and normal prize17→300/Game Show clues; portable/source/repository builds verified; TV effect still pending |
 
 The full-game goal is **not complete**. The ordinary winning loop is now verified. Next are
 opening/File presentation and transitions,
@@ -70,3 +71,6 @@ repeated sets, visible questions and deterministic animation repainting.
 Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
 timed activities, palette/audio calibration, ending refinements and a full
 natural adventure playthrough remain. See practice-presentation-recovery.md.
+
+
+Milestone0.23 restores prize price/outline flashes and their original retry-based random consumption, spinner highlights, Great Eight music-header flashes and Equipment List header cycles. Native saves retain the initial random stream and applied checkpoint cursor; repainting cannot advance it, and future phases do not consume it early. Question/input appear only after the recovered waits.800 native checks pass, including1280 endpoint comparisons, exact54-draw prize fixture/next-draw validation, partial restore and prior0.22 compatibility. Native windows separately verify spinner/music/equipment answers and a normal new-game prize activity17→300points with Game Show clues. The TV static effect remains pending because its command23 aliases a bounded-range helper with unresolved caller arguments. Opening/File/sign-in, queued input, driver masks/palette/audio, ending refinements and a fresh complete playthrough still prevent complete-game status. See activity-effects-recovery.md.

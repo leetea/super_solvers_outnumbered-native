@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.22
+## Current verified milestone: 0.23
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,15 +16,16 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**771 integration checks pass.** The app ZIP passes strict signature verification
+**800 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.22.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.23.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
 [music/message recovery](docs/music-messages-recovery.md) and
 [practice presentation](docs/practice-presentation-recovery.md) and
 [adventure Telly presentation](docs/drill-presentation-recovery.md) and
-[timed charts/sliders/cassettes](docs/activity-timing-recovery.md).
+[timed charts/sliders/cassettes](docs/activity-timing-recovery.md) and
+[prize/spinner/music/equipment effects](docs/activity-effects-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
 Original opening/menu animations,
@@ -157,3 +158,6 @@ Milestone0.19 replaces the coarse player pose counter with persisted original wa
 
 
 Milestone0.20 restores the room ceiling security camera (correcting the earlier energy-machine-eye label): original panning row14, four-update holds, actor order, entry/exit lifecycle and retained timing state. Recharge now uses recovered scrolling alignment, raised player poses, continued enemy/projectile updates and exact per-frame RNG bookkeeping; the unpaced-copy display interval remains a documented native adaptation. Older in-progress actions retain their prior schedule. All713 checks pass. Local video shows the corresponding pan poses; ordinary native play separately showed a panning Cartoon camera and empty-machine interaction with scroll, moving Telly/projectile and unchanged energy9. Remaining encounter/capture presentation, timed activity effects/RNG, opening/File/sign-in, queued input, ending/palette/mask/audio refinements and a fresh full playthrough keep the complete-game goal active.
+
+
+Milestone0.23 restores prize price/outline flashes and their original retry-based random consumption, spinner highlights, Great Eight music-header flashes and Equipment List header cycles. Native saves retain the initial random stream and applied checkpoint cursor; repainting cannot advance it, and future phases do not consume it early. Question/input appear only after the recovered waits.800 native checks pass, including1280 endpoint comparisons, exact54-draw prize fixture/next-draw validation, partial restore and prior0.22 compatibility. Native windows separately verify spinner/music/equipment answers and a normal new-game prize activity17→300points with Game Show clues. The TV static effect remains pending because its command23 aliases a bounded-range helper with unresolved caller arguments. Opening/File/sign-in, queued input, driver masks/palette/audio, ending refinements and a fresh complete playthrough still prevent complete-game status. See activity-effects-recovery.md.

@@ -140,6 +140,7 @@ func nativeIntegrationChecks(root: URL) throws {
     checks.merge(try nativeFountainMotionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeElevatorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeDoorTransitionChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeActivityEffectsChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeActivityPresentationChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeDrillPresentationChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeEncounterChecks(root: root,output: output)) { _,new in new }

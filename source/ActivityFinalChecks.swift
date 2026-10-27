@@ -51,6 +51,7 @@ func nativeFinalActivityChecks(root: URL,output: URL) throws -> [String:Bool] {
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false
     for (name,id,hotspot,scene,answer) in [("spinner",9120,3,12,100),("music",9050,4,15,106),("supplies",9040,7,14,29)] {
         view.activityCheckpoint(id: id,hotspot: hotspot,scene: scene)
+        try view.advanceActivityPresentation(irqTicks: 10_000)
         let randomBefore = view.session.generator.randomState
         let drawing = view.session.activityStates?[hotspot]
         checks["native_\(name)_checkpoint_source_answer"] = view.session.activeChallenge?.answer == answer
@@ -65,6 +66,7 @@ func nativeFinalActivityChecks(root: URL,output: URL) throws -> [String:Bool] {
             view.leaveQuestion(); view.open(bank.cases.first { $0.id == id && $0.seed == 1 && $0.variant == 0 }!)
             checks["native_\(name)_reopen_keeps_original_assigned_drawing"] = view.session.activityStates?[hotspot] == drawing
         }
+        try view.advanceActivityPresentation(irqTicks: 10_000)
         for character in String(answer) { view.questionCharacter(String(character)) }
         view.submitQuestion()
         checks["native_\(name)_correct_answer_300_and_clues"] = view.session.score == 300 && view.session.completed.contains(hotspot) && view.session.pendingRecharge == 2 && view.session.decoder.completedRoomCount == 1

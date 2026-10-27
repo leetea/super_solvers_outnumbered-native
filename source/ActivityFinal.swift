@@ -87,18 +87,21 @@ struct OriginalActivityState: Codable,Equatable {
 struct ActivityFinal {
     let content: OriginalContent
     static let supportedHotspots: Set<Int> = [3,4,7]
-    func draw(_ challenge: OriginalChallenge,state: OriginalActivityState?,on canvas: NativeCanvas) throws -> ActivityRenderSupport {
+    func draw(_ challenge: OriginalChallenge,state: OriginalActivityState?,on canvas: NativeCanvas,progress: NativeActivityPlan.Frame? = nil) throws -> ActivityRenderSupport {
         canvas.draw(try content.bitmap(String(format: "TEMPLATE.GRA.%04x",challenge.bitmap_record_id)),x: 8,y: 19)
-        if challenge.hotspot == 3 { try spinner(challenge,on: canvas) }
+        if challenge.hotspot == 3 { try spinner(challenge,on: canvas,progress: progress) }
         else {
             guard let state, state.valid, state.matches(challenge) else { throw ContentError.invalid("Missing original activity drawing state") }
             if challenge.hotspot == 4 { try music(challenge,state: state,on: canvas) }
-            else if challenge.hotspot == 7 { try equipment(challenge,state: state,on: canvas) }
+            else if challenge.hotspot == 7 { try equipment(challenge,state: state,on: canvas,progress: progress) }
             else { return .unsupported(template: challenge.bitmap_record_id-1,missing: "Unknown original activity") }
         }
-        return .recoveredStatic(template: challenge.bitmap_record_id-1,omittedAnimation: "Original timed color/spin effects and sound; complete campaign RNG stream and driver palette details remain under validation")
+        if challenge.hotspot == 4, progress?.marks.first == 12 {
+            canvas.replaceActivityColor(left: 12,top: 36,right: 98,bottom: 54,from: 14,to: 12)
+        }
+        return .recoveredStatic(template: challenge.bitmap_record_id-1,omittedAnimation: "Native timelines restore spin/color effects; complete campaign RNG stream and driver palette details remain under validation")
     }
-    private func spinner(_ challenge: OriginalChallenge,on canvas: NativeCanvas) throws {
+    private func spinner(_ challenge: OriginalChallenge,on canvas: NativeCanvas,progress: NativeActivityPlan.Frame?) throws {
         guard challenge.bitmap_record_id == 8511 else { throw ContentError.invalid("Unexpected original spinner bitmap") }
         let title = try challenge.originalString(at: 17), subtitle = try challenge.originalString(at: 18)
         let small = try content.font("MOCKET.DAT.1396"), large = try content.font("MOCKET.DAT.1395")
@@ -115,7 +118,7 @@ struct ActivityFinal {
             let text = String(try challenge.originalWord(at: 5+i))
             canvas.text(text,font: font,x: xs[i]+8-font.width(of: text)/2,y: ys[i]+19,color: 0)
         }
-        let selected = try challenge.originalWord(at: 2)
+        let selected = try progress?.marks.first ?? challenge.originalWord(at: 2)
         guard (0..<10).contains(selected) else { throw ContentError.invalid("Invalid original spinner position") }
         let rectangles = [
             ([82,125,146,146,123,81,42,19,19,41],[13,28,52,82,108,127,109,83,53,29],[94,134,156,156,134,94,52,30,30,50],[18,36,62,91,116,132,117,92,63,37]),
@@ -151,11 +154,13 @@ struct ActivityFinal {
             canvas.text(second,font: small,x: right2-small.width(of: second),y: row.valueY,color: 0)
         }
     }
-    private func equipment(_ challenge: OriginalChallenge,state: OriginalActivityState,on canvas: NativeCanvas) throws {
+    private func equipment(_ challenge: OriginalChallenge,state: OriginalActivityState,on canvas: NativeCanvas,progress: NativeActivityPlan.Frame?) throws {
         guard challenge.bitmap_record_id == 8517 else { throw ContentError.invalid("Unexpected original equipment-list bitmap") }
         let font = try content.font("MOCKET.DAT.1393"), small = try content.font("MOCKET.DAT.1396")
         canvas.text("Equipment List",font: font,x: 97-font.width(of: "Equipment List")/2,y: 20,color: 0)
-        for (x,width,color) in [(10,49,UInt8(13)),(60,55,11),(116,31,14),(148,34,10)] { canvas.fill(x,32,width,28,color) }
+        let colors: [UInt8] = [13,11,14,10]
+        let rotation = progress.map { ($0.marks[0]+1)%4 } ?? 0
+        for (i,column) in [(10,49),(60,55),(116,31),(148,34)].enumerated() { canvas.fill(column.0,32,column.1,28,colors[(i+rotation)%4]) }
         for (text,y,sum,offset) in [("Item",41,71,0),("Quantity",37,177,0),("on Hand",46,177,0),("Days",37,265,0),("Used",46,265,0),("Cost",33,333,0),("per",41,333,1),("Item",50,333,0)] {
             canvas.text(text,font: small,x: (sum-small.width(of: text))/2+offset,y: y,color: 0)
         }

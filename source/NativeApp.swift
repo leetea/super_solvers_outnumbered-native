@@ -42,6 +42,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var tutorialLastEnergy: Int?
     var lastSoundIndex: Int?
     var lastError: String?
+    var activityPlanCache: (key: String,plan: NativeActivityPlan)?
     var referenceMode = false
     var lastSaveTick = 0
     var menuReturn = Screen.title
@@ -237,6 +238,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         // Upgrade an assigned pre-0.7 question with the same original data and
         // recovered post-generation stream; never change its identity.
         let challenge = bank.cases.first { $0.id == challenge.id && $0.seed == challenge.seed && $0.variant == challenge.variant } ?? challenge
+        sound?.stop();lastSoundIndex = nil
+        if challenge.hotspot == 7 { effect(34) }
         do { try prepareActivityState(challenge,regenerating: true) } catch { present(error); return }
         session.liveWire?.clear()
         session.calculator = NativeCalculator()
@@ -498,9 +501,9 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let attempt = session.attempts[challenge.hotspot] ?? RoomAttempt()
         canvas.fill(4,14,isActivityPresenting ? 312 : 184,146,0)
         if challenge.hotspot == 0 { try renderer.draw(challenge,on: canvas) }
-        else if ActivityTemplates.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityTemplates(content: content).draw(challenge,on: canvas) }
+        else if ActivityTemplates.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityTemplates(content: content).draw(challenge,on: canvas,progress: activityPresentationFrame(challenge)) }
         else if ActivityMore.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityMore(content: content).draw(challenge,on: canvas,progress: activityPresentationFrame(challenge)) }
-        else { _ = try ActivityFinal(content: content).draw(challenge,state: session.activityStates?[challenge.hotspot],on: canvas) }
+        else { _ = try ActivityFinal(content: content).draw(challenge,state: session.activityStates?[challenge.hotspot],on: canvas,progress: activityPresentationFrame(challenge)) }
         if isActivityPresenting { return }
         canvas.draw(try content.bitmap("ROOMS.GRA.017"),x: 188,y: 15)
         let small = try content.font("MOCKET.DAT.1396"), ui = try content.font("MOCKET.DAT.1393")

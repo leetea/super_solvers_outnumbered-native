@@ -65,14 +65,14 @@ struct ActivityTemplates {
     let content: OriginalContent
     static let supportedHotspots: Set<Int> = [2, 6]
 
-    func draw(_ challenge: OriginalChallenge, on canvas: NativeCanvas) throws -> ActivityRenderSupport {
+    func draw(_ challenge: OriginalChallenge, on canvas: NativeCanvas,progress: NativeActivityPlan.Frame? = nil) throws -> ActivityRenderSupport {
         switch challenge.hotspot {
         case 2:
             guard challenge.bitmap_record_id == 8505 else {
                 throw ContentError.invalid("Unexpected original prize-board bitmap")
             }
-            try drawPrizeBoard(challenge, on: canvas)
-            return .recoveredStatic(template: 8504, omittedAnimation: "Original random price flashing and prize-outline effects")
+            try drawPrizeBoard(challenge, on: canvas,progress: progress)
+            return .recoveredStatic(template: 8504, omittedAnimation: "Native timeline restores price flashes and source-color replacement; full driver palette details remain under analysis")
         case 6:
             guard challenge.bitmap_record_id == 8513 else {
                 throw ContentError.invalid("Unexpected original television bitmap")
@@ -89,7 +89,7 @@ struct ActivityTemplates {
         canvas.draw(try content.bitmap(String(format: "TEMPLATE.GRA.%04x", challenge.bitmap_record_id)), x: 8, y: 19)
     }
 
-    private func drawPrizeBoard(_ challenge: OriginalChallenge, on canvas: NativeCanvas) throws {
+    private func drawPrizeBoard(_ challenge: OriginalChallenge, on canvas: NativeCanvas,progress: NativeActivityPlan.Frame?) throws {
         try background(challenge, on: canvas)
         // TEMPLATE8504: loop0x0087 reads flattened fields1..4, prefixes '$',
         // measures each string, and uses tables0x0414/0x041c for placement.
@@ -102,7 +102,14 @@ struct ActivityTemplates {
             let amount = try challenge.originalWord(at: index + 1)
             guard amount >= 0 else { throw ContentError.invalid("Invalid original prize amount") }
             let text = "$\(amount)"
-            canvas.text(text, font: font, x: centers[index] - font.width(of: text)/2, y: rows[index], color: 0)
+            let color = progress?.marks[index] ?? 0
+            if color >= 0 { canvas.text(text, font: font, x: centers[index] - font.width(of: text)/2, y: rows[index], color: color == 1 ? 0 : UInt8(color)) }
+        }
+        if let marks = progress?.marks, marks[4] >= 0 {
+            let i = marks[4]
+            canvas.replaceActivityColor(left: [34,106,5,107][i]+7,top: [20,27,62,75][i]+19,
+                                        right: [52,124,23,126][i]+10,bottom: [37,44,79,92][i]+19,
+                                        from: 14,to: UInt8(marks[5]))
         }
     }
 
