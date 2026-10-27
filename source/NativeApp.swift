@@ -185,20 +185,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         }
         if screen == .drill && session.outcome == "active" {
             do {
-                var drill = session.activeDrill!, generator = session.generator
-                let previousPhase = drill.phase
-                let award = try drill.advance(irqTicks: OriginalWorld.frameIRQTicks,nextRandom: { generator.nextRandomValue() })
-                session.score = VerifiedScore.adding(award,to: session.score)
-                session.generator = generator; session.activeDrill = drill
-                if previousPhase != drill.phase && drill.phase == .asking { scheduleTutorial(8,ticks: 720) }
-                if drill.phase == .finished {
-                    finishDrill()
-                    if drill.rewardApplied {
-                        let remaining = max(0,session.activeDrill!.resultTicksRemaining-OriginalWorld.frameIRQTicks)
-                        session.activeDrill?.resultTicksRemaining = remaining
-                    }
-                    if session.activeDrill?.resultTicksRemaining == 0 { let captured = session.activeDrill?.capturedSymbol != nil; session.activeDrill = nil; screen = .world; save(); if captured { showNewUserMessage(3) } }
-                }
+                try advanceDrill(irqTicks: OriginalWorld.frameIRQTicks)
                 if session.clock.expired { startEnding(room: session.decoder.hideoutRoom,reason: .midnight); return }
             } catch { present(error) }
         }
@@ -310,9 +297,10 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 else if session.attempts[challenge.hotspot]?.result == .editing && session.attempts[challenge.hotspot]?.input.isEmpty == false { session.attempts[challenge.hotspot]?.input.removeLast() }
             } else if let chars = event.characters, chars.count == 1 { questionCharacter(chars) }
         case .drill:
+            if let presentation = session.activeDrill?.presentation, presentation.stage != .questions { return }
             if key == 53 {
                 session.activeDrill?.abort()
-                if session.activeDrill?.phase == .finished { finishDrill() }
+                if session.activeDrill?.phase == .finished { try? advanceDrill(irqTicks: 0);save() }
             } else if key == 36, session.activeDrill?.phase == .finished {
                 session.activeDrill = nil; screen = .world; save()
             } else if key == 36 {

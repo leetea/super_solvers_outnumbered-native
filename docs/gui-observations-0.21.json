@@ -1,0 +1,43 @@
+{
+  "milestone": "0.21",
+  "application": "Outnumbered-Messages-Final.app",
+  "dataDirectory": "isolated temporary copy of previous native verification players; reference mode did not write player progress",
+  "checkCount": 740,
+  "referenceMode": true,
+  "ordinaryFullAdventure": false,
+  "observations": [
+    {
+      "image": "gui-telly-introduction-0.21.png",
+      "meaning": "Command-D isolated six-question reference starts original color-static introduction."
+    },
+    {
+      "images": [
+        "gui-telly-spinning-code-a-0.21.png",
+        "gui-telly-spinning-code-b-0.21.png"
+      ],
+      "meaning": "After answers19,12,22,7,22,3 the spinning white card appears on black at score900; these two captures show the same sampled pose, not two distinct frames."
+    },
+    {
+      "image": "gui-telly-world-return-0.21.png",
+      "meaning": "Automatic return to Reception with score1000. Burst itself was missed by GUI sampling; burst composition covered headlessly."
+    },
+    {
+      "image": "gui-telly-decoder-reward-0.21.png",
+      "meaning": "Tab decoder shows one lightning secret, score1000, Pause."
+    },
+    {
+      "images": [
+        "gui-telly-rejection-intro-0.21.png",
+        "gui-telly-no-code-0.21.png"
+      ],
+      "meaning": "Second Command-D run: Escape from first unanswered equation starts static introduction. Holding Enter900ms still leaves No Code message, score600."
+    }
+  ],
+  "quit": "Normal Quit menu; subsequent app-state read reported procNotFound because process had exited.",
+  "limits": [
+    "Fixture window flow, not new natural Telly spawn/capture or full-game win.",
+    "Exact IRQ durations and save/resume boundaries checked headlessly.",
+    "No new audio listening, palette or full mask parity claim.",
+    "GUI app bundle identity differs; compiled-section and asset identity checked separately."
+  ]
+}

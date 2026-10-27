@@ -65,6 +65,7 @@ extension NativeGameView {
         if zap.elapsedIRQTicks >= zap.schedule.totalDurationIRQTicks {
             session.energy = VerifiedEnergy.applying(-zap.schedule.energyCost,to: session.energy)!
             session.activeZap = nil; session.clock.pollAfterIRQTicks(0)
+            var motion = playerMotion;motion.request(1,count: 1);playerMotion = motion
             if zap.hitEffect == OriginalZapHitEffect.startDrill.rawValue { startDrill() }
             else if zap.hitEffect == OriginalZapHitEffect.stunTelly.rawValue, var enemy = session.telly {
                 effect(enemy.stun()); session.telly = enemy
@@ -179,7 +180,9 @@ extension NativeGameView {
         do {
             var generator = session.generator
             session.activeDrill = try NativeDrill(tier: session.decoder.difficulty,nextRandom: { generator.nextRandomValue() },reference: reference,settings: session.gameSettings)
-            session.generator = generator; clearTelly(); held.removeAll(); screen = .drill; status = ""; save()
+            session.activeDrill?.presentation = NativeDrillPresentation()
+            session.generator = generator; clearTelly(); held.removeAll(); screen = .drill; status = ""
+            try advanceDrill(irqTicks: 0);save()
         } catch { present(error) }
     }
     @objc func referenceDrill() {
@@ -195,8 +198,53 @@ extension NativeGameView {
         for _ in 0..<12 { session.clock.pollAfterIRQTicks(781) }
         referenceMode = true; startDrill(reference: true); needsDisplay = true
     }
+    func advanceDrill(irqTicks: Int) throws {
+        var remaining = max(0,irqTicks)
+        while var drill = session.activeDrill {
+            if var presentation = drill.presentation, presentation.animated {
+                let result = presentation.advance(irqTicks: remaining)
+                remaining -= result.consumed;drill.presentation = presentation
+                session.activeDrill = drill
+                for sound in result.sounds {
+                    switch sound {
+                    case .play(let index): effect(index)
+                    case .stop: self.sound?.stop();lastSoundIndex = nil
+                    }
+                }
+                if presentation.stage == .result { finishDrill() }
+                if remaining == 0 { return }
+                continue
+            }
+            if drill.phase != .finished {
+                let previous = drill.phase
+                var generator = session.generator, unused = remaining
+                let award = try drill.advance(irqTicks: remaining,remainingIRQTicks: &unused,nextRandom: { generator.nextRandomValue() })
+                remaining = unused;session.score = VerifiedScore.adding(award,to: session.score)
+                session.generator = generator;session.activeDrill = drill
+                if previous != drill.phase && drill.phase == .asking { scheduleTutorial(8,ticks: 720) }
+                if drill.phase != .finished { return }
+            }
+            if var presentation = drill.presentation, presentation.stage == .questions {
+                presentation.beginResult(success: drill.entitledToCode)
+                drill.presentation = presentation;session.activeDrill = drill
+                //Even at an exact boundary, draw and sound the first frame.
+                continue
+            }
+            finishDrill()
+            guard var result = session.activeDrill, result.rewardApplied else { return }
+            result.resultTicksRemaining = max(0,result.resultTicksRemaining-remaining)
+            session.activeDrill = result
+            if result.resultTicksRemaining == 0 {
+                let captured = result.capturedSymbol != nil
+                session.activeDrill = nil;screen = .world;save()
+                if captured { showNewUserMessage(3) }
+            }
+            return
+        }
+    }
     func finishDrill() {
-        guard var drill = session.activeDrill, !drill.rewardApplied else { return }
+        guard var drill = session.activeDrill, !drill.rewardApplied,
+              drill.presentation == nil || drill.presentation?.stage == .result else { return }
         drill.rewardApplied = true
         if drill.entitledToCode, let symbol = session.decoder.collectSecret() {
             session.score = VerifiedScore.adding(100,to: session.score)
@@ -220,10 +268,20 @@ extension NativeGameView {
     }
     func drawDrill(_ drill: NativeDrill) throws {
         canvas.draw(try content.bitmap("DMOCKET.GRA.157c"),x: 0,y: 15)
-        if drill.practice == true { canvas.draw(try content.bitmap("DRILL.GRA.012"),x: 76,y: 28,transparent: true) }
+        let presentation = drill.presentation
+        let animated = presentation?.animated == true
+        let capture = presentation?.stage == .capture
+        let tv = capture || (presentation?.stage == .result && drill.capturedSymbol == nil) ? 12 : (presentation?.sprite ?? 12)
+        canvas.draw(try content.bitmap(String(format: "DRILL.GRA.%03d",tv)),x: 76,y: 28,transparent: true)
+        if capture {
+            //104b:04c0 uses eight-pixel byte columns, unlike bitmap X/4.
+            canvas.fill(152,53,40,37,0)
+            canvas.draw(try content.bitmap(String(format: "DRILL.GRA.%03d",presentation!.sprite)),x: 152,y: 55,transparent: true)
+        }
         let font = try content.font("MOCKET.DAT.1394"), small = try content.font("MOCKET.DAT.1396"), ui = try content.font("MOCKET.DAT.1393")
-        if drill.phase == .finished && drill.practice != true {
-            if let symbol = drill.capturedSymbol { try sprite(Int(symbol)+78,x: 156,y: 65,transparent: false) }
+        if animated { /*Original synchronous animation accepts no answers.*/ }
+        else if drill.phase == .finished && drill.practice != true {
+            if let symbol = drill.capturedSymbol { try sprite(Int(symbol)+78,x: 156,y: 65,transparent: true) }
             else { canvas.text("No Code. Catch me again!",font: small,x: 102,y: 70,color: 15) }
         } else if drill.phase != .between && drill.phase != .finished {
             let parts = drill.displayParts, widths = parts.map { font.width(of: $0) }
@@ -237,6 +295,6 @@ extension NativeGameView {
             if drill.phase == .correctFeedback || drill.phase == .correctPause { canvas.text(drill.acknowledgement,font: small,x: 162-small.width(of: drill.acknowledgement)/2,y: 104,color: 15) }
             if drill.phase == .wrongFeedback { canvas.text("That's incorrect.",font: small,x: 120,y: 104,color: 15) }
         }
-        if drill.practice != true { canvas.text("\u{84} to Explore TV Station",font: ui,x: 8,y: 184,color: 15) }
+        if drill.practice != true && presentation?.stage != .capture && !(presentation?.stage == .result && drill.capturedSymbol != nil) { canvas.text("\u{84} to Explore TV Station",font: ui,x: 8,y: 184,color: 15) }
     }
 }

@@ -61,6 +61,7 @@ func nativeEncounterChecks(root: URL, output: URL) throws -> [String: Bool] {
         }
         for _ in 0..<10 { view.step() }
     }
+    for _ in 0..<30 where view.session.activeDrill?.rewardApplied == false { view.step() }
     checks["video_six_answers_plus_code_score_1000"] = view.session.score == 1000 && view.session.decoder.capturedCount == 1
     let finalScore = view.session.score; view.finishDrill()
     checks["code_reward_applied_once"] = view.session.score == finalScore && view.session.decoder.capturedCount == 1

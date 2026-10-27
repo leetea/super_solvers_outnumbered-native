@@ -1,4 +1,4 @@
-# Outnumbered Native Development Build 0.20
+# Outnumbered Native Development Build 0.21
 
 Open `Outnumbered Native Development.app` on an Apple Silicon Mac with macOS12 or later. This is a playable development milestone toward the complete game, not the finished game.
 
@@ -105,3 +105,8 @@ Milestone0.19 replaces the coarse player pose counter with persisted original wa
 
 
 Milestone0.20 restores the room ceiling security camera (correcting the earlier energy-machine-eye label): original panning row14, four-update holds, actor order, entry/exit lifecycle and retained timing state. Recharge now uses recovered scrolling alignment, raised player poses, continued enemy/projectile updates and exact per-frame RNG bookkeeping; the unpaced-copy display interval remains a documented native adaptation. Older in-progress actions retain their prior schedule. All713 checks pass. Local video shows the corresponding pan poses; ordinary native play separately showed a panning Cartoon camera and empty-machine interaction with scroll, moving Telly/projectile and unchanged energy9. Remaining encounter/capture presentation, timed activity effects/RNG, opening/File/sign-in, queued input, ending/palette/mask/audio refinements and a fresh full playthrough keep the complete-game goal active.
+
+
+Milestone0.21 restores the original adventure Telly introduction, static question television, seven spinning code-card frames, capture burst and delayed reward, and rejection introduction/message wait. Presentation state and sound-start cursors survive saves without repeated rewards or frame sounds. Older in-progress drills retain their saved timing; practice remains separate. The player requests idle motion at zap completion. The local recording corroborates all seven card sprites and their order before the900→1000 award. Detailed driver masks, input buffering, palette/audio and complete-game fidelity remain open. See drill-presentation-recovery.md.
+
+All740 native checks pass. Final native-window reference drill confirmed the introduction, spinning card at900, automatic return at1000 and lightning piece in the decoder; the rejection introduction and No Code message were separately observed. This fixture verification is not a fresh ordinary full adventure win.

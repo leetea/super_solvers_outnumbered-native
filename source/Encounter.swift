@@ -98,6 +98,7 @@ struct NativeDrill: Codable {
     var capturedSymbol: UInt8?
     var resultTicksRemaining = 0
     var practice: Bool?
+    var presentation: NativeDrillPresentation?
     static let acknowledgements = ["That's correct!","That's the answer!","That's right!","You're right!","Good job!"] // Original DS:5354 pointers.
     init(tier: Int, nextRandom: () -> Int, reference: Bool = false, settings: OriginalGameSettings? = nil, practice: Bool = false) throws {
         guard (0..<4).contains(tier) else { throw DrillError.invalidSettings }
@@ -141,8 +142,14 @@ struct NativeDrill: Codable {
     // Returns the original50-point award exactly at the first correct wait's
     // end. Further input is blocked during original feedback/wait phases.
     mutating func advance(irqTicks: Int, nextRandom: () -> Int) throws -> Int {
+        var remaining = irqTicks
+        return try advance(irqTicks: irqTicks,remainingIRQTicks: &remaining,nextRandom: nextRandom)
+    }
+    mutating func advance(irqTicks: Int,remainingIRQTicks: inout Int,nextRandom: () -> Int) throws -> Int {
+        remainingIRQTicks = max(0,irqTicks)
         guard irqTicks >= 0, phase != .asking && phase != .finished else { return 0 }
         var ticks = irqTicks, award = 0
+        defer { remainingIRQTicks = ticks }
         while ticks > 0 && phase != .asking && phase != .finished {
             let consumed = min(ticks,ticksRemaining); ticksRemaining -= consumed; ticks -= consumed
             guard ticksRemaining == 0 else { break }
@@ -168,7 +175,12 @@ struct NativeDrill: Codable {
         (0...questionCount).contains(answered) && (0...answered).contains(correct) &&
         (0...720).contains(ticksRemaining) && input.count <= 3 && input.utf8.allSatisfy { (48...57).contains($0) } &&
         (referenceQuestions == nil || (questionCount == 6 && referenceQuestions!.count == 6 && referenceQuestions!.allSatisfy(\.valid))) &&
-        (capturedSymbol == nil || capturedSymbol! < 20) && (0...720).contains(resultTicksRemaining)
+        (capturedSymbol == nil || capturedSymbol! < 20) && (0...720).contains(resultTicksRemaining) &&
+        (presentation == nil || (practice != true && presentation!.valid &&
+          ((presentation!.stage == .introduction && phase == .between && answered == 0 && !rewardApplied) ||
+           (presentation!.stage == .questions && phase != .finished && !rewardApplied) ||
+           ([.capture,.rejection].contains(presentation!.stage) && phase == .finished && !rewardApplied) ||
+           (presentation!.stage == .result && phase == .finished && rewardApplied))))
     }
 }
 

@@ -1,0 +1,972 @@
+{
+  "milestone": "0.21",
+  "reference": "local-inputs/OutNumbered Gameplay.mkv",
+  "sha256": "6960fb011e044a141e75e734e35140ff5c6c62e8e3440bf78f96d27baf957205",
+  "method": "30fps samples scaled to320x200; threshold all RGB channels>160 inside original152,55,40,34 ROI; compare original DRILL3..9 white-pixel masks.",
+  "limits": [
+    "Nominal ffmpeg seek/sample times, not original IRQ timestamps.",
+    "Heuristic isolates card shape; does not establish palette, sound or full-frame parity."
+  ],
+  "samples": [
+    {
+      "sample": 1,
+      "nominalSeconds": 162.9,
+      "bestDRILLSprite": 6,
+      "differentPixels": 148,
+      "allSpriteErrors": [
+        165,
+        174,
+        156,
+        148,
+        154,
+        156,
+        309
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 2,
+      "nominalSeconds": 162.9333,
+      "bestDRILLSprite": 6,
+      "differentPixels": 148,
+      "allSpriteErrors": [
+        165,
+        174,
+        156,
+        148,
+        154,
+        156,
+        309
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 3,
+      "nominalSeconds": 162.9667,
+      "bestDRILLSprite": 6,
+      "differentPixels": 148,
+      "allSpriteErrors": [
+        165,
+        174,
+        156,
+        148,
+        154,
+        156,
+        309
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 4,
+      "nominalSeconds": 163.0,
+      "bestDRILLSprite": 6,
+      "differentPixels": 148,
+      "allSpriteErrors": [
+        165,
+        174,
+        156,
+        148,
+        154,
+        156,
+        309
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 5,
+      "nominalSeconds": 163.0333,
+      "bestDRILLSprite": 6,
+      "differentPixels": 148,
+      "allSpriteErrors": [
+        165,
+        174,
+        156,
+        148,
+        154,
+        156,
+        309
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 6,
+      "nominalSeconds": 163.0667,
+      "bestDRILLSprite": 3,
+      "differentPixels": 13,
+      "allSpriteErrors": [
+        13,
+        58,
+        64,
+        106,
+        166,
+        176,
+        313
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 7,
+      "nominalSeconds": 163.1,
+      "bestDRILLSprite": 3,
+      "differentPixels": 14,
+      "allSpriteErrors": [
+        14,
+        57,
+        65,
+        105,
+        167,
+        175,
+        312
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 8,
+      "nominalSeconds": 163.1333,
+      "bestDRILLSprite": 3,
+      "differentPixels": 14,
+      "allSpriteErrors": [
+        14,
+        57,
+        65,
+        105,
+        167,
+        175,
+        312
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 9,
+      "nominalSeconds": 163.1667,
+      "bestDRILLSprite": 3,
+      "differentPixels": 14,
+      "allSpriteErrors": [
+        14,
+        57,
+        65,
+        105,
+        167,
+        175,
+        312
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 10,
+      "nominalSeconds": 163.2,
+      "bestDRILLSprite": 3,
+      "differentPixels": 14,
+      "allSpriteErrors": [
+        14,
+        57,
+        65,
+        105,
+        167,
+        175,
+        312
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 11,
+      "nominalSeconds": 163.2333,
+      "bestDRILLSprite": 3,
+      "differentPixels": 14,
+      "allSpriteErrors": [
+        14,
+        57,
+        65,
+        105,
+        167,
+        175,
+        312
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 12,
+      "nominalSeconds": 163.2667,
+      "bestDRILLSprite": 3,
+      "differentPixels": 14,
+      "allSpriteErrors": [
+        14,
+        57,
+        65,
+        105,
+        167,
+        175,
+        312
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 13,
+      "nominalSeconds": 163.3,
+      "bestDRILLSprite": 4,
+      "differentPixels": 12,
+      "allSpriteErrors": [
+        57,
+        12,
+        64,
+        94,
+        156,
+        170,
+        283
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 14,
+      "nominalSeconds": 163.3333,
+      "bestDRILLSprite": 4,
+      "differentPixels": 12,
+      "allSpriteErrors": [
+        57,
+        12,
+        64,
+        94,
+        156,
+        170,
+        283
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 15,
+      "nominalSeconds": 163.3667,
+      "bestDRILLSprite": 4,
+      "differentPixels": 12,
+      "allSpriteErrors": [
+        57,
+        12,
+        64,
+        94,
+        156,
+        170,
+        283
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 16,
+      "nominalSeconds": 163.4,
+      "bestDRILLSprite": 4,
+      "differentPixels": 12,
+      "allSpriteErrors": [
+        57,
+        12,
+        64,
+        94,
+        156,
+        170,
+        283
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 17,
+      "nominalSeconds": 163.4333,
+      "bestDRILLSprite": 4,
+      "differentPixels": 12,
+      "allSpriteErrors": [
+        57,
+        12,
+        64,
+        94,
+        156,
+        170,
+        283
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 18,
+      "nominalSeconds": 163.4667,
+      "bestDRILLSprite": 4,
+      "differentPixels": 12,
+      "allSpriteErrors": [
+        57,
+        12,
+        64,
+        94,
+        156,
+        170,
+        283
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 19,
+      "nominalSeconds": 163.5,
+      "bestDRILLSprite": 5,
+      "differentPixels": 16,
+      "allSpriteErrors": [
+        65,
+        66,
+        16,
+        78,
+        136,
+        148,
+        261
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 20,
+      "nominalSeconds": 163.5333,
+      "bestDRILLSprite": 5,
+      "differentPixels": 16,
+      "allSpriteErrors": [
+        65,
+        66,
+        16,
+        78,
+        136,
+        148,
+        261
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 21,
+      "nominalSeconds": 163.5667,
+      "bestDRILLSprite": 5,
+      "differentPixels": 16,
+      "allSpriteErrors": [
+        65,
+        66,
+        16,
+        78,
+        136,
+        148,
+        261
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 22,
+      "nominalSeconds": 163.6,
+      "bestDRILLSprite": 5,
+      "differentPixels": 16,
+      "allSpriteErrors": [
+        65,
+        66,
+        16,
+        78,
+        136,
+        148,
+        261
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 23,
+      "nominalSeconds": 163.6333,
+      "bestDRILLSprite": 5,
+      "differentPixels": 16,
+      "allSpriteErrors": [
+        65,
+        66,
+        16,
+        78,
+        136,
+        148,
+        261
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 24,
+      "nominalSeconds": 163.6667,
+      "bestDRILLSprite": 5,
+      "differentPixels": 16,
+      "allSpriteErrors": [
+        65,
+        66,
+        16,
+        78,
+        136,
+        148,
+        261
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 25,
+      "nominalSeconds": 163.7,
+      "bestDRILLSprite": 6,
+      "differentPixels": 18,
+      "allSpriteErrors": [
+        107,
+        90,
+        72,
+        18,
+        96,
+        130,
+        229
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 26,
+      "nominalSeconds": 163.7333,
+      "bestDRILLSprite": 6,
+      "differentPixels": 18,
+      "allSpriteErrors": [
+        107,
+        90,
+        72,
+        18,
+        96,
+        130,
+        229
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 27,
+      "nominalSeconds": 163.7667,
+      "bestDRILLSprite": 6,
+      "differentPixels": 18,
+      "allSpriteErrors": [
+        107,
+        90,
+        72,
+        18,
+        96,
+        130,
+        229
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 28,
+      "nominalSeconds": 163.8,
+      "bestDRILLSprite": 6,
+      "differentPixels": 18,
+      "allSpriteErrors": [
+        107,
+        90,
+        72,
+        18,
+        96,
+        130,
+        229
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 29,
+      "nominalSeconds": 163.8333,
+      "bestDRILLSprite": 6,
+      "differentPixels": 18,
+      "allSpriteErrors": [
+        107,
+        90,
+        72,
+        18,
+        96,
+        130,
+        229
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 30,
+      "nominalSeconds": 163.8667,
+      "bestDRILLSprite": 6,
+      "differentPixels": 18,
+      "allSpriteErrors": [
+        107,
+        90,
+        72,
+        18,
+        96,
+        130,
+        229
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 31,
+      "nominalSeconds": 163.9,
+      "bestDRILLSprite": 7,
+      "differentPixels": 24,
+      "allSpriteErrors": [
+        171,
+        160,
+        150,
+        100,
+        24,
+        110,
+        211
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 32,
+      "nominalSeconds": 163.9333,
+      "bestDRILLSprite": 7,
+      "differentPixels": 24,
+      "allSpriteErrors": [
+        171,
+        160,
+        150,
+        100,
+        24,
+        110,
+        211
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 33,
+      "nominalSeconds": 163.9667,
+      "bestDRILLSprite": 7,
+      "differentPixels": 24,
+      "allSpriteErrors": [
+        171,
+        160,
+        150,
+        100,
+        24,
+        110,
+        211
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 34,
+      "nominalSeconds": 164.0,
+      "bestDRILLSprite": 7,
+      "differentPixels": 24,
+      "allSpriteErrors": [
+        171,
+        160,
+        150,
+        100,
+        24,
+        110,
+        211
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 35,
+      "nominalSeconds": 164.0333,
+      "bestDRILLSprite": 7,
+      "differentPixels": 24,
+      "allSpriteErrors": [
+        171,
+        160,
+        150,
+        100,
+        24,
+        110,
+        211
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 36,
+      "nominalSeconds": 164.0667,
+      "bestDRILLSprite": 7,
+      "differentPixels": 24,
+      "allSpriteErrors": [
+        171,
+        160,
+        150,
+        100,
+        24,
+        110,
+        211
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 37,
+      "nominalSeconds": 164.1,
+      "bestDRILLSprite": 7,
+      "differentPixels": 24,
+      "allSpriteErrors": [
+        171,
+        160,
+        150,
+        100,
+        24,
+        110,
+        211
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 38,
+      "nominalSeconds": 164.1333,
+      "bestDRILLSprite": 8,
+      "differentPixels": 13,
+      "allSpriteErrors": [
+        194,
+        181,
+        157,
+        145,
+        113,
+        13,
+        196
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 39,
+      "nominalSeconds": 164.1667,
+      "bestDRILLSprite": 8,
+      "differentPixels": 13,
+      "allSpriteErrors": [
+        194,
+        181,
+        157,
+        145,
+        113,
+        13,
+        196
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 40,
+      "nominalSeconds": 164.2,
+      "bestDRILLSprite": 8,
+      "differentPixels": 13,
+      "allSpriteErrors": [
+        194,
+        181,
+        157,
+        145,
+        113,
+        13,
+        196
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 41,
+      "nominalSeconds": 164.2333,
+      "bestDRILLSprite": 8,
+      "differentPixels": 13,
+      "allSpriteErrors": [
+        194,
+        181,
+        157,
+        145,
+        113,
+        13,
+        196
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 42,
+      "nominalSeconds": 164.2667,
+      "bestDRILLSprite": 8,
+      "differentPixels": 13,
+      "allSpriteErrors": [
+        194,
+        181,
+        157,
+        145,
+        113,
+        13,
+        196
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 43,
+      "nominalSeconds": 164.3,
+      "bestDRILLSprite": 8,
+      "differentPixels": 13,
+      "allSpriteErrors": [
+        194,
+        181,
+        157,
+        145,
+        113,
+        13,
+        196
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 44,
+      "nominalSeconds": 164.3333,
+      "bestDRILLSprite": 9,
+      "differentPixels": 17,
+      "allSpriteErrors": [
+        327,
+        302,
+        286,
+        258,
+        226,
+        202,
+        17
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 45,
+      "nominalSeconds": 164.3667,
+      "bestDRILLSprite": 9,
+      "differentPixels": 17,
+      "allSpriteErrors": [
+        327,
+        302,
+        286,
+        258,
+        226,
+        202,
+        17
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 46,
+      "nominalSeconds": 164.4,
+      "bestDRILLSprite": 9,
+      "differentPixels": 17,
+      "allSpriteErrors": [
+        327,
+        302,
+        286,
+        258,
+        226,
+        202,
+        17
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 47,
+      "nominalSeconds": 164.4333,
+      "bestDRILLSprite": 9,
+      "differentPixels": 17,
+      "allSpriteErrors": [
+        327,
+        302,
+        286,
+        258,
+        226,
+        202,
+        17
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 48,
+      "nominalSeconds": 164.4667,
+      "bestDRILLSprite": 9,
+      "differentPixels": 17,
+      "allSpriteErrors": [
+        327,
+        302,
+        286,
+        258,
+        226,
+        202,
+        17
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 49,
+      "nominalSeconds": 164.5,
+      "bestDRILLSprite": 9,
+      "differentPixels": 17,
+      "allSpriteErrors": [
+        327,
+        302,
+        286,
+        258,
+        226,
+        202,
+        17
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 50,
+      "nominalSeconds": 164.5333,
+      "bestDRILLSprite": 9,
+      "differentPixels": 17,
+      "allSpriteErrors": [
+        327,
+        302,
+        286,
+        258,
+        226,
+        202,
+        17
+      ],
+      "isolatedCardHeuristic": true
+    },
+    {
+      "sample": 51,
+      "nominalSeconds": 164.5667,
+      "bestDRILLSprite": 8,
+      "differentPixels": 300,
+      "allSpriteErrors": [
+        451,
+        446,
+        418,
+        384,
+        342,
+        300,
+        305
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 52,
+      "nominalSeconds": 164.6,
+      "bestDRILLSprite": 8,
+      "differentPixels": 307,
+      "allSpriteErrors": [
+        368,
+        395,
+        371,
+        357,
+        331,
+        307,
+        378
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 53,
+      "nominalSeconds": 164.6333,
+      "bestDRILLSprite": 8,
+      "differentPixels": 307,
+      "allSpriteErrors": [
+        368,
+        395,
+        371,
+        357,
+        331,
+        307,
+        378
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 54,
+      "nominalSeconds": 164.6667,
+      "bestDRILLSprite": 8,
+      "differentPixels": 307,
+      "allSpriteErrors": [
+        368,
+        395,
+        371,
+        357,
+        331,
+        307,
+        378
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 55,
+      "nominalSeconds": 164.7,
+      "bestDRILLSprite": 8,
+      "differentPixels": 307,
+      "allSpriteErrors": [
+        368,
+        395,
+        371,
+        357,
+        331,
+        307,
+        378
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 56,
+      "nominalSeconds": 164.7333,
+      "bestDRILLSprite": 8,
+      "differentPixels": 307,
+      "allSpriteErrors": [
+        368,
+        395,
+        371,
+        357,
+        331,
+        307,
+        378
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 57,
+      "nominalSeconds": 164.7667,
+      "bestDRILLSprite": 8,
+      "differentPixels": 307,
+      "allSpriteErrors": [
+        368,
+        395,
+        371,
+        357,
+        331,
+        307,
+        378
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 58,
+      "nominalSeconds": 164.8,
+      "bestDRILLSprite": 8,
+      "differentPixels": 307,
+      "allSpriteErrors": [
+        368,
+        395,
+        371,
+        357,
+        331,
+        307,
+        378
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 59,
+      "nominalSeconds": 164.8333,
+      "bestDRILLSprite": 8,
+      "differentPixels": 307,
+      "allSpriteErrors": [
+        368,
+        395,
+        371,
+        357,
+        331,
+        307,
+        378
+      ],
+      "isolatedCardHeuristic": false
+    },
+    {
+      "sample": 60,
+      "nominalSeconds": 164.8667,
+      "bestDRILLSprite": 8,
+      "differentPixels": 307,
+      "allSpriteErrors": [
+        368,
+        395,
+        371,
+        357,
+        331,
+        307,
+        378
+      ],
+      "isolatedCardHeuristic": false
+    }
+  ]
+}
