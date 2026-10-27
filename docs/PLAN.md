@@ -2,6 +2,26 @@
 
 Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers Outnumbered. The original DOS executable, graphics drivers and DOS/PC CPU environment are not part of the finished app. Keep original assets and the supplied reference video unchanged.
 
+## Current verified state — 0.19, October27,2026
+
+675 native checks pass. The ordinary full adventure win and normal
+quit/relaunch/replay were established at0.14; later fidelity milestones still
+require a fresh complete playthrough before final completion.0.15–0.18 add
+original staged doors/elevators, transition actor/RNG updates and camera rules.
+0.19 adds persisted player motion, boundary/reaction sequences, collision-word
+waits and original actor foreground order. Ordinary native play observed a
+boundary impact, natural type25 projectile hit/recovery and vertical jump.
+Independent runtime/source/repository rebuild verification accompanies each
+published milestone. This is a development build, not the completed game.
+
+Next recover the energy-machine eye actor and remaining encounter/capture
+presentation, then timed activity effects and their RNG, opening/File/sign-in,
+queued input, ending refinements and palette/audio calibration. Keep the
+original completion criteria below; cosmetic fidelity and complete-loop
+validation remain part of the requested end state. Detailed source-mask and
+panel-occlusion parity need broader evidence than the current opaque overlap
+check. See player-impact-recovery.md and DEVELOPMENT-STATUS.md.
+
 ## Current authoritative references
 
 - Original ZIP: `Super-Solvers-Outnumbered_DOS_EN.zip`, SHA-256 `6766fbaa4152436ec1096bf1a06c5889a7b82f25b5ee33bb7583629b8252dd14`. Member hashes are in `outputs/archive-inventory.json`.
@@ -14,7 +34,7 @@ Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers O
 1. Reference and preservation baseline: established source hashes, edition, local frames/audio, observed mechanics and unresolved gaps. Local-video replacement is authoritative; no further YouTube browsing. Original ZIP is also available unchanged at `local-inputs/Super-Solvers-Outnumbered_DOS_EN.zip`; ZIP and MKV hashes were rechecked October 24.
 2. Complete asset recovery and native rendering: room backgrounds, sprites, fonts, HUD, teaching templates and sound. 389 bitmap records and 430 font glyphs recovered; all52 PC-speaker data sequences rendered to PCM. Trailer semantics, exact palette/transparency and audio parity still require validation.
 3. One authentic original interaction: the recovered rainfall question now runs in the native development app. Original question text/numbers/answer644, three-attempt flow, Enter-before-hint acknowledgement, 300/200/100 score, room clues, pending recharge, paused clock and original-data correct/wrong PCM are integrated. Verified in an actual native window and with independent fixture checks. All3,200 recovered finite-domain question cases are compiled into native data. Original new-game choices, eligibility, template bands and setup order are implemented in0.7; complete custom/practice lifecycle and timed activity random consumption remain pending.
-4. Traversal and encounters: hallway/room/elevator traversal plus Telly spawn/movement/throw/stun, projectiles,90IRQ zaps, delayed energy cost, drills and code-piece capture are integrated. Native drill pools reproduce original arithmetic and rank counts; the local six-question fixture reaches600→900→1,000. Body/projectile penalties are implemented; LiveWire room encounters and energy-machine recharge are integrated. Knockback/impact animations and full transition fidelity remain incomplete.
+4. Traversal and encounters: hallway/room/elevator traversal plus Telly spawn/movement/throw/stun, projectiles,90IRQ zaps, delayed energy cost, drills and code-piece capture are integrated. Native drill pools reproduce original arithmetic and rank counts; the local six-question fixture reaches600→900→1,000. Body/projectile penalties are implemented; LiveWire room encounters and energy-machine recharge are integrated. Staged room/elevator transitions, camera ordering, persisted boundary/knockback/recovery and collision-word waits are implemented through0.19. Full masking/encounter and transition fidelity still require validation.
 5. Complete game logic: all challenge types and ranks, drill/custom settings, four secret-code pieces, room clues, decoder/match rules, calculator, help, win/loss states, awards and progression. Native0.8 now includes the original scripted hideout reveal, energy/time/victory tally, wrong-choice/midnight losses, persistent lifetime/rank updates and replay, with269 passing checks and an observed ending checkpoint. Native0.9 adds player/game/custom/practice menus, separate13-byte settings, practice counters/no rewards and unfinished-game continuation, with309 checks. Music, exact menu/practice presentation, detailed effects/transitions and complete-playthrough verification remain required. Not complete.
 6. Native persistence and packaging: profile foundation plus versioned atomic native session saves now preserve location, question/input/attempt state, clock, clues and score. Corrupt/future saves are preserved; transient menu pauses are normalized for resume. A self-contained ARM64 development bundle is available in outputs; final complete-game packaging remains.
 7. Fidelity validation: compare full playable loops and representative edge cases against the original code and local recording; visually inspect the native window, check audio measurements, package/extract/launch independently, and retain clear limits. Not complete.
@@ -25,7 +45,7 @@ Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers O
 - `work/reimplementation/`: expanded native source, original resource catalog, decoded images/fonts/audio, question VM recovery, references and static evidence.
 - `work/reimplementation/reference-media/source.json`: local video identity and measured tracks. Derived PNG frames and mono PCM are analysis copies only.
 - `work/reimplementation/REFERENCE-OVERRIDE.md`: local-video replacement instruction and workspace migration.
-- `outputs/Outnumbered Native Development.app`: current0.12 playable milestone. Command-R opens the local rainfall checkpoint; Command-D opens its six-question Telly drill. Command-4 opens an original-selected Junior question (answer165); Command-5 runs the ending checkpoint to Game11680/Total64275 and replay. These are isolated reference sessions. All ten activity families and3,200 recovered cases have native visual context. Core player/custom/practice menus are integrated; music/history, exact presentation, timed effects, detailed transitions and complete-game fidelity remain unresolved. This is separate from the preserved first prototype.
+- `outputs/Outnumbered Native Development.app`: current0.19 ARM64 development app with675 checks. All ten activity families, source-derived question setup, ordinary winning loop, core menus/custom/practice/help/scores, music/message options, staged traversal, camera rules, enemies, drills, zaps, recharge and player reactions are integrated. Checkpoint commands are isolated reference sessions, not ordinary-play evidence. Read the current status and milestone verification for remaining gaps; this is separate from the preserved first prototype.
 - `work/reimplementation/DEVELOPMENT-STATUS.md`: implemented behavior, verification, known approximations and next work. Treat this alongside this checklist when continuing.
 
 Current workspace is `.`. Earlier work was copied from the previous Codex directory without modifying that directory; compiler caches were omitted.

@@ -135,6 +135,7 @@ func nativeIntegrationChecks(root: URL) throws {
     checks["transient_decoder_pause_not_saved_into_exploration"] = try view.saves.load(view.session.profileID)?.clock.pauseDepth == 0
     checks.merge(try nativeTransitionActorChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeMovementChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativePlayerMotionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeElevatorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeDoorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeEncounterChecks(root: root,output: output)) { _,new in new }

@@ -11,7 +11,7 @@ extension NativeGameView {
         if entering { hallway = OriginalMovement.alignment(from: origin,to: hallway.playerUnit).last ?? origin }
         hallway.facing = 1
         session.activeDoor = NativeDoorTransition(entering: entering,origin: origin,hallway: hallway,doorStartUnit: door.startUnit)
-        held.removeAll(); jumpStep = nil; status = ""
+        held.removeAll(); session.playerMotion = nil; status = ""
         if entering { effect(3) }
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
         advanceDoor(irqTicks: 0)

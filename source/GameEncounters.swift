@@ -17,31 +17,25 @@ extension NativeGameView {
     func updateTellyProjectileAndCollision() {
         guard var enemy = session.telly else { return }
         for sound in enemy.stepProjectile().sounds { effect(sound) }
-        if jumpStep == nil && session.position.scene < 10 {
+        if !playerMotion.airborne && session.activeCollision == nil && session.position.scene < 10 {
             let actor = world.actors[3]
             let left = playerScreenUnit+actor.collisionLeftOffsetUnits, width = actor.collisionWidthUnits
             var collision: OriginalCollisionEffect?
             if let projectile = enemy.projectile, !projectile.pendingRemoval,
                OriginalCollisionEffect.horizontalGap(leftA: left,widthA: width,leftB: projectile.xUnits,widthB: projectile.collisionWidthUnits) < 1 {
                 collision = .forActor(5,sameFacing: session.position.facing == enemy.facing,projectileKind: projectile.kind)
-                enemy.removeProjectile()
-                if enemy.state != .stunned && enemy.state != .disappearing { enemy.remove() }
             } else if enemy.hittable && OriginalCollisionEffect.horizontalGap(leftA: left,widthA: width,leftB: enemy.collisionLeftUnit,widthB: enemy.collisionWidthUnits) < 1 {
                 collision = .forActor(4,sameFacing: session.position.facing == enemy.facing)
-                enemy.collideWithPlayer()
             }
             if let collision {
-                queueTutorial(collision.timePenaltyMinutes > 0 ? 1 : 2)
-                if collision.energyCost > 0 { session.energy = VerifiedEnergy.applying(-collision.energyCost,to: session.energy)! }
-                session.clock.applyMinutePenalty(collision.timePenaltyMinutes)
-                for sound in collision.sounds { effect(sound) }
-                // Original knockback/impact-word animation is still being
-                // integrated; apply recovered costs and enemy removal once.
+                session.telly = enemy
+                beginCollisionFlash(actor: collision.timePenaltyMinutes > 0 ? 5 : 4,sameFacing: session.position.facing == enemy.facing,projectileKind: enemy.projectile?.kind ?? 22)
             }
         }
         session.telly = enemy
     }
     func beginZap() {
+        guard playerMotion.settled else { return }
         session.playerHasMoved = true
         let enemy = session.telly, target = enemy?.hittable == true ? enemy : nil
         let hallway = session.position.scene < 10
@@ -54,6 +48,7 @@ extension NativeGameView {
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
     }
     func pulseZap() {
+        if session != nil && session.activeCollision != nil { pulseCollision();return }
         if session != nil && session.activeElevator != nil { pulseElevator(); return }
         if session != nil && session.activeDoor != nil { pulseDoor(); return }
         if session != nil && session.activeFountain != nil { pulseFountain(); return }
@@ -88,7 +83,7 @@ extension NativeGameView {
         let machineUnit = session.position.scene*38+object.startUnit
         if session.pendingRecharge == 0 { queueTutorial(4) }
         session.activeFountain = NativeFountain(initialPlayerUnit: session.position.playerUnit,targetPlayerUnit: machineUnit+1,machineWorldUnit: machineUnit,initialFacing: session.position.facing,credits: session.pendingRecharge)
-        held.removeAll(); status = ""; jumpStep = nil
+        held.removeAll(); status = ""; session.playerMotion = nil
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
         save()
     }
@@ -120,13 +115,14 @@ extension NativeGameView {
         session.generator = generator; session.liveWire = wire
     }
     func updateLiveWireAndCollision() {
-        guard session.position.scene >= 10, var wire = session.liveWire else { return }
+        guard session.activeCollision == nil, session.position.scene >= 10, var wire = session.liveWire else { return }
         wire.beginFrame()
         for sound in wire.step().sounds { effect(sound) }
-        if jumpStep == nil && wire.collisionEnabled && OriginalCollisionEffect.horizontalGap(leftA: playerScreenUnit+1,widthA: 4,leftB: wire.collisionLeftUnit,widthB: wire.collisionWidthUnits) < 1 {
+        if !playerMotion.airborne && wire.collisionEnabled && OriginalCollisionEffect.horizontalGap(leftA: playerScreenUnit+1,widthA: 4,leftB: wire.collisionLeftUnit,widthB: wire.collisionWidthUnits) < 1 {
             let collision = OriginalCollisionEffect.forActor(1,sameFacing: session.position.facing == wire.facing)!
             session.energy = VerifiedEnergy.applying(-collision.energyCost,to: session.energy)!
             for sound in collision.sounds { effect(sound) }
+            startPlayerCollision(collision)
             wire.collideWithPlayer(); queueTutorial(6)
         }
         session.liveWire = wire

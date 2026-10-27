@@ -26,9 +26,6 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var scoresShowHighGames = false
     var scorePage = 0
     var tick = 0
-    var jumpStep: Int?
-    var jumpDirection = 0
-    var fireFrames = 0
     var selectedRoom = 0
     var status = ""
     var sound: NSSound?
@@ -177,15 +174,9 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         processTutorials()
         if screen == .world && session.outcome == "active" {
             if session.clock.expired { startEnding(room: session.decoder.hideoutRoom,reason: .midnight); return }
-            let direction = (held.contains(124) ? 1 : 0) - (held.contains(123) ? 1 : 0)
-            let motion = jumpStep == nil ? direction : jumpDirection*2
-            let movement = motion == 0 ? nil : prepareMovement(motion)
+            let movement = preparePlayerFrame()
             updateTelly()
-            if let movement { session.position = movement.destination }
-            if let jump = jumpStep {
-                jumpStep = jump == 7 ? nil : jump+1
-            }
-            if fireFrames > 0 { fireFrames -= 1 }
+            finishPlayerFrame(movement)
             updateTellyProjectileAndCollision()
             updateLiveWireAndCollision()
             if tick-lastSaveTick >= 100 { save(); lastSaveTick = tick }
@@ -224,7 +215,10 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         return movement
     }
     func interact() {
+        guard playerMotion.settled else { return }
         session.playerHasMoved = true
+        let direction = (held.contains(124) ? 1 : 0)-(held.contains(123) ? 1 : 0)
+        if direction != 0 { beginJump(direction: direction);return }
         let scene = session.position.scene
         let unit = scene < 10 ? session.position.playerUnit-(scene*38) : session.position.playerUnit
         if let object = world.object(scene: scene, overlappingPlayerAt: unit,energyMachineSlot: session.energyMachineSlot) {
@@ -248,8 +242,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 return
             }
         }
-        jumpDirection = (held.contains(124) ? 1 : 0) - (held.contains(123) ? 1 : 0)
-        jumpStep = 0
+        beginJump(direction: 0)
     }
     func open(_ challenge: OriginalChallenge) {
         // Upgrade an assigned pre-0.7 question with the same original data and
@@ -302,7 +295,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         case .title, .menu, .practice, .ending, .results: break
         case .world:
             if key == 126 && !event.isARepeat && session.outcome == "active" { interact() }
-            else if key == 49 && !event.isARepeat && jumpStep == nil && session.outcome == "active" {
+            else if key == 49 && !event.isARepeat && playerMotion.settled && session.outcome == "active" {
                 beginZap()
             } else if key == 48 { sound?.stop(); lastSoundIndex = nil; screen = .decoder; session.clock.pause(); held.removeAll(); showNewUserMessage(13) }
             else if key == 53 { showPlayerMenu() }
@@ -477,13 +470,9 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let p = elevatorFrame?.position ?? doorFrame?.position ?? session.position
         try drawWorldBackdrop(p)
         if let elevator, let frame = elevatorFrame, frame.drawsPanels { try drawElevatorBase(elevator,frame) }
-        try drawTellyAndProjectile()
         try drawLiveWire()
-        let moving = held.contains(123) || held.contains(124)
-        var frame = moving ? world.animations[2].frames[tick%8] : 0
-        var y = 81
-        if let jump = jumpStep { frame = world.animations[8].frames[jump]; y += OriginalWorld.jumpYOffsets[jump] }
-        if fireFrames > 0 { frame = 47+(3-fireFrames)%3 }
+        var frame = playerMotion.sprite
+        var y = playerMotion.y
         if let fountain = session.activeFountain { frame = fountain.playerFrame }
         var x = (p.scene < 10 ? p.playerUnit-p.cameraUnit : p.playerUnit)*8
         if let doorFrame {
@@ -501,12 +490,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             frame = elevatorFrame.ordinal ?? 0; y = elevatorFrame.y
             if let elevator, elevatorFrame.drawsPanels && elevatorFrame.playerInFront { try drawElevatorPanels(elevator,elevatorFrame) }
         }
-        try sprite(frame,x: x,y: y,flipped: p.facing < 0)
+        try drawPlayerSprite(frame,x: x,y: y,flipped: p.facing < 0)
+        try drawTellyAndProjectile()
         if let elevator, let elevatorFrame, elevatorFrame.drawsPanels && !elevatorFrame.playerInFront { try drawElevatorPanels(elevator,elevatorFrame) }
         if let zap = session.activeZap, zap.elapsedIRQTicks >= 30, !zap.schedule.beamFrames.isEmpty {
             let index = min(5,(zap.elapsedIRQTicks-30)/10), beam = zap.schedule.beamFrames[index]
             try sprite(beam.ordinal,x: beam.xUnits*8,y: beam.yPixels,flipped: p.facing < 0)
         }
+        if let flash = session.activeCollision, let word = flash.effect.impactSprite { try sprite(word,x: flash.xUnit*8,y: 52) }
         canvas.clip = nil
         canvas.border(4,14,312,146,0)
     }

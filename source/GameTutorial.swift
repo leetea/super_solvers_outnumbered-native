@@ -56,7 +56,7 @@ extension NativeGameView {
         if energyChanged && session.energy < 6 { queueTutorial(11) }
         if minuteChanged && session.clock.elapsedMinutes >= 60 && (session.decoder.capturedCount == 0 || session.completed.isEmpty) { queueTutorial(12) }
         if minuteChanged && session.clock.elapsedMinutes == 2 { showNewUserMessage(0) }
-        if let id = tutorialState.nextQueued(actorsSettled: jumpStep == nil) { showNewUserMessage(id) }
+        if let id = tutorialState.nextQueued(actorsSettled: playerMotion.settled) { showNewUserMessage(id) }
     }
     func preparePracticeMessages() {
         let enabled = session?.profileID == selectedProfile?.id ? (session?.newUserMessages?.enabled ?? menuMessages.enabled) : menuMessages.enabled

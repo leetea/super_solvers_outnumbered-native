@@ -1,10 +1,10 @@
 import Cocoa
 
 extension NativeGameView {
-    var isTransitioning: Bool { session?.activeDoor != nil || session?.activeElevator != nil }
+    var isTransitioning: Bool { session?.activeDoor != nil || session?.activeElevator != nil || session?.activeCollision != nil }
     func beginElevator(_ object: OriginalWorldObject) {
         session.activeElevator = NativeElevatorTransition(origin: session.position,startUnit: object.startUnit)
-        held.removeAll(); jumpStep = nil; status = ""
+        held.removeAll(); session.playerMotion = nil; status = ""
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
         advanceElevator(irqTicks: 0)
         save(); needsDisplay = true

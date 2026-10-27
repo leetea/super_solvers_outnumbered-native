@@ -69,10 +69,12 @@ func nativeEnergyLiveWireChecks(root: URL, output: URL) throws -> [String: Bool]
     checks["native_empty_zap_cannot_disperse_livewire"] = view.session.liveWire?.state == .walking && view.session.energy == 0
     view.session.position.playerUnit = 25; view.updateLiveWireAndCollision()
     checks["native_room_wire_horizontal_collision_removes_once"] = view.session.liveWire?.state == .removed && view.session.energy == 0
-    view.referenceLiveWire(); view.session.position.playerUnit = 25; view.jumpStep = 1; view.updateLiveWireAndCollision()
+    view.referenceLiveWire(); view.session.position.playerUnit = 25; view.beginJump(direction: 0); view.updateLiveWireAndCollision()
     checks["native_jump_excludes_livewire_collision"] = view.session.liveWire?.state == .walking && view.session.energy == 12
-    view.jumpStep = nil; view.updateLiveWireAndCollision()
-    checks["native_wire_collision_cost_one_energy"] = view.session.energy == 11 && view.session.liveWire?.state == .removed
+    view.session.playerMotion = nil; view.updateLiveWireAndCollision()
+    checks["native_wire_collision_cost_one_energy"] = view.session.energy == 11 && view.session.liveWire?.state == .removed && view.playerMotion.animation == 30 && view.playerMotion.horizontal == -2
+    let reaction = view.preparePlayerFrame();view.finishPlayerFrame(reaction)
+    try view.render();try view.canvas.writePNG(to: output.appendingPathComponent("native-player-wire-reaction.png"))
     var legacy = try JSONSerialization.jsonObject(with: JSONEncoder().encode(NativeSession(profileID: UUID(),seed: 1))) as! [String:Any]
     for key in ["energyMachineSlot","activeFountain","liveWire"] { legacy.removeValue(forKey: key) }
     view.session = try JSONDecoder().decode(NativeSession.self,from: JSONSerialization.data(withJSONObject: legacy))

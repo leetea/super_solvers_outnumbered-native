@@ -9,7 +9,7 @@ extension NativeGameView {
         session.activeEnding = NativeEnding(reason: reason,room: room,tier: session.decoder.difficulty,initialEnergy: session.energy,initialMinutes: session.clock.elapsedMinutes,initialScore: session.score,initialLifetime: session.lifetimePoints,playerDialogue: playerLine,masterDialogue: masterLine)
         if session.runID == nil { session.runID = UUID() }
         session.activeChallenge = nil; session.activeDrill = nil; session.activeZap = nil
-        session.activeFountain = nil; session.liveWire?.clear(); clearTelly()
+        session.activeFountain = nil; session.activeCollision = nil; session.playerMotion = nil; session.liveWire?.clear(); clearTelly()
         while session.clock.pauseDepth > 0 { session.clock.resume() }
         session.clock.pause(); held.removeAll(); screen = .ending; status = ""
         if reason == .midnight { effect(49) } else { effect(3) }

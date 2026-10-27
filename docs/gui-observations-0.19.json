@@ -1,0 +1,25 @@
+{
+  "milestone": "0.19.0",
+  "method": "Ordinary keyboard play in native Cocoa window, continued separate verification profile; no forced spawn, checkpoint command, seed change or save edit",
+  "observations": [
+    "Walked left to the upper hallway boundary and observed the new impact pose; a Telly spawned naturally nearby",
+    "Subsequent ordinary movement encountered trick type25; raw native completion snapshot records projectile pendingRemoval=true, player reaction9/horizontal-1, fifteen-minute penalty and unchanged energy10",
+    "Captured impact pose, seated recovery pose and idle return in gui-player-encounter-a/b/c-0.19.png",
+    "Observed vertical jump and landing near the upper left elevator/cactus; no direct native-window claim for diagonal flip input",
+    "Normal quit retains the current native session, including the new player motion fields"
+  ],
+  "evidence": [
+    "gui-player-boundary-0.19.png",
+    "gui-player-encounter-a-0.19.png",
+    "gui-player-encounter-b-0.19.png",
+    "gui-player-encounter-c-0.19.png",
+    "gui-player-jump-0.19.png",
+    "gui-player-jump-complete-0.19.png"
+  ],
+  "limits": [
+    "Impact-word200IRQ duration and all relative-facing/projectile-type combinations are headless evidence, not frame-timed native-window/video comparison",
+    "Raw verification saves are retained locally under player-impact-run-0.19 and excluded from the repository",
+    "Computer input API rejected combined Right+Up before dispatch; the paused game was restored, and directional flips remain covered headlessly",
+    "No perceptual or bit-exact audio verification; no fresh full adventure win for0.19"
+  ]
+}

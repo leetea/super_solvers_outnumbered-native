@@ -41,6 +41,8 @@ struct NativeSession: Codable {
     var activeFountain: NativeFountain?
     var activeDoor: NativeDoorTransition?
     var activeElevator: NativeElevatorTransition?
+    var playerMotion: NativePlayerMotion?
+    var activeCollision: NativeCollisionFlash?
     var liveWire: OriginalLiveWire?
     var calculator: NativeCalculator?
     var calculatorEnabled: Bool?
@@ -81,6 +83,8 @@ struct NativeSession: Codable {
         (questionSetup == nil || questionSetup!.valid) &&
         (gameSettings == nil || gameSettings!.valid) &&
         (newUserMessages == nil || newUserMessages!.valid) &&
+        (playerMotion == nil || playerMotion!.valid) &&
+        (activeCollision == nil || (activeCollision!.valid && activeDoor == nil && activeElevator == nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil && activeEnding == nil)) &&
         (activeEnding == nil || (activeEnding!.valid && runID != nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil)) &&
         (telly == nil || telly!.hasValidPersistenceState) &&
         (activeDrill == nil || activeDrill!.valid) && (activeZap == nil || activeZap!.valid) &&
