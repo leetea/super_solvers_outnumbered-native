@@ -177,13 +177,13 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         processTutorials()
         if screen == .world && session.outcome == "active" {
             if session.clock.expired { startEnding(room: session.decoder.hideoutRoom,reason: .midnight); return }
+            let direction = (held.contains(124) ? 1 : 0) - (held.contains(123) ? 1 : 0)
+            let motion = jumpStep == nil ? direction : jumpDirection*2
+            let movement = motion == 0 ? nil : prepareMovement(motion)
             updateTelly()
+            if let movement { session.position = movement.destination }
             if let jump = jumpStep {
-                if jumpDirection != 0 { move(jumpDirection * 2) }
                 jumpStep = jump == 7 ? nil : jump+1
-            } else {
-                let direction = (held.contains(124) ? 1 : 0) - (held.contains(123) ? 1 : 0)
-                if direction != 0 { move(direction) }
             }
             if fireFrames > 0 { fireFrames -= 1 }
             updateTellyProjectileAndCollision()
@@ -212,20 +212,16 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if screen == .world || screen == .drill { needsDisplay = true }
     }
     func move(_ delta: Int) {
+        guard delta != 0 else { return }
+        session.position = prepareMovement(delta).destination
+    }
+    func prepareMovement(_ delta: Int) -> OriginalMovement {
         session.playerHasMoved = true
-        let oldCamera = session.position.cameraUnit
         let direction = delta < 0 ? -1 : 1
-        session.position.facing = direction
-        if session.position.scene < 10 {
-            let floor = session.position.scene / 5
-            session.position.playerUnit = max(floor*190+1,min(floor*190+185,session.position.playerUnit+delta))
-            let screenUnit = session.position.playerUnit-session.position.cameraUnit
-            if screenUnit < 6 { session.position.cameraUnit = max(floor*190,session.position.playerUnit-6) }
-            if screenUnit > 26 { session.position.cameraUnit = min(floor*190+152,session.position.playerUnit-26) }
-            session.position.scene = min(floor*5+4,max(floor*5,session.position.playerUnit/38))
-        } else { session.position.playerUnit = max(1,min(33,session.position.playerUnit+delta)) }
-        let cameraShift = session.position.cameraUnit-oldCamera
-        session.telly?.shiftForCamera(by: cameraShift)
+        let movement = OriginalMovement.frame(from: session.position,horizontal: min(2,abs(delta)),facing: direction)
+        session.position = movement.scrolled
+        session.telly?.shiftForCamera(by: movement.cameraShift)
+        return movement
     }
     func interact() {
         session.playerHasMoved = true

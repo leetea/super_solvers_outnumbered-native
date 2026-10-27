@@ -8,6 +8,7 @@ extension NativeGameView {
         guard let hall, let door = world.scenes[hall].first(where: { $0.kind == 1 }) else { return }
         var hallway = entering ? origin : session.returnPosition!
         hallway.playerUnit = hall*38+door.startUnit+1
+        if entering { hallway = OriginalMovement.alignment(from: origin,to: hallway.playerUnit).last ?? origin }
         hallway.facing = 1
         session.activeDoor = NativeDoorTransition(entering: entering,origin: origin,hallway: hallway,doorStartUnit: door.startUnit)
         held.removeAll(); jumpStep = nil; status = ""
@@ -35,6 +36,7 @@ extension NativeGameView {
             }
             var prior = index == 0 ? door.origin : frames[index-1].position
             if frame.destination { prior = frame.position }
+            session.telly?.shiftForCamera(by: frame.position.cameraUnit-prior.cameraUnit)
             prior.cameraUnit = frame.position.cameraUnit
             updateTransitionActors(at: prior,playerStepSound: transitionWalkSound(at: frame.position,ordinal: frame.ordinal))
         } }

@@ -21,6 +21,7 @@ documented history, not backdated Git commits.
 | 0.15 | Staged room-door entrances/exits, persistent transition progress and aligned returns; elevator final facing | 504 native checks; ordinary News doorway window captures; unpaced-frame timing uses documented native adaptation; elevator animation remains pending |
 | 0.16 | Staged elevator panels, vertical travel, persistent progress and input lockout | 563 checks; both left-side directions in final native window; all four origins and save/resume headless; detailed camera/actor fidelity still pending |
 | 0.17 | Telly/projectile/LiveWire updates and RNG during transitions; persisted frame cursors | 582 checks; natural Telly/projectile motion during native-window News entry; legacy migration and timer-batch equivalence checked headlessly |
+| 0.18 | Camera-before-actor ordering, signed movement and scrolling doorway/elevator alignment | 610 checks; original edge overshoot and legacy transition compatibility; native Cartoon Room scrolled approach/entry/return |
 
 The full-game goal is **not complete**. The ordinary winning loop is now verified. Next are
 opening/File presentation and transitions,

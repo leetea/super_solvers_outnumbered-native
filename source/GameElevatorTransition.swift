@@ -32,6 +32,7 @@ extension NativeGameView {
             if frame.scrollPixels == 0 {
                 var prior = index == 0 ? elevator.origin : frames[index-1].position
                 if frame.destination { prior = frame.position }
+                session.telly?.shiftForCamera(by: frame.position.cameraUnit-prior.cameraUnit)
                 prior.cameraUnit = frame.position.cameraUnit
                 updateTransitionActors(at: prior,playerStepSound: transitionWalkSound(at: frame.position,ordinal: frame.ordinal))
             }

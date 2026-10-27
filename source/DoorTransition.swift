@@ -9,6 +9,7 @@ struct NativeDoorTransition: Codable {
     let doorStartUnit: Int
     var elapsedIRQTicks = 0
     var auxiliaryFramesApplied: Int? = 0 // nil in pre-0.17 saves
+    var usesOriginalMovement: Bool? = true // nil retains pre-0.18 frame positions
     var destinationApplied = false
     struct Frame {
         let position: NativePosition
@@ -26,9 +27,10 @@ struct NativeDoorTransition: Codable {
         let aligned = entering ? hallway : NativePosition(scene: origin.scene,playerUnit: 5,cameraUnit: 0,facing: 1)
         let delta = aligned.playerUnit-origin.playerUnit
         if delta != 0 {
+            let recovered = usesOriginalMovement == true ? OriginalMovement.alignment(from: origin,to: aligned.playerUnit) : []
             for offset in 1...abs(delta) {
-                var position = origin
-                position.playerUnit += offset*(delta < 0 ? -1 : 1)
+                var position = recovered.isEmpty ? origin : recovered[offset-1]
+                if recovered.isEmpty { position.playerUnit += offset*(delta < 0 ? -1 : 1) }
                 position.facing = origin.facing
                 result.append(Frame(position: position,ordinal: 1+(offset-1)%8,y: 81,doorOrdinal: nil,ticks: 4,destination: false))
             }

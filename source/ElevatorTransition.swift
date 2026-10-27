@@ -7,6 +7,7 @@ struct NativeElevatorTransition: Codable {
     let startUnit: Int
     var elapsedIRQTicks = 0
     var auxiliaryFramesApplied: Int? = 0 // nil in pre-0.17 saves
+    var usesOriginalMovement: Bool? = true // nil retains pre-0.18 frame positions
     var destinationApplied = false
     var travelSoundStarted = false
     struct Frame {
@@ -20,7 +21,11 @@ struct NativeElevatorTransition: Codable {
         let destination: Bool
         let ticks: Int
     }
-    var aligned: NativePosition { NativePosition(scene: origin.scene,playerUnit: origin.scene*38+startUnit+5,cameraUnit: origin.cameraUnit,facing: 1) }
+    var aligned: NativePosition {
+        let target = origin.scene*38+startUnit+5
+        var position = usesOriginalMovement == true ? OriginalMovement.alignment(from: origin,to: target).last ?? origin : origin
+        position.playerUnit = target; position.facing = 1; return position
+    }
     var exitPosition: NativePosition {
         let hall = OriginalWorld.elevatorDestination(from: origin.scene)!
         return NativePosition(scene: hall,playerUnit: hall*38+OriginalWorld.elevatorExitScreenUnit(from: origin.scene)!,cameraUnit: hall*38,facing: 1)
@@ -34,8 +39,10 @@ struct NativeElevatorTransition: Codable {
             result.append(Frame(position: position,ordinal: ordinal,y: y,panel: panel,drawsPanels: panels,playerInFront: front,scrollPixels: scroll,destination: destination,ticks: ticks))
         }
         let delta = aligned.playerUnit-origin.playerUnit
+        let recovered = usesOriginalMovement == true ? OriginalMovement.alignment(from: origin,to: aligned.playerUnit) : []
         if delta != 0 { for offset in 1...abs(delta) {
-            var position = origin; position.playerUnit += offset*(delta < 0 ? -1 : 1); position.facing = origin.facing
+            var position = recovered.isEmpty ? origin : recovered[offset-1]
+            if recovered.isEmpty { position.playerUnit += offset*(delta < 0 ? -1 : 1) }; position.facing = origin.facing
             append(position,1+(offset-1)%8,81,nil,false,true,0,false,4)
         } }
         for i in 0..<5 { append(aligned,9+i,78-i*3) }

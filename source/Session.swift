@@ -9,7 +9,9 @@ struct NativePosition: Codable, Equatable {
         guard [-1,1].contains(facing) else { return false }
         if (0..<10).contains(scene) {
             let floorStart = (scene/5)*190
-            return (floorStart+1...floorStart+185).contains(playerUnit) && (floorStart...floorStart+152).contains(cameraUnit)
+            //A two-unit frame can scroll151->153 before the original
+            //right-edge predicate closes; screen X is still bounded at33.
+            return (floorStart+1...floorStart+186).contains(playerUnit) && (floorStart...floorStart+153).contains(cameraUnit)
         }
         return [10,12,13,14,15].contains(scene) && (1...33).contains(playerUnit) && cameraUnit == 0
     }

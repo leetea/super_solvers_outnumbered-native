@@ -1,0 +1,22 @@
+{
+  "milestone": "0.18.0",
+  "method": "Ordinary keyboard play in native Cocoa window; existing separate verification profile continued, no save edits or fixture commands",
+  "compiledCodeIdentity": "gui-0.18-code-identity.json",
+  "observations": [
+    "Walked upper hallway right, then approached Cartoon Room from the right with player screen X=6",
+    "First Up just outside active door range jumped because the final hidden object slot overrides the door; moved left one unit before the successful attempt",
+    "Final compiled build repeated ordinary approach, captured rear pose with scrolled hallway, completed entry and exit",
+    "Return position scene6/player249/camera243/facing1; activeDoor and returnPosition nil; score0/lifetime6350 retained"
+  ],
+  "evidence": [
+    "gui-camera-door-approach-final-0.18.png",
+    "gui-camera-door-aligned-final-0.18.png",
+    "gui-camera-room-inside-final-0.18.png",
+    "gui-camera-hall-return-0.18.png"
+  ],
+  "limits": [
+    "Only final-suffixed entrance screenshots and hall-return establish final code observations; earlier diagnostic captures are not final-build proof",
+    "Right-edge overshoot, elevator alignment camera and legacy save transition checks are headless, not native-window proof",
+    "No new complete adventure playthrough for0.18; original full loop remains0.14 evidence"
+  ]
+}

@@ -128,12 +128,13 @@ func nativeIntegrationChecks(root: URL) throws {
     view.interact(); view.advanceElevator(irqTicks: 10_000)
     checks["native_left_elevator"] = view.session.position.scene == 5 && view.session.position.playerUnit == 202 && view.session.position.cameraUnit == 190
     view.session.position = NativePosition(scene: 4,playerUnit: 185,cameraUnit: 152,facing: 1)
-    view.move(100)
+    view.move(2)
     checks["native_floor_end_does_not_wrap"] = view.session.position.scene == 4 && view.session.position.playerUnit == 185
     view.referenceMode = false
     view.session.clock.pause(); view.save()
     checks["transient_decoder_pause_not_saved_into_exploration"] = try view.saves.load(view.session.profileID)?.clock.pauseDepth == 0
     checks.merge(try nativeTransitionActorChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeMovementChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeElevatorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeDoorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeEncounterChecks(root: root,output: output)) { _,new in new }
