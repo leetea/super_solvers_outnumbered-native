@@ -1,0 +1,27 @@
+{
+  "milestone": "0.20.0",
+  "method": "Ordinary keyboard play using separate continued verification profile; no checkpoint commands, forced spawns, seed changes or save edits",
+  "observations": [
+    "Final candidate: entered Sound Room normally; camera poses differ between two native-window captures at x152,y24",
+    "Exited and walked to the naturally placed energy machine at candidate36; a Telly spawned during ordinary play",
+    "Used empty machine: raised rear pose and front return pose, camera scroll and moving Telly/projectile visible in captures",
+    "At machine completion: hall9/player348/camera322/facing1, no activeFountain, energy9/pending0; empty machine granted no energy",
+    "Decoder pause visibly confirmed after each observation; normal Quit retained the native session",
+    "Camera and empty-machine flow were repeated after the sound-stop correction; the final retained screenshots use this candidate. Earlier Cartoon-room observations were from the initial candidate."
+  ],
+  "evidence": [
+    "gui-room-camera-a-0.20.png",
+    "gui-room-camera-b-0.20.png",
+    "gui-fountain-approach-0.20.png",
+    "gui-fountain-enter-0.20.png",
+    "gui-fountain-dispense-0.20.png",
+    "gui-fountain-complete-0.20.png"
+  ],
+  "limits": [
+    "The filename dispense denotes the interaction capture; its displayed player pose is already in front return, so it does not establish an exact dispenser boundary",
+    "Earned credits, precise hold counts and all save/batching combinations are headless verification",
+    "Local video crop confirms visible panning poses, not exact IRQ/color/audio parity",
+    "Raw verification saves remain local; no new full adventure win for0.20",
+    "Sound-stop ordering uses silent state markers; no calibrated listening or audio parity claim."
+  ]
+}

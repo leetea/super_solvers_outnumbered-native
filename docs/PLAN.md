@@ -2,9 +2,9 @@
 
 Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers Outnumbered. The original DOS executable, graphics drivers and DOS/PC CPU environment are not part of the finished app. Keep original assets and the supplied reference video unchanged.
 
-## Current verified state — 0.19, October27,2026
+## Current verified state — 0.20, October27,2026
 
-675 native checks pass. The ordinary full adventure win and normal
+713 native checks pass. The ordinary full adventure win and normal
 quit/relaunch/replay were established at0.14; later fidelity milestones still
 require a fresh complete playthrough before final completion.0.15–0.18 add
 original staged doors/elevators, transition actor/RNG updates and camera rules.
@@ -14,8 +14,10 @@ boundary impact, natural type25 projectile hit/recovery and vertical jump.
 Independent runtime/source/repository rebuild verification accompanies each
 published milestone. This is a development build, not the completed game.
 
-Next recover the energy-machine eye actor and remaining encounter/capture
-presentation, then timed activity effects and their RNG, opening/File/sign-in,
+The0.20 camera/recharge milestone implements the room ceiling camera
+(the earlier energy-machine-eye label was incorrect) and recharge pose,
+scroll and auxiliary-actor lifecycle. Next recover remaining encounter/capture
+presentation, timed activity effects and their RNG, opening/File/sign-in,
 queued input, ending refinements and palette/audio calibration. Keep the
 original completion criteria below; cosmetic fidelity and complete-loop
 validation remain part of the requested end state. Detailed source-mask and
@@ -45,7 +47,7 @@ check. See player-impact-recovery.md and DEVELOPMENT-STATUS.md.
 - `work/reimplementation/`: expanded native source, original resource catalog, decoded images/fonts/audio, question VM recovery, references and static evidence.
 - `work/reimplementation/reference-media/source.json`: local video identity and measured tracks. Derived PNG frames and mono PCM are analysis copies only.
 - `work/reimplementation/REFERENCE-OVERRIDE.md`: local-video replacement instruction and workspace migration.
-- `outputs/Outnumbered Native Development.app`: current0.19 ARM64 development app with675 checks. All ten activity families, source-derived question setup, ordinary winning loop, core menus/custom/practice/help/scores, music/message options, staged traversal, camera rules, enemies, drills, zaps, recharge and player reactions are integrated. Checkpoint commands are isolated reference sessions, not ordinary-play evidence. Read the current status and milestone verification for remaining gaps; this is separate from the preserved first prototype.
+- `outputs/Outnumbered Native Development.app`: current0.20 ARM64 development app with713 checks. All ten activity families, source-derived question setup, ordinary winning loop, core menus/custom/practice/help/scores, music/message options, staged traversal, camera rules, enemies, drills, zaps, recharge and player reactions are integrated. Checkpoint commands are isolated reference sessions, not ordinary-play evidence. Read the current status and milestone verification for remaining gaps; this is separate from the preserved first prototype.
 - `work/reimplementation/DEVELOPMENT-STATUS.md`: implemented behavior, verification, known approximations and next work. Treat this alongside this checklist when continuing.
 
 Current workspace is `.`. Earlier work was copied from the previous Codex directory without modifying that directory; compiler caches were omitted.
@@ -138,3 +140,6 @@ Milestone0.16 adds the original staged elevators: approach/shrunken/front poses,
 
 
 Milestone0.17 restores Telly, projectile and LiveWire updates during room/elevator pose and panel loops. Spawning stays disabled as in1559(0), but absent-enemy RNG draws and active motion continue. The elevator cleanup update is included; vertical scroll bands do not step actors. Saved per-frame cursors prevent repeated updates after restore, and older cursorless saves skip completed frames without replaying past RNG. Alignment preserves the initial facing until the original force-right pose. All582 native checks pass, including exact absent-enemy draw totals, active Telly motion, projectile/LiveWire updates, timer batching equivalence and legacy resume. A naturally spawned Telly/projectile advanced during a normal native-window News entrance; room exit and elevator travel also completed. Detailed camera/bounds, collision/knockback/occlusion, machine eye animation, timed activities, opening/File/sign-in, queued input and remaining ending/palette/audio fidelity keep the complete-game goal active.
+
+
+Milestone0.20 restores the room ceiling security camera (correcting the earlier energy-machine-eye label): original panning row14, four-update holds, actor order, entry/exit lifecycle and retained timing state. Recharge now uses recovered scrolling alignment, raised player poses, continued enemy/projectile updates and exact per-frame RNG bookkeeping; the unpaced-copy display interval remains a documented native adaptation. Older in-progress actions retain their prior schedule. All713 checks pass. Local video shows the corresponding pan poses; ordinary native play separately showed a panning Cartoon camera and empty-machine interaction with scroll, moving Telly/projectile and unchanged energy9. Remaining encounter/capture presentation, timed activity effects/RNG, opening/File/sign-in, queued input, ending/palette/mask/audio refinements and a fresh full playthrough keep the complete-game goal active.

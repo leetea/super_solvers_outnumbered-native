@@ -19,6 +19,7 @@ extension NativeGameView {
             for sound in wire.step().sounds { effect(sound) }
             session.liveWire = wire
         }
+        updateRoomCamera(at: position)
     }
     func transitionWalkSound(at position: NativePosition,ordinal: Int?) -> Int? {
         guard let ordinal, (1...8).contains(ordinal) else { return nil }

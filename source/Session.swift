@@ -43,6 +43,7 @@ struct NativeSession: Codable {
     var activeElevator: NativeElevatorTransition?
     var playerMotion: NativePlayerMotion?
     var activeCollision: NativeCollisionFlash?
+    var roomCamera: NativeRoomCamera?
     var liveWire: OriginalLiveWire?
     var calculator: NativeCalculator?
     var calculatorEnabled: Bool?
@@ -55,10 +56,11 @@ struct NativeSession: Codable {
     var newUserMessages: NativeNewUserMessages?
     var outcome = "active"
     var rank: VerifiedRank { VerifiedRank.forLifetimePoints(lifetimePoints) }
-    init(profileID: UUID, seed: UInt32, lifetimePoints: Int = 0, settings: OriginalGameSettings? = nil, previousGenerator: DecoderGenerator? = nil) {
+    init(profileID: UUID, seed: UInt32, lifetimePoints: Int = 0, settings: OriginalGameSettings? = nil, previousGenerator: DecoderGenerator? = nil, previousRoomCamera: NativeRoomCamera? = nil) {
         formatVersion = 1; self.profileID = profileID; self.lifetimePoints = lifetimePoints
         runID = UUID()
         newUserMessages = NativeNewUserMessages(enabled: lifetimePoints < 5000)
+        roomCamera = previousRoomCamera;roomCamera?.disable()
         var generator = previousGenerator ?? DecoderGenerator(seed: seed)
         let tier = VerifiedRank.allCases.firstIndex(of: VerifiedRank.forLifetimePoints(lifetimePoints))! >> 1
         let settings = settings ?? .defaults(tier: tier)
@@ -84,6 +86,7 @@ struct NativeSession: Codable {
         (gameSettings == nil || gameSettings!.valid) &&
         (newUserMessages == nil || newUserMessages!.valid) &&
         (playerMotion == nil || playerMotion!.valid) &&
+        (roomCamera == nil || roomCamera!.valid) &&
         (activeCollision == nil || (activeCollision!.valid && activeDoor == nil && activeElevator == nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil && activeEnding == nil)) &&
         (activeEnding == nil || (activeEnding!.valid && runID != nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil)) &&
         (telly == nil || telly!.hasValidPersistenceState) &&

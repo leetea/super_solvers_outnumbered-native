@@ -1,5 +1,7 @@
 # Energy machine recovery, native0.4
 
+Historical baseline. Current pose/scroll/actor lifecycle is documented in room-camera-recharge-recovery.md (0.20).
+
 This is a direct native reconstruction of static code/data with separately recorded native-window checks. The DOS executable is never executed. Original archive and local MKV remain read only.
 
 ## Placement and earned recharge

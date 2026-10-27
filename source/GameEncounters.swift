@@ -82,31 +82,60 @@ extension NativeGameView {
     func beginFountain(_ object: OriginalWorldObject) {
         let machineUnit = session.position.scene*38+object.startUnit
         if session.pendingRecharge == 0 { queueTutorial(4) }
-        session.activeFountain = NativeFountain(initialPlayerUnit: session.position.playerUnit,targetPlayerUnit: machineUnit+1,machineWorldUnit: machineUnit,initialFacing: session.position.facing,credits: session.pendingRecharge)
+        session.activeFountain = NativeFountain(initialPlayerUnit: session.position.playerUnit,targetPlayerUnit: machineUnit+1,machineWorldUnit: machineUnit,initialFacing: session.position.facing,credits: session.pendingRecharge,origin: session.position)
         held.removeAll(); status = ""; session.playerMotion = nil
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
+        advanceFountain(irqTicks: 0)
         save()
+    }
+    func advanceFountain(irqTicks: Int) {
+        guard var fountain = session.activeFountain else { return }
+        let first = fountain.auxiliaryFramesApplied ?? fountain.currentFrameIndex+1
+        let ticks = min(max(0,irqTicks),fountain.duration-fountain.elapsedIRQTicks)
+        session.clock.pollAfterIRQTicks(UInt64(ticks),processMinute: false)
+        let award = fountain.advance(irqTicks: ticks)
+        var rewarded = false
+        func issueAward() {
+            session.energy = VerifiedEnergy.applying(fountain.credits,to: session.energy)!
+            session.pendingRecharge = 0;effect(fountain.sound);rewarded = true
+        }
+        if fountain.origin != nil {
+            let frames = fountain.frames,last = fountain.currentFrameIndex
+            if first <= last { for i in first...last {
+                let frame = frames[i]
+                if award && !rewarded && frame.phase == .dispensing { issueAward() }
+                if frame.phase == .leaving && i > 0 && frames[i-1].phase == .dispensing {
+                    sound?.stop();lastSoundIndex = nil
+                }
+                if frame.updatesActors {
+                    var prior = i == 0 ? fountain.origin! : frames[i-1].position
+                    session.telly?.shiftForCamera(by: frame.position.cameraUnit-prior.cameraUnit)
+                    prior.cameraUnit = frame.position.cameraUnit
+                    updateTransitionActors(at: prior,playerStepSound: transitionWalkSound(at: frame.position,ordinal: frame.ordinal))
+                }
+            } }
+            fountain.auxiliaryFramesApplied = last+1
+            session.position = fountain.currentFrame.position
+            session.position.facing = fountain.facing
+        } else {
+            session.position.playerUnit = fountain.playerUnit;session.position.facing = fountain.facing
+        }
+        if award && !rewarded { issueAward() }
+        session.activeFountain = fountain
+        if fountain.phase == .finished {
+            if fountain.origin == nil { sound?.stop();lastSoundIndex = nil }
+            session.activeFountain = nil;session.clock.pollAfterIRQTicks(0);save()
+        }
+        needsDisplay = true
     }
     func pulseFountain() {
         let now = ProcessInfo.processInfo.systemUptime
         defer { lastZapPulse = now }
-        guard modalDepth == 0, screen == .world, var fountain = session.activeFountain else { return }
+        guard modalDepth == 0, screen == .world, session.activeFountain != nil else { return }
         let ticks = max(0,now-lastZapPulse)*VerifiedClock.pitInputHz/VerifiedClock.pitDivisor+zapFraction
-        let whole = min(fountain.duration-fountain.elapsedIRQTicks,Int(ticks.rounded(.down)))
+        let whole = Int(min(ticks.rounded(.down),10_000))
         zapFraction = ticks-ticks.rounded(.down)
-        session.clock.pollAfterIRQTicks(UInt64(whole),processMinute: false)
-        if fountain.advance(irqTicks: whole) {
-            session.energy = VerifiedEnergy.applying(fountain.credits,to: session.energy)!
-            session.pendingRecharge = 0; effect(fountain.sound)
-        }
-        session.position.playerUnit = fountain.playerUnit
-        session.position.facing = fountain.facing
-        session.activeFountain = fountain
-        if fountain.phase == .finished {
-            sound?.stop(); lastSoundIndex = nil
-            session.activeFountain = nil; session.clock.pollAfterIRQTicks(0); save()
-        }
-        needsDisplay = true
+        advanceFountain(irqTicks: whole)
     }
     func attemptLiveWire() {
         var wire = session.liveWire ?? (try! OriginalLiveWire(tier: session.decoder.difficulty))

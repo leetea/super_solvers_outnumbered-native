@@ -145,7 +145,8 @@ extension NativeGameView {
             if previous != nil { seed = previous!.nextRandomValue() }
             else { seed = Int.random(in: 0...65535) }
             let messages = session?.profileID == profile.id && !referenceMode ? session?.newUserMessages : menuMessages
-            session = NativeSession(profileID: profile.id,seed: UInt32(seed),lifetimePoints: profile.lifetimePoints ?? 0,settings: settings,previousGenerator: previous)
+            let roomCamera = session?.profileID == profile.id && !referenceMode ? session?.roomCamera : saved?.roomCamera
+            session = NativeSession(profileID: profile.id,seed: UInt32(seed),lifetimePoints: profile.lifetimePoints ?? 0,settings: settings,previousGenerator: previous,previousRoomCamera: roomCamera)
             session.newUserMessages = messages ?? menuMessages
             referenceMode = false; practice = nil; screen = .world; held.removeAll(); status = ""
             save(); needsDisplay = true

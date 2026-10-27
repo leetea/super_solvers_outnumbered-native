@@ -86,6 +86,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             session.ensureQuestionSetup()
             ensureEnergyMachine()
             ensureCalculator()
+            ensureRoomCamera()
             if let active = session.activeChallenge { try prepareActivityState(active) }
             lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
             screen = session.activeDrill != nil ? .drill : (session.activeChallenge == nil ? .world : .question)
@@ -179,6 +180,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             finishPlayerFrame(movement)
             updateTellyProjectileAndCollision()
             updateLiveWireAndCollision()
+            updateRoomCamera(at: session.position)
             if tick-lastSaveTick >= 100 { save(); lastSaveTick = tick }
         }
         if screen == .drill && session.outcome == "active" {
@@ -471,9 +473,10 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         try drawWorldBackdrop(p)
         if let elevator, let frame = elevatorFrame, frame.drawsPanels { try drawElevatorBase(elevator,frame) }
         try drawLiveWire()
+        try drawRoomCamera(at: p)
         var frame = playerMotion.sprite
         var y = playerMotion.y
-        if let fountain = session.activeFountain { frame = fountain.playerFrame }
+        if let fountain = session.activeFountain { frame = fountain.playerFrame;y = fountain.playerY }
         var x = (p.scene < 10 ? p.playerUnit-p.cameraUnit : p.playerUnit)*8
         if let doorFrame {
             frame = doorFrame.ordinal; y = doorFrame.y

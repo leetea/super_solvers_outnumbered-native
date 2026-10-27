@@ -136,6 +136,8 @@ func nativeIntegrationChecks(root: URL) throws {
     checks.merge(try nativeTransitionActorChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeMovementChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativePlayerMotionChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeRoomCameraChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeFountainMotionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeElevatorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeDoorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeEncounterChecks(root: root,output: output)) { _,new in new }

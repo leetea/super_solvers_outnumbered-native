@@ -23,6 +23,7 @@ documented history, not backdated Git commits.
 | 0.17 | Telly/projectile/LiveWire updates and RNG during transitions; persisted frame cursors | 582 checks; natural Telly/projectile motion during native-window News entry; legacy migration and timer-batch equivalence checked headlessly |
 | 0.18 | Camera-before-actor ordering, signed movement and scrolling doorway/elevator alignment | 610 checks; original edge overshoot and legacy transition compatibility; native Cartoon Room scrolled approach/entry/return |
 | 0.19 | Persisted original player reactions,200IRQ collision words/costs and actor foreground order | 675 checks; ordinary boundary impact, natural type25 hit/recovery and vertical jump/landing; all reaction/facing combinations and resume headless |
+| 0.20 | Original room-camera pan lifecycle and recharge pose/scroll/auxiliary updates | 713 checks; local-video pan evidence; ordinary room camera and empty recharge with continued Telly/projectile motion |
 
 The full-game goal is **not complete**. The ordinary winning loop is now verified. Next are
 opening/File presentation and transitions,

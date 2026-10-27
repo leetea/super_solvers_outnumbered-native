@@ -31,8 +31,8 @@ extension NativeGameView {
                 session.position = door.destination
                 session.returnPosition = door.entering ? door.hallway : nil
                 clearTelly(); session.liveWire?.clear()
-                if door.entering { attemptLiveWire() }
-                else { effect(door.hallway.scene < 5 ? 1 : 2) }
+                if door.entering { startRoomCamera();attemptLiveWire() }
+                else { stopRoomCamera();effect(door.hallway.scene < 5 ? 1 : 2) }
             }
             var prior = index == 0 ? door.origin : frames[index-1].position
             if frame.destination { prior = frame.position }

@@ -10,6 +10,7 @@ extension NativeGameView {
         if session.runID == nil { session.runID = UUID() }
         session.activeChallenge = nil; session.activeDrill = nil; session.activeZap = nil
         session.activeFountain = nil; session.activeCollision = nil; session.playerMotion = nil; session.liveWire?.clear(); clearTelly()
+        if reason != .midnight { disableRoomCamera() }
         while session.clock.pauseDepth > 0 { session.clock.resume() }
         session.clock.pause(); held.removeAll(); screen = .ending; status = ""
         if reason == .midnight { effect(49) } else { effect(3) }
@@ -51,7 +52,7 @@ extension NativeGameView {
         var stream = session.generator
         let seed = UInt32(stream.nextRandomValue())
         let messages = session.newUserMessages
-        session = NativeSession(profileID: session.profileID,seed: seed,lifetimePoints: session.lifetimePoints,previousGenerator: stream)
+        session = NativeSession(profileID: session.profileID,seed: seed,lifetimePoints: session.lifetimePoints,previousGenerator: stream,previousRoomCamera: session.roomCamera)
         if let messages { session.newUserMessages = messages }
         screen = .world; held.removeAll(); status = ""; save(); needsDisplay = true
     }

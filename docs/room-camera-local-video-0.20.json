@@ -1,0 +1,546 @@
+{
+  "source": "OutNumbered Gameplay.mkv",
+  "sourceSHA256": "6960fb011e044a141e75e734e35140ff5c6c62e8e3440bf78f96d27baf957205",
+  "extraction": "ffmpeg -ss174, fps10, 4seconds; nominal positions may differ one video frame",
+  "region": {
+    "x": 152,
+    "y": 24,
+    "width": 32,
+    "height": 26
+  },
+  "method": "Mean absolute RGB comparison with original camera sprites composited over original Equipment background",
+  "rows": [
+    {
+      "nominalSeconds": 174.0,
+      "sprite": 6,
+      "meanAbsoluteRGBError": 37.44,
+      "allPoseErrors": {
+        "3": 62.52,
+        "4": 56.69,
+        "5": 52.99,
+        "6": 37.44,
+        "7": 53.05
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 174.1,
+      "sprite": 6,
+      "meanAbsoluteRGBError": 37.44,
+      "allPoseErrors": {
+        "3": 62.52,
+        "4": 56.69,
+        "5": 52.99,
+        "6": 37.44,
+        "7": 53.05
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 174.2,
+      "sprite": 6,
+      "meanAbsoluteRGBError": 37.44,
+      "allPoseErrors": {
+        "3": 62.52,
+        "4": 56.69,
+        "5": 52.99,
+        "6": 37.44,
+        "7": 53.05
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 174.3,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 38.13,
+      "allPoseErrors": {
+        "3": 60.04,
+        "4": 53.58,
+        "5": 38.13,
+        "6": 54.01,
+        "7": 58.03
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 174.4,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 38.02,
+      "allPoseErrors": {
+        "3": 60.05,
+        "4": 53.62,
+        "5": 38.02,
+        "6": 54.11,
+        "7": 58.1
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 174.5,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 38.0,
+      "allPoseErrors": {
+        "3": 60.01,
+        "4": 53.59,
+        "5": 38.0,
+        "6": 54.13,
+        "7": 58.14
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 174.6,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 38.0,
+      "allPoseErrors": {
+        "3": 60.01,
+        "4": 53.59,
+        "5": 38.0,
+        "6": 54.13,
+        "7": 58.14
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 174.7,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 38.0,
+      "allPoseErrors": {
+        "3": 60.01,
+        "4": 53.59,
+        "5": 38.0,
+        "6": 54.13,
+        "7": 58.14
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 174.8,
+      "sprite": 4,
+      "meanAbsoluteRGBError": 37.48,
+      "allPoseErrors": {
+        "3": 53.66,
+        "4": 37.48,
+        "5": 52.09,
+        "6": 56.64,
+        "7": 61.97
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 174.9,
+      "sprite": 4,
+      "meanAbsoluteRGBError": 37.48,
+      "allPoseErrors": {
+        "3": 53.66,
+        "4": 37.48,
+        "5": 52.09,
+        "6": 56.64,
+        "7": 61.97
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 175.0,
+      "sprite": 4,
+      "meanAbsoluteRGBError": 37.48,
+      "allPoseErrors": {
+        "3": 53.66,
+        "4": 37.48,
+        "5": 52.09,
+        "6": 56.64,
+        "7": 61.97
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 175.1,
+      "sprite": 3,
+      "meanAbsoluteRGBError": 37.27,
+      "allPoseErrors": {
+        "3": 37.27,
+        "4": 50.82,
+        "5": 56.63,
+        "6": 60.53,
+        "7": 64.63
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 175.2,
+      "sprite": 3,
+      "meanAbsoluteRGBError": 37.27,
+      "allPoseErrors": {
+        "3": 37.27,
+        "4": 50.82,
+        "5": 56.63,
+        "6": 60.53,
+        "7": 64.63
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 175.3,
+      "sprite": 3,
+      "meanAbsoluteRGBError": 37.27,
+      "allPoseErrors": {
+        "3": 37.27,
+        "4": 50.82,
+        "5": 56.63,
+        "6": 60.53,
+        "7": 64.63
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 175.4,
+      "sprite": 3,
+      "meanAbsoluteRGBError": 37.27,
+      "allPoseErrors": {
+        "3": 37.27,
+        "4": 50.82,
+        "5": 56.63,
+        "6": 60.53,
+        "7": 64.63
+      },
+      "cameraRegionUsable": true
+    },
+    {
+      "nominalSeconds": 175.5,
+      "sprite": 7,
+      "meanAbsoluteRGBError": 91.2,
+      "allPoseErrors": {
+        "3": 91.33,
+        "4": 95.22,
+        "5": 98.83,
+        "6": 95.22,
+        "7": 91.2
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 175.6,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 103.8,
+      "allPoseErrors": {
+        "3": 108.5,
+        "4": 106.65,
+        "5": 103.8,
+        "6": 108.27,
+        "7": 109.45
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 175.7,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 99.55,
+      "allPoseErrors": {
+        "3": 104.88,
+        "4": 103.13,
+        "5": 99.55,
+        "6": 103.56,
+        "7": 102.81
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 175.8,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 99.01,
+      "allPoseErrors": {
+        "3": 104.34,
+        "4": 102.83,
+        "5": 99.01,
+        "6": 103.02,
+        "7": 102.31
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 175.9,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 99.01,
+      "allPoseErrors": {
+        "3": 104.37,
+        "4": 102.83,
+        "5": 99.01,
+        "6": 103.05,
+        "7": 102.35
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.0,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.62,
+      "allPoseErrors": {
+        "3": 106.14,
+        "4": 104.75,
+        "5": 100.62,
+        "6": 104.62,
+        "7": 103.58
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.1,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.61,
+      "allPoseErrors": {
+        "3": 105.89,
+        "4": 104.74,
+        "5": 100.61,
+        "6": 104.67,
+        "7": 103.6
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.2,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.66,
+      "allPoseErrors": {
+        "3": 106.15,
+        "4": 104.76,
+        "5": 100.66,
+        "6": 104.64,
+        "7": 103.6
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.3,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.54,
+      "allPoseErrors": {
+        "3": 106.09,
+        "4": 104.72,
+        "5": 100.54,
+        "6": 104.53,
+        "7": 103.46
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.4,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.53,
+      "allPoseErrors": {
+        "3": 106.09,
+        "4": 104.71,
+        "5": 100.53,
+        "6": 104.52,
+        "7": 103.45
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.5,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.53,
+      "allPoseErrors": {
+        "3": 106.09,
+        "4": 104.71,
+        "5": 100.53,
+        "6": 104.52,
+        "7": 103.45
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.6,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.58,
+      "allPoseErrors": {
+        "3": 106.09,
+        "4": 104.7,
+        "5": 100.58,
+        "6": 104.52,
+        "7": 103.47
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.7,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.61,
+      "allPoseErrors": {
+        "3": 105.5,
+        "4": 104.39,
+        "5": 100.61,
+        "6": 104.15,
+        "7": 102.82
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.8,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.61,
+      "allPoseErrors": {
+        "3": 106.11,
+        "4": 104.72,
+        "5": 100.61,
+        "6": 104.52,
+        "7": 103.46
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 176.9,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.63,
+      "allPoseErrors": {
+        "3": 106.1,
+        "4": 104.72,
+        "5": 100.63,
+        "6": 104.54,
+        "7": 103.48
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.0,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.62,
+      "allPoseErrors": {
+        "3": 106.1,
+        "4": 104.72,
+        "5": 100.62,
+        "6": 104.54,
+        "7": 103.48
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.1,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.62,
+      "allPoseErrors": {
+        "3": 106.1,
+        "4": 104.72,
+        "5": 100.62,
+        "6": 104.54,
+        "7": 103.48
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.2,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.62,
+      "allPoseErrors": {
+        "3": 106.09,
+        "4": 104.72,
+        "5": 100.62,
+        "6": 104.54,
+        "7": 103.48
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.3,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.67,
+      "allPoseErrors": {
+        "3": 106.1,
+        "4": 104.74,
+        "5": 100.67,
+        "6": 104.57,
+        "7": 103.5
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.4,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.64,
+      "allPoseErrors": {
+        "3": 106.16,
+        "4": 104.78,
+        "5": 100.64,
+        "6": 104.53,
+        "7": 103.5
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.5,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.64,
+      "allPoseErrors": {
+        "3": 106.16,
+        "4": 104.78,
+        "5": 100.64,
+        "6": 104.53,
+        "7": 103.5
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.6,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.64,
+      "allPoseErrors": {
+        "3": 106.16,
+        "4": 104.78,
+        "5": 100.64,
+        "6": 104.53,
+        "7": 103.5
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.7,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.64,
+      "allPoseErrors": {
+        "3": 106.16,
+        "4": 104.78,
+        "5": 100.64,
+        "6": 104.53,
+        "7": 103.5
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.8,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.64,
+      "allPoseErrors": {
+        "3": 106.16,
+        "4": 104.78,
+        "5": 100.64,
+        "6": 104.53,
+        "7": 103.5
+      },
+      "cameraRegionUsable": false
+    },
+    {
+      "nominalSeconds": 177.9,
+      "sprite": 5,
+      "meanAbsoluteRGBError": 100.64,
+      "allPoseErrors": {
+        "3": 106.16,
+        "4": 104.78,
+        "5": 100.64,
+        "6": 104.53,
+        "7": 103.5
+      },
+      "cameraRegionUsable": false
+    }
+  ],
+  "limitations": [
+    "10fps sample is not proof of exact IRQ timing",
+    "Color mapping is not a calibrated video color comparison",
+    "Five poses cannot distinguish forward/back halves of the8-entry animation",
+    "The activity transition covers the camera region from about175.5seconds; high-error samples are excluded by an explicit error<60 heuristic, not reported as pan poses."
+  ],
+  "observedUsablePoseRuns": [
+    6,
+    5,
+    4,
+    3
+  ]
+}
