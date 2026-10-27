@@ -1,4 +1,4 @@
-# Native reimplementation 0.21 — October 27, 2026
+# Native reimplementation 0.22 — October 27, 2026
 
 The complete-game goal remains active. This turn made concrete implementation progress; it was not a wait or a blocked turn.
 
@@ -148,3 +148,6 @@ Milestone0.20 restores the room ceiling security camera (correcting the earlier 
 Milestone0.21 restores the original adventure Telly introduction, static question television, seven spinning code-card frames, capture burst and delayed reward, and rejection introduction/message wait. Presentation state and sound-start cursors survive saves without repeated rewards or frame sounds. Older in-progress drills retain their saved timing; practice remains separate. The player requests idle motion at zap completion. The local recording corroborates all seven card sprites and their order before the900→1000 award. Detailed driver masks, input buffering, palette/audio and complete-game fidelity remain open. See drill-presentation-recovery.md.
 
 All740 native checks pass. Final native-window reference drill confirmed the introduction, spinning card at900, automatic return at1000 and lightning piece in the decoder; the rejection introduction and No Code message were separately observed. This fixture verification is not a fresh ordinary full adventure win.
+
+
+Milestone0.22 restores timed bar growth, measurement needles, line-series plotting and cassette arrivals with their original waits and sound requests/stops. The question panel and input appear after the sequence. Partial native saves preserve animation/sound progress; older ready-to-answer saves retain their state.771 checks pass, including1280 endpoint comparisons and frozen actor/RNG validation. The local video corroborates plotting and needle order. Native windows separately verified plot/bar animations and answers, plus an ordinary Cartoon cassette activity159→300points and room clues. Remaining prize/TV/spinner/music/equipment effects, input buffering, opening and other documented fidelity gaps keep the complete-game goal active. See activity-timing-recovery.md.

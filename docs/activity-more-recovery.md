@@ -62,3 +62,8 @@ All320 recovered bar cases render. A generated9010/seed1/variant0 fixture has fo
 The standalone native check originally rendered960 measurement/line-chart/cassette cases. The main app checks now render all320 available generated cases for each of bar charts, measurement, line charts and cassettes, totaling1,280. They also independently assert the recorded Cartoon chart's values/point locations and the generated interview-bar values. Resource/data bounds and control ranges are checked before rendering.
 
 No full activity fidelity claim is made. Original intro timing/audio, driver masking and some palette behavior remain open. The remaining hotspots3,4,7 are now implemented in ActivityFinal.swift; see final-activities-recovery.md. Original timed effects and full campaign generation remain unfinished.
+
+
+##0.22 superseding timing recovery
+
+The bar-growth, needle movement, line-series waits and cassette arrival omissions above are historical. Native timelines now restore their recovered timing, sound requests/stops and deferred question-panel entry. Endpoint geometry and driver-mask limits remain as documented. See activity-timing-recovery.md.

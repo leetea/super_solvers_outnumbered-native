@@ -12,7 +12,7 @@ extension NativeGameView {
         let alert = NSAlert(); alert.messageText = title; alert.informativeText = NativeCalculator.notices[id]; alert.runModal()
     }
     func calculatorKey(_ key: NativeCalculator.Key) {
-        guard let challenge = session.activeChallenge, session.attempts[challenge.hotspot]?.result == .editing,
+        guard !isActivityPresenting, let challenge = session.activeChallenge, session.attempts[challenge.hotspot]?.result == .editing,
               session.attempts[challenge.hotspot]?.awaitingHintAcknowledgement != true else { return }
         var calculator = session.calculator ?? NativeCalculator()
         let event = calculator.press(key)
@@ -27,7 +27,7 @@ extension NativeGameView {
         }
     }
     func questionCharacter(_ text: String) {
-        guard let challenge = session.activeChallenge else { return }
+        guard !isActivityPresenting, let challenge = session.activeChallenge else { return }
         if let digit = Int(text), text.count == 1, (0...9).contains(digit) {
             if usesCalculator { calculatorKey(.digit(digit)) }
             else { session.attempts[challenge.hotspot]?.digit(digit) }
@@ -44,7 +44,7 @@ extension NativeGameView {
         }
     }
     func submitQuestion() {
-        guard let challenge = session.activeChallenge else { return }
+        guard !isActivityPresenting, let challenge = session.activeChallenge else { return }
         if session.attempts[challenge.hotspot]?.awaitingHintAcknowledgement == true {
             session.attempts[challenge.hotspot]?.awaitingHintAcknowledgement = false; save(); return
         }

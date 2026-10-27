@@ -243,13 +243,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         session.activeChallenge = challenge
         if session.attempts[challenge.hotspot] == nil { session.attempts[challenge.hotspot] = RoomAttempt() }
         session.clock.pause(); screen = .question; held.removeAll(); status = ""
+        do { try startActivityPresentation(challenge) } catch { present(error);return }
         save(); needsDisplay = true
-        showNewUserMessage(usesCalculator ? 10 : 9)
+        if !isActivityPresenting { showNewUserMessage(usesCalculator ? 10 : 9) }
     }
     func leaveQuestion() {
         attemptLiveWire()
         let result = session.activeChallenge.flatMap { session.attempts[$0.hotspot]?.result }
-        session.activeChallenge = nil; session.clock.resume(); screen = .world; status = ""; save()
+        session.activeChallenge = nil;session.activityPresentation = nil; session.clock.resume(); screen = .world; status = ""; save()
         if result == .correct { showNewUserMessage(7) }
         else if result == .failed { showNewUserMessage(14) }
     }
@@ -495,11 +496,12 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     func drawQuestion() throws {
         guard let challenge = session.activeChallenge else { return }
         let attempt = session.attempts[challenge.hotspot] ?? RoomAttempt()
-        canvas.fill(4,14,184,146,0)
+        canvas.fill(4,14,isActivityPresenting ? 312 : 184,146,0)
         if challenge.hotspot == 0 { try renderer.draw(challenge,on: canvas) }
         else if ActivityTemplates.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityTemplates(content: content).draw(challenge,on: canvas) }
-        else if ActivityMore.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityMore(content: content).draw(challenge,on: canvas) }
+        else if ActivityMore.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityMore(content: content).draw(challenge,on: canvas,progress: activityPresentationFrame(challenge)) }
         else { _ = try ActivityFinal(content: content).draw(challenge,state: session.activityStates?[challenge.hotspot],on: canvas) }
+        if isActivityPresenting { return }
         canvas.draw(try content.bitmap("ROOMS.GRA.017"),x: 188,y: 15)
         let small = try content.font("MOCKET.DAT.1396"), ui = try content.font("MOCKET.DAT.1393")
         canvas.text(challenge.question,font: small,x: 200,y: 32,color: 0,wrapWidth: 105,lineHeight: 9)

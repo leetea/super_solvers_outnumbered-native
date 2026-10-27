@@ -2,9 +2,9 @@
 
 Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers Outnumbered. The original DOS executable, graphics drivers and DOS/PC CPU environment are not part of the finished app. Keep original assets and the supplied reference video unchanged.
 
-## Current verified state — 0.21, October27,2026
+## Current verified state — 0.22, October27,2026
 
-740 native checks pass. The ordinary full adventure win and normal
+771 native checks pass. The ordinary full adventure win and normal
 quit/relaunch/replay were established at0.14; later fidelity milestones still
 require a fresh complete playthrough before final completion.0.15–0.18 add
 original staged doors/elevators, transition actor/RNG updates and camera rules.
@@ -17,7 +17,8 @@ published milestone. This is a development build, not the completed game.
 The0.20 camera/recharge milestone implements the room ceiling camera
 (the earlier energy-machine-eye label was incorrect) and recharge pose,
 scroll and auxiliary-actor lifecycle. The0.21 milestone restores adventure Telly introduction, code-card capture,
-rejection and persisted result waits. Next recover timed activity effects and their RNG, opening/File/sign-in,
+rejection and persisted result waits. The0.22 milestone restores timed bars, needles, line plots and cassettes.
+Next recover remaining prize/TV/spinner/music/equipment effects and their RNG, opening/File/sign-in,
 queued input, ending refinements and palette/audio calibration. Keep the
 original completion criteria below; cosmetic fidelity and complete-loop
 validation remain part of the requested end state. Detailed source-mask and

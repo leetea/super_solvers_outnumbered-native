@@ -1,0 +1,65 @@
+{
+  "milestone": "0.22",
+  "reference": "local-inputs/OutNumbered Gameplay.mkv",
+  "sha256": "6960fb011e044a141e75e734e35140ff5c6c62e8e3440bf78f96d27baf957205",
+  "method": "Visual inspection of local ffmpeg2fps contact sheets, source320x200 scaled for viewing. Times below label nominal0.5-second sample bins, not original frame PTS or IRQ times.",
+  "contacts": [
+    {
+      "file": "plot-contact.png",
+      "sha256": "55ccdabb431213b7c1aace6d6d8225adadf5166a8c76a957efc94be405c8f9df",
+      "seekSeconds": 106,
+      "durationSeconds": 8,
+      "observations": [
+        {
+          "nominalSeconds": 107,
+          "meaning": "Chart shows first red segment with two points; question area black; HUD Pause."
+        },
+        {
+          "nominalSeconds": 109,
+          "meaning": "Red series reaches fifth point before black series."
+        },
+        {
+          "nominalSeconds": 109.5,
+          "meaning": "Black second series starts at first segment."
+        },
+        {
+          "nominalSeconds": 112,
+          "meaning": "Question panel and calculator visible after both series finish."
+        }
+      ]
+    },
+    {
+      "file": "slider-contact.png",
+      "sha256": "4096ae9c7824f6050ecffb72dbc8ca74e06f75deef471a671121546721f7780e",
+      "seekSeconds": 220,
+      "durationSeconds": 7,
+      "observations": [
+        {
+          "nominalSeconds": 221,
+          "meaning": "Harpsichord graphic visible without needles; right area black, HUD Pause."
+        },
+        {
+          "nominalSeconds": 221.5,
+          "meaning": "First needle near bottom, later rises."
+        },
+        {
+          "nominalSeconds": 223,
+          "meaning": "First needle at final8; second needle begins near bottom."
+        },
+        {
+          "nominalSeconds": 225,
+          "meaning": "First and second complete; third begins near bottom."
+        },
+        {
+          "nominalSeconds": 226,
+          "meaning": "8/7/3 final readings and question panel visible."
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Qualitative sequence and screen-phase comparison; no exact IRQ/color/whole-frame equivalence.",
+    "No new sound-listening or audio-parity evidence.",
+    "Native 1280 endpoint comparisons and source deadlines are separate headless evidence."
+  ]
+}

@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.21
+## Current verified milestone: 0.22
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,14 +16,15 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**740 integration checks pass.** The app ZIP passes strict signature verification
+**771 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.21.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.22.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
 [music/message recovery](docs/music-messages-recovery.md) and
 [practice presentation](docs/practice-presentation-recovery.md) and
-[adventure Telly presentation](docs/drill-presentation-recovery.md).
+[adventure Telly presentation](docs/drill-presentation-recovery.md) and
+[timed charts/sliders/cassettes](docs/activity-timing-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
 Original opening/menu animations,

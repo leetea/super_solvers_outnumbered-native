@@ -1,0 +1,862 @@
+{
+  "milestone": "0.22",
+  "scope": "Timed bar, measurement, one/two-series plot and cassette presentation; no RNG calls in these drawing paths",
+  "derivatives": "Separate analysis wrappers only; source module bytes unchanged",
+  "measurement": {
+    "evidence_id": "ev_bf1ada1543e9aa00cbf4cd9284c9c05274acf3474adaa96ca1caa24e6a20243f",
+    "subject": {
+      "name": "template-213c-analysis.EXE",
+      "digest": {
+        "sha256": "24cabb5cf940c81c88c1cccbc9de344fd649583fe759a7b87ab0f1bf26ac5497"
+      },
+      "local_path": "./work/reimplementation/activity-timing-analysis/template-213c-analysis.EXE",
+      "format": "dos-mz",
+      "architecture": "x86"
+    },
+    "provider": {
+      "id": "rea-workflow",
+      "name": "REA composed investigation workflow",
+      "version": "1"
+    },
+    "parameters": {
+      "addresses": [
+        "0x1003e",
+        "0x100bd",
+        "0x101ee"
+      ]
+    },
+    "normalized_result": {
+      "items": [
+        {
+          "address": "0x1003e",
+          "procedure": {
+            "status": "resolved",
+            "address": "0x1003e",
+            "name": "FUN_1000_003e"
+          },
+          "status": "ok",
+          "pseudocode": "\nvoid __cdecl16near FUN_1000_003e(void)\n\n{\n  int iVar1;\n  int iVar2;\n  int iVar3;\n  int iVar4;\n  undefined2 unaff_DS;\n  undefined2 uVar5;\n  undefined2 uVar6;\n  \n  FUN_1000_002c(1,1,0x11);\n  for (iVar3 = 0; iVar3 < 3; iVar3 = iVar3 + 1) {\n    iVar1 = *(int *)(iVar3 * 2 + 0x280);\n    iVar4 = iVar1 + -0x11;\n    uVar6 = *(undefined2 *)(iVar3 * 2 + 0x286);\n    uVar5 = 0x27;\n    iVar2 = FUN_1000_002c(5,*(undefined2 *)(iVar3 * 2 + 0x286));\n    FUN_1000_002c(3,(((iVar1 + 0x25) - iVar4) / 2 + iVar4) - iVar2 / 2,uVar5,uVar6);\n  }\n  return;\n}\n\n"
+        },
+        {
+          "address": "0x100bd",
+          "procedure": {
+            "status": "resolved",
+            "address": "0x100bd",
+            "name": "FUN_1000_00bd"
+          },
+          "status": "ok",
+          "pseudocode": "\nvoid __cdecl16near FUN_1000_00bd(int param_1,int param_2)\n\n{\n  int iVar1;\n  int iVar2;\n  undefined2 unaff_DS;\n  undefined2 local_6;\n  undefined2 local_4;\n  \n  local_6 = 1;\n  if (param_2 != 0) {\n    FUN_1000_002c(6,0x1b);\n  }\n  iVar1 = *(int *)(param_1 * 2 + 0x280) / 4;\n  FUN_1000_002c(0x1a,*(undefined2 *)0x28,iVar1,0x36,iVar1 + 6,0x92,*(undefined2 *)0x2a,0x48,0);\n  FUN_1000_002c(0x1a,*(undefined2 *)0x28,iVar1,0x36,iVar1 + 6,0x92,*(undefined2 *)0x2a,0x41,0);\n  local_4 = 0x88;\n  for (iVar2 = 0; iVar2 <= param_2 * 9; iVar2 = iVar2 + 1) {\n    FUN_1000_002c(7,(int)(0x5a / (long)local_6));\n    FUN_1000_002c(0x1a,*(undefined2 *)0x2a,0x41,0,0x47,0x5c,*(undefined2 *)0x2a,0x48,0);\n    FUN_1000_002c(2,*(undefined2 *)0x2a,0x2722,0x48,local_4 + -0x36,0x40);\n    FUN_1000_002c(0x1a,*(undefined2 *)0x2a,0x48,0,0x4e,0x5c,*(undefined2 *)0x28,iVar1,0x36);\n    local_4 = local_4 + -1;\n    local_6 = local_6 + 1;\n  }\n  FUN_1000_002c(8);\n  return;\n}\n\n"
+        },
+        {
+          "address": "0x101ee",
+          "procedure": {
+            "status": "resolved",
+            "address": "0x101ee",
+            "name": "FUN_1000_01ee"
+          },
+          "status": "ok",
+          "pseudocode": "\nvoid __cdecl16near FUN_1000_01ee(void)\n\n{\n  undefined4 uVar1;\n  int iVar2;\n  int iVar3;\n  undefined2 uVar4;\n  undefined2 uVar5;\n  undefined2 unaff_DS;\n  \n  uVar1 = *(undefined4 *)0x24;\n  FUN_1000_002c(0);\n  FUN_1000_002c(1,1,0x11);\n  uVar4 = (undefined2)((ulong)*(undefined4 *)0x24 >> 0x10);\n  iVar2 = (int)*(undefined4 *)0x24;\n  uVar5 = (undefined2)((ulong)*(undefined4 *)0x24 >> 0x10);\n  iVar3 = (int)*(undefined4 *)0x24;\n  iVar2 = FUN_1000_002c(5,*(undefined2 *)(iVar3 + 0x24),*(undefined2 *)(iVar3 + 0x26),0x16,\n                        *(undefined2 *)(iVar2 + 0x24),*(undefined2 *)(iVar2 + 0x26));\n  FUN_1000_002c(3,99 - iVar2 / 2);\n  FUN_1000_003e();\n  for (iVar2 = 0; iVar2 < 3; iVar2 = iVar2 + 1) {\n    FUN_1000_00bd(iVar2,*(undefined2 *)*(undefined4 *)((int)uVar1 + (iVar2 + 0x18) * 4));\n  }\n  return;\n}\n\n"
+        }
+      ],
+      "total": 3,
+      "succeeded": 3,
+      "failed": 0
+    },
+    "limitations": [
+      "Derived by an REA composed workflow.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "DOS MZ uses 16-bit x86 real mode with the Ghidra load segment 0x1000. Returned addresses are linear byte coordinates; they do not identify a unique segment:offset alias.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+      "External functions and local thunks are distinct; procedure metadata identifies both and preserves a thunk target when Ghidra resolves one.",
+      "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+      "Static DOS analysis does not emulate BIOS, DOS interrupts, device ports, or self-modifying unpacking code. Packed targets require a separately identified unpacked artifact for original-program analysis; appended overlays are not the initialized load module.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "macOS sessions require a matching executable Ghidra native decompiler; REA checks for it but does not build native components or change Gatekeeper quarantine state."
+    ]
+  },
+  "cassette": {
+    "evidence_id": "ev_551c042253e193a5d064c1e1918f7e0c80db5c99fd12b439fdbca9863f7e6754",
+    "subject": {
+      "name": "template-2146-analysis.EXE",
+      "digest": {
+        "sha256": "64ba7bd6eaf06c6820fc2464902b10973fd123c3bb40d74dcec05a4b0b44739b"
+      },
+      "local_path": "./work/reimplementation/activity-timing-analysis/template-2146-analysis.EXE",
+      "format": "dos-mz",
+      "architecture": "x86"
+    },
+    "provider": {
+      "id": "rea-workflow",
+      "name": "REA composed investigation workflow",
+      "version": "1"
+    },
+    "parameters": {
+      "addresses": [
+        "0x10000",
+        "0x1003e"
+      ]
+    },
+    "normalized_result": {
+      "items": [
+        {
+          "address": "0x10000",
+          "procedure": {
+            "status": "resolved",
+            "address": "0x10000",
+            "name": "entry"
+          },
+          "status": "ok",
+          "pseudocode": "\n/* WARNING: This function may have set the stack pointer */\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid __cdecl16far entry(void)\n\n{\n  undefined2 unaff_BP;\n  undefined2 unaff_DS;\n  \n  DAT_1000_0026 = 0xc88c;\n  DAT_1000_0024 = 0x1eec;\n  DAT_1000_0028 = 0xd88e;\n  DAT_1000_002a = 0x46c4;\n  _DAT_1000_fff8 = 0x21;\n  _DAT_1000_fffa = unaff_DS;\n  _DAT_1000_fffc = unaff_BP;\n  FUN_1000_003e();\n  return;\n}\n\n"
+        },
+        {
+          "address": "0x1003e",
+          "procedure": {
+            "status": "resolved",
+            "address": "0x1003e",
+            "name": "FUN_1000_003e"
+          },
+          "status": "ok",
+          "pseudocode": "\nvoid __cdecl16near FUN_1000_003e(void)\n\n{\n  int iVar1;\n  int iVar2;\n  int iVar3;\n  undefined2 uVar4;\n  undefined2 unaff_DS;\n  undefined1 local_1c [20];\n  int local_8;\n  int local_6;\n  int local_4;\n  \n  local_4 = 0x28;\n  *(undefined1 *)0x15a = 0x44;\n  FUN_1000_002c(0);\n  FUN_1000_002c(1,4,0x11);\n  local_6 = 0x6a;\n  for (iVar2 = 0; iVar1 = local_6, iVar2 < 4; iVar2 = iVar2 + 1) {\n    iVar3 = local_6 + 4;\n    FUN_1000_002c(2,*(undefined2 *)0x28,0x271f,0xe,local_6,0x40);\n    FUN_1000_002c(3,0x53,iVar1 + 5,0x15a);\n    FUN_1000_002c(4,*(undefined2 *)*(undefined4 *)((int)*(undefined4 *)0x24 + (3 - iVar2) * 4),\n                  local_1c);\n    local_8 = FUN_1000_002c(5,local_1c);\n    FUN_1000_002c(3,0x76 - local_8,iVar3,local_1c);\n    uVar4 = (undefined2)((ulong)*(undefined4 *)0x24 >> 0x10);\n    iVar1 = (int)*(undefined4 *)0x24;\n    FUN_1000_002c(3,0x82,iVar3,*(undefined2 *)(iVar1 + 0x10),*(undefined2 *)(iVar1 + 0x12));\n    FUN_1000_002c(6,0x20);\n    FUN_1000_002c(7,local_4 + 0x14);\n    FUN_1000_002c(8);\n    local_4 = local_4 + -10;\n    *(char *)0x15a = *(char *)0x15a + -1;\n    local_6 = local_6 + -0x14;\n  }\n  return;\n}\n\n"
+        }
+      ],
+      "total": 2,
+      "succeeded": 2,
+      "failed": 0
+    },
+    "limitations": [
+      "Derived by an REA composed workflow.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "DOS MZ uses 16-bit x86 real mode with the Ghidra load segment 0x1000. Returned addresses are linear byte coordinates; they do not identify a unique segment:offset alias.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+      "External functions and local thunks are distinct; procedure metadata identifies both and preserves a thunk target when Ghidra resolves one.",
+      "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+      "Static DOS analysis does not emulate BIOS, DOS interrupts, device ports, or self-modifying unpacking code. Packed targets require a separately identified unpacked artifact for original-program analysis; appended overlays are not the initialized load module.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "macOS sessions require a matching executable Ghidra native decompiler; REA checks for it but does not build native components or change Gatekeeper quarantine state."
+    ]
+  },
+  "measurementInstructions": {
+    "evidence_id": "ev_987e0ee515befc49c47fda7cc96ab0c2f720c1584fe2a812c51c6dd4ec6ca334",
+    "subject": {
+      "name": "template-213c-analysis.EXE",
+      "digest": {
+        "sha256": "24cabb5cf940c81c88c1cccbc9de344fd649583fe759a7b87ab0f1bf26ac5497"
+      },
+      "local_path": "./work/reimplementation/activity-timing-analysis/template-213c-analysis.EXE",
+      "format": "dos-mz",
+      "architecture": "x86"
+    },
+    "provider": {
+      "id": "ghidra",
+      "name": "Ghidra",
+      "version": "12.1.4"
+    },
+    "parameters": {
+      "procedure": "0x100bd"
+    },
+    "normalized_result": {
+      "procedure": {
+        "address": "0x100bd",
+        "name": "FUN_1000_00bd",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x100bd",
+              "end": "0x101ed"
+            }
+          ],
+          "total_bytes": 305,
+          "span_bytes": 305,
+          "non_contiguous": false,
+          "contains_entry": true
+        }
+      },
+      "instructions": [
+        "0x100bd: PUSH BP",
+        "0x100be: MOV BP, SP",
+        "0x100c0: SUB SP, 0x4",
+        "0x100c3: PUSH SI",
+        "0x100c4: PUSH DI",
+        "0x100c5: MOV word ptr [BP + -0x4], 0x1",
+        "0x100ca: CMP word ptr [BP + 0x6], 0x0",
+        "0x100ce: JZ 0x1000:00dd",
+        "0x100d0: MOV AX, 0x1b",
+        "0x100d3: PUSH AX",
+        "0x100d4: MOV AX, 0x6",
+        "0x100d7: PUSH AX",
+        "0x100d8: CALL 0x1000:002c",
+        "0x100db: POP CX",
+        "0x100dc: POP CX",
+        "0x100dd: MOV BX, word ptr [BP + 0x4]",
+        "0x100e0: SHL BX, 0x1",
+        "0x100e2: MOV AX, word ptr [BX + 0x280]",
+        "0x100e6: MOV BX, 0x4",
+        "0x100e9: CWD",
+        "0x100ea: IDIV BX",
+        "0x100ec: MOV SI, AX",
+        "0x100ee: XOR AX, AX",
+        "0x100f0: PUSH AX",
+        "0x100f1: MOV AX, 0x48",
+        "0x100f4: PUSH AX",
+        "0x100f5: PUSH word ptr [0x2a]",
+        "0x100f9: MOV AX, 0x92",
+        "0x100fc: PUSH AX",
+        "0x100fd: MOV AX, SI",
+        "0x100ff: ADD AX, 0x6",
+        "0x10102: PUSH AX",
+        "0x10103: MOV AX, 0x36",
+        "0x10106: PUSH AX",
+        "0x10107: PUSH SI",
+        "0x10108: PUSH word ptr [0x28]",
+        "0x1010c: MOV AX, 0x1a",
+        "0x1010f: PUSH AX",
+        "0x10110: CALL 0x1000:002c",
+        "0x10113: ADD SP, 0x12",
+        "0x10116: XOR AX, AX",
+        "0x10118: PUSH AX",
+        "0x10119: MOV AX, 0x41",
+        "0x1011c: PUSH AX",
+        "0x1011d: PUSH word ptr [0x2a]",
+        "0x10121: MOV AX, 0x92",
+        "0x10124: PUSH AX",
+        "0x10125: MOV AX, SI",
+        "0x10127: ADD AX, 0x6",
+        "0x1012a: PUSH AX",
+        "0x1012b: MOV AX, 0x36",
+        "0x1012e: PUSH AX",
+        "0x1012f: PUSH SI",
+        "0x10130: PUSH word ptr [0x28]",
+        "0x10134: MOV AX, 0x1a",
+        "0x10137: PUSH AX",
+        "0x10138: CALL 0x1000:002c",
+        "0x1013b: ADD SP, 0x12",
+        "0x1013e: MOV word ptr [BP + -0x2], 0x88",
+        "0x10143: XOR DI, DI",
+        "0x10145: JMP 0x1000:01d1",
+        "0x10148: MOV AX, 0x5a",
+        "0x1014b: MOV BX, word ptr [BP + -0x4]",
+        "0x1014e: INC word ptr [BP + -0x4]",
+        "0x10151: CWD",
+        "0x10152: IDIV BX",
+        "0x10154: PUSH AX",
+        "0x10155: MOV AX, 0x7",
+        "0x10158: PUSH AX",
+        "0x10159: CALL 0x1000:002c",
+        "0x1015c: POP CX",
+        "0x1015d: POP CX",
+        "0x1015e: XOR AX, AX",
+        "0x10160: PUSH AX",
+        "0x10161: MOV AX, 0x48",
+        "0x10164: PUSH AX",
+        "0x10165: PUSH word ptr [0x2a]",
+        "0x10169: MOV AX, 0x5c",
+        "0x1016c: PUSH AX",
+        "0x1016d: MOV AX, 0x47",
+        "0x10170: PUSH AX",
+        "0x10171: XOR AX, AX",
+        "0x10173: PUSH AX",
+        "0x10174: MOV AX, 0x41",
+        "0x10177: PUSH AX",
+        "0x10178: PUSH word ptr [0x2a]",
+        "0x1017c: MOV AX, 0x1a",
+        "0x1017f: PUSH AX",
+        "0x10180: CALL 0x1000:002c",
+        "0x10183: ADD SP, 0x12",
+        "0x10186: MOV AX, 0x40",
+        "0x10189: PUSH AX",
+        "0x1018a: MOV AX, word ptr [BP + -0x2]",
+        "0x1018d: ADD AX, 0xffca",
+        "0x10190: PUSH AX",
+        "0x10191: MOV AX, 0x48",
+        "0x10194: PUSH AX",
+        "0x10195: MOV AX, 0x2722",
+        "0x10198: PUSH AX",
+        "0x10199: PUSH word ptr [0x2a]",
+        "0x1019d: MOV AX, 0x2",
+        "0x101a0: PUSH AX",
+        "0x101a1: CALL 0x1000:002c",
+        "0x101a4: ADD SP, 0xc",
+        "0x101a7: MOV AX, 0x36",
+        "0x101aa: PUSH AX",
+        "0x101ab: PUSH SI",
+        "0x101ac: PUSH word ptr [0x28]",
+        "0x101b0: MOV AX, 0x5c",
+        "0x101b3: PUSH AX",
+        "0x101b4: MOV AX, 0x4e",
+        "0x101b7: PUSH AX",
+        "0x101b8: XOR AX, AX",
+        "0x101ba: PUSH AX",
+        "0x101bb: MOV AX, 0x48",
+        "0x101be: PUSH AX",
+        "0x101bf: PUSH word ptr [0x2a]",
+        "0x101c3: MOV AX, 0x1a",
+        "0x101c6: PUSH AX",
+        "0x101c7: CALL 0x1000:002c",
+        "0x101ca: ADD SP, 0x12",
+        "0x101cd: DEC word ptr [BP + -0x2]",
+        "0x101d0: INC DI",
+        "0x101d1: MOV AX, word ptr [BP + 0x6]",
+        "0x101d4: MOV DX, 0x9",
+        "0x101d7: MUL DX",
+        "0x101d9: CMP AX, DI",
+        "0x101db: JL 0x1000:01e0",
+        "0x101dd: JMP 0x1000:0148",
+        "0x101e0: MOV AX, 0x8",
+        "0x101e3: PUSH AX",
+        "0x101e4: CALL 0x1000:002c",
+        "0x101e7: POP CX",
+        "0x101e8: POP DI",
+        "0x101e9: POP SI",
+        "0x101ea: MOV SP, BP",
+        "0x101ec: POP BP",
+        "0x101ed: RET"
+      ],
+      "limitations": [
+        "Instruction text and ordering are Ghidra-specific representations.",
+        "The fast path does not invoke the decompiler or scan whole-program names and strings."
+      ]
+    },
+    "limitations": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "This fast path reads only the requested function and does not invoke the decompiler or whole-program string/name inventories.",
+      "Instruction text is Ghidra-specific and does not claim textual equivalence with Hopper output.",
+      "macOS sessions require a matching executable Ghidra native decompiler; REA checks for it but does not build native components or change Gatekeeper quarantine state.",
+      "DOS MZ uses 16-bit x86 real mode with the Ghidra load segment 0x1000. Returned addresses are linear byte coordinates; they do not identify a unique segment:offset alias.",
+      "Static DOS analysis does not emulate BIOS, DOS interrupts, device ports, or self-modifying unpacking code. Packed targets require a separately identified unpacked artifact for original-program analysis; appended overlays are not the initialized load module."
+    ]
+  },
+  "cassetteInstructions": {
+    "evidence_id": "ev_475e398a2b57c3b2afb6d8c70ea1b9eaa54dac0e09e5a6aac40ac3165a16efef",
+    "subject": {
+      "name": "template-2146-analysis.EXE",
+      "digest": {
+        "sha256": "64ba7bd6eaf06c6820fc2464902b10973fd123c3bb40d74dcec05a4b0b44739b"
+      },
+      "local_path": "./work/reimplementation/activity-timing-analysis/template-2146-analysis.EXE",
+      "format": "dos-mz",
+      "architecture": "x86"
+    },
+    "provider": {
+      "id": "ghidra",
+      "name": "Ghidra",
+      "version": "12.1.4"
+    },
+    "parameters": {
+      "procedure": "0x1003e"
+    },
+    "normalized_result": {
+      "procedure": {
+        "address": "0x1003e",
+        "name": "FUN_1000_003e",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x1003e",
+              "end": "0x10158"
+            }
+          ],
+          "total_bytes": 283,
+          "span_bytes": 283,
+          "non_contiguous": false,
+          "contains_entry": true
+        }
+      },
+      "instructions": [
+        "0x1003e: PUSH BP",
+        "0x1003f: MOV BP, SP",
+        "0x10041: SUB SP, 0x1a",
+        "0x10044: PUSH SI",
+        "0x10045: PUSH DI",
+        "0x10046: MOV word ptr [BP + -0x2], 0x28",
+        "0x1004b: MOV byte ptr [0x15a], 0x44",
+        "0x10050: XOR AX, AX",
+        "0x10052: PUSH AX",
+        "0x10053: CALL 0x1000:002c",
+        "0x10056: POP CX",
+        "0x10057: MOV AX, 0x11",
+        "0x1005a: PUSH AX",
+        "0x1005b: MOV AX, 0x4",
+        "0x1005e: PUSH AX",
+        "0x1005f: MOV AX, 0x1",
+        "0x10062: PUSH AX",
+        "0x10063: CALL 0x1000:002c",
+        "0x10066: ADD SP, 0x6",
+        "0x10069: MOV word ptr [BP + -0x4], 0x6a",
+        "0x1006e: XOR SI, SI",
+        "0x10070: JMP 0x1000:014b",
+        "0x10073: MOV DI, word ptr [BP + -0x4]",
+        "0x10076: ADD DI, 0x4",
+        "0x10079: MOV AX, 0x40",
+        "0x1007c: PUSH AX",
+        "0x1007d: PUSH word ptr [BP + -0x4]",
+        "0x10080: MOV AX, 0xe",
+        "0x10083: PUSH AX",
+        "0x10084: MOV AX, 0x271f",
+        "0x10087: PUSH AX",
+        "0x10088: PUSH word ptr [0x28]",
+        "0x1008c: MOV AX, 0x2",
+        "0x1008f: PUSH AX",
+        "0x10090: CALL 0x1000:002c",
+        "0x10093: ADD SP, 0xc",
+        "0x10096: PUSH DS",
+        "0x10097: MOV AX, 0x15a",
+        "0x1009a: PUSH AX",
+        "0x1009b: MOV AX, DI",
+        "0x1009d: INC AX",
+        "0x1009e: PUSH AX",
+        "0x1009f: MOV AX, 0x53",
+        "0x100a2: PUSH AX",
+        "0x100a3: MOV AX, 0x3",
+        "0x100a6: PUSH AX",
+        "0x100a7: CALL 0x1000:002c",
+        "0x100aa: ADD SP, 0xa",
+        "0x100ad: MOV AX, 0xa",
+        "0x100b0: PUSH AX",
+        "0x100b1: PUSH SS",
+        "0x100b2: LEA AX, [BP + -0x1a]",
+        "0x100b5: PUSH AX",
+        "0x100b6: MOV AX, 0x3",
+        "0x100b9: SUB AX, SI",
+        "0x100bb: SHL AX, 0x1",
+        "0x100bd: SHL AX, 0x1",
+        "0x100bf: LES BX, [0x24]",
+        "0x100c3: ADD BX, AX",
+        "0x100c5: LES BX, ES:[BX]",
+        "0x100c8: PUSH word ptr ES:[BX]",
+        "0x100cb: MOV AX, 0x4",
+        "0x100ce: PUSH AX",
+        "0x100cf: CALL 0x1000:002c",
+        "0x100d2: ADD SP, 0xa",
+        "0x100d5: PUSH SS",
+        "0x100d6: LEA AX, [BP + -0x1a]",
+        "0x100d9: PUSH AX",
+        "0x100da: MOV AX, 0x5",
+        "0x100dd: PUSH AX",
+        "0x100de: CALL 0x1000:002c",
+        "0x100e1: ADD SP, 0x6",
+        "0x100e4: MOV word ptr [BP + -0x6], AX",
+        "0x100e7: PUSH SS",
+        "0x100e8: LEA AX, [BP + -0x1a]",
+        "0x100eb: PUSH AX",
+        "0x100ec: PUSH DI",
+        "0x100ed: MOV AX, 0x76",
+        "0x100f0: SUB AX, word ptr [BP + -0x6]",
+        "0x100f3: PUSH AX",
+        "0x100f4: MOV AX, 0x3",
+        "0x100f7: PUSH AX",
+        "0x100f8: CALL 0x1000:002c",
+        "0x100fb: ADD SP, 0xa",
+        "0x100fe: LES BX, [0x24]",
+        "0x10102: PUSH word ptr ES:[BX + 0x12]",
+        "0x10106: PUSH word ptr ES:[BX + 0x10]",
+        "0x1010a: PUSH DI",
+        "0x1010b: MOV AX, 0x82",
+        "0x1010e: PUSH AX",
+        "0x1010f: MOV AX, 0x3",
+        "0x10112: PUSH AX",
+        "0x10113: CALL 0x1000:002c",
+        "0x10116: ADD SP, 0xa",
+        "0x10119: MOV AX, 0x20",
+        "0x1011c: PUSH AX",
+        "0x1011d: MOV AX, 0x6",
+        "0x10120: PUSH AX",
+        "0x10121: CALL 0x1000:002c",
+        "0x10124: POP CX",
+        "0x10125: POP CX",
+        "0x10126: MOV AX, word ptr [BP + -0x2]",
+        "0x10129: ADD AX, 0x14",
+        "0x1012c: PUSH AX",
+        "0x1012d: MOV AX, 0x7",
+        "0x10130: PUSH AX",
+        "0x10131: CALL 0x1000:002c",
+        "0x10134: POP CX",
+        "0x10135: POP CX",
+        "0x10136: MOV AX, 0x8",
+        "0x10139: PUSH AX",
+        "0x1013a: CALL 0x1000:002c",
+        "0x1013d: POP CX",
+        "0x1013e: SUB word ptr [BP + -0x2], 0xa",
+        "0x10142: DEC byte ptr [0x15a]",
+        "0x10146: SUB word ptr [BP + -0x4], 0x14",
+        "0x1014a: INC SI",
+        "0x1014b: CMP SI, 0x4",
+        "0x1014e: JGE 0x1000:0153",
+        "0x10150: JMP 0x1000:0073",
+        "0x10153: POP DI",
+        "0x10154: POP SI",
+        "0x10155: MOV SP, BP",
+        "0x10157: POP BP",
+        "0x10158: RET"
+      ],
+      "limitations": [
+        "Instruction text and ordering are Ghidra-specific representations.",
+        "The fast path does not invoke the decompiler or scan whole-program names and strings."
+      ]
+    },
+    "limitations": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "This fast path reads only the requested function and does not invoke the decompiler or whole-program string/name inventories.",
+      "Instruction text is Ghidra-specific and does not claim textual equivalence with Hopper output.",
+      "macOS sessions require a matching executable Ghidra native decompiler; REA checks for it but does not build native components or change Gatekeeper quarantine state.",
+      "DOS MZ uses 16-bit x86 real mode with the Ghidra load segment 0x1000. Returned addresses are linear byte coordinates; they do not identify a unique segment:offset alias.",
+      "Static DOS analysis does not emulate BIOS, DOS interrupts, device ports, or self-modifying unpacking code. Packed targets require a separately identified unpacked artifact for original-program analysis; appended overlays are not the initialized load module."
+    ]
+  },
+  "delayInstructions": {
+    "evidence_id": "ev_d41049ce450062ea46e82da479235bd31c7b6bb27d7589da3e43cffb0be71469",
+    "subject": {
+      "name": "SSO-unpacked-analysis.EXE",
+      "digest": {
+        "sha256": "ff2e0d28e0a6aa8bcf86db1ea8a2980d2ccb1e10dd793bc15ab1bb929697b464"
+      },
+      "local_path": "./work/SSO-unpacked-analysis.EXE",
+      "format": "dos-mz",
+      "architecture": "x86"
+    },
+    "provider": {
+      "id": "ghidra",
+      "name": "Ghidra",
+      "version": "12.1.4"
+    },
+    "parameters": {
+      "procedure": "0x1cabb"
+    },
+    "normalized_result": {
+      "procedure": {
+        "address": "0x1cabb",
+        "name": "FUN_1ca1_00ab",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x1cabb",
+              "end": "0x1caeb"
+            }
+          ],
+          "total_bytes": 49,
+          "span_bytes": 49,
+          "non_contiguous": false,
+          "contains_entry": true
+        }
+      },
+      "instructions": [
+        "0x1cabb: PUSH BP",
+        "0x1cabc: MOV BP, SP",
+        "0x1cabe: MOV DX, word ptr [0x5b80]",
+        "0x1cac2: MOV AX, [0x5b7e]",
+        "0x1cac5: MOV word ptr [0x7376], DX",
+        "0x1cac9: MOV [0x7374], AX",
+        "0x1cacc: MOV DX, word ptr [0x5b80]",
+        "0x1cad0: MOV AX, [0x5b7e]",
+        "0x1cad3: SUB AX, word ptr [0x7374]",
+        "0x1cad7: SBB DX, word ptr [0x7376]",
+        "0x1cadb: MOV BX, word ptr [BP + 0x6]",
+        "0x1cade: XOR CX, CX",
+        "0x1cae0: CMP DX, CX",
+        "0x1cae2: JC 0x1000:cacc",
+        "0x1cae4: JNZ 0x1000:caea",
+        "0x1cae6: CMP AX, BX",
+        "0x1cae8: JC 0x1000:cacc",
+        "0x1caea: POP BP",
+        "0x1caeb: RETF"
+      ],
+      "limitations": [
+        "Instruction text and ordering are Ghidra-specific representations.",
+        "The fast path does not invoke the decompiler or scan whole-program names and strings."
+      ]
+    },
+    "limitations": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "This fast path reads only the requested function and does not invoke the decompiler or whole-program string/name inventories.",
+      "Instruction text is Ghidra-specific and does not claim textual equivalence with Hopper output.",
+      "macOS sessions require a matching executable Ghidra native decompiler; REA checks for it but does not build native components or change Gatekeeper quarantine state.",
+      "DOS MZ uses 16-bit x86 real mode with the Ghidra load segment 0x1000. Returned addresses are linear byte coordinates; they do not identify a unique segment:offset alias.",
+      "Static DOS analysis does not emulate BIOS, DOS interrupts, device ports, or self-modifying unpacking code. Packed targets require a separately identified unpacked artifact for original-program analysis; appended overlays are not the initialized load module."
+    ]
+  },
+  "activityCallerInstructions": {
+    "evidence_id": "ev_547700a5e6f349d19b970072fda2ab9bf4aa18fd350b01f090015d587e2ab488",
+    "subject": {
+      "name": "SSO-unpacked-analysis.EXE",
+      "digest": {
+        "sha256": "ff2e0d28e0a6aa8bcf86db1ea8a2980d2ccb1e10dd793bc15ab1bb929697b464"
+      },
+      "local_path": "./work/SSO-unpacked-analysis.EXE",
+      "format": "dos-mz",
+      "architecture": "x86"
+    },
+    "provider": {
+      "id": "ghidra",
+      "name": "Ghidra",
+      "version": "12.1.4"
+    },
+    "parameters": {
+      "procedure": "0x1d102"
+    },
+    "normalized_result": {
+      "procedure": {
+        "address": "0x1d102",
+        "name": "FUN_1d06_00a2",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x1d102",
+              "end": "0x1d266"
+            }
+          ],
+          "total_bytes": 357,
+          "span_bytes": 357,
+          "non_contiguous": false,
+          "contains_entry": true
+        }
+      },
+      "instructions": [
+        "0x1d102: PUSH BP",
+        "0x1d103: MOV BP, SP",
+        "0x1d105: SUB SP, 0x2",
+        "0x1d108: PUSH SI",
+        "0x1d109: XOR AX, AX",
+        "0x1d10b: PUSH AX",
+        "0x1d10c: CALLF 0x1000:7d1a",
+        "0x1d111: POP CX",
+        "0x1d112: MOV word ptr [0x4c6e], 0x1",
+        "0x1d118: MOV BX, word ptr [0x784a]",
+        "0x1d11c: MOV AL, byte ptr [BX + 0x5b9d]",
+        "0x1d120: CBW",
+        "0x1d121: MOV [0x784e], AX",
+        "0x1d124: SHL BX, 0x1",
+        "0x1d126: PUSH word ptr [BX + 0x7833]",
+        "0x1d12a: CALLF 0x2000:36a2",
+        "0x1d12f: POP CX",
+        "0x1d130: CALLF 0x1000:d36f",
+        "0x1d135: CALLF 0x1000:d9e4",
+        "0x1d13a: CALLF 0x1000:d45c",
+        "0x1d13f: PUSH word ptr [0x6b24]",
+        "0x1d143: CALLF 0x1000:3503",
+        "0x1d148: POP CX",
+        "0x1d149: PUSH word ptr [0x6b24]",
+        "0x1d14d: CALLF 0x1000:3eda",
+        "0x1d152: POP CX",
+        "0x1d153: CALLF 0x2000:0511",
+        "0x1d158: CALLF 0x1000:e7d8",
+        "0x1d15d: MOV word ptr [0x78f8], 0x0",
+        "0x1d163: CALL 0x1000:d06a",
+        "0x1d166: CALLF 0x1000:e5d7",
+        "0x1d16b: CALLF 0x1000:e98b",
+        "0x1d170: MOV AX, 0x84",
+        "0x1d173: PUSH AX",
+        "0x1d174: CALLF 0x2000:0567",
+        "0x1d179: POP CX",
+        "0x1d17a: CMP word ptr [0x5bed], 0x0",
+        "0x1d17f: JZ 0x1000:d186",
+        "0x1d181: CALLF 0x1000:7e43",
+        "0x1d186: LES BX, [0x737f]",
+        "0x1d18a: MOV AX, word ptr ES:[BX]",
+        "0x1d18d: MOV word ptr [BP + -0x2], AX",
+        "0x1d190: MOV [0x7847], AX",
+        "0x1d193: CALLF 0x1000:bd4a",
+        "0x1d198: PUSH word ptr [BP + -0x2]",
+        "0x1d19b: CALLF 0x1000:ec32",
+        "0x1d1a0: POP CX",
+        "0x1d1a1: MOV SI, AX",
+        "0x1d1a3: MOV AX, SI",
+        "0x1d1a5: OR AX, AX",
+        "0x1d1a7: JNZ 0x1000:d1ac",
+        "0x1d1a9: JMP 0x1000:d25c",
+        "0x1d1ac: CALLF 0x2000:0511",
+        "0x1d1b1: CMP SI, 0x1",
+        "0x1d1b4: JNZ 0x1000:d21a",
+        "0x1d1b6: MOV BX, word ptr [0x784a]",
+        "0x1d1ba: MOV byte ptr [BX + 0x5b93], 0x2",
+        "0x1d1bf: MOV AX, [0x5b86]",
+        "0x1d1c2: MOV DX, 0x1a",
+        "0x1d1c5: MUL DX",
+        "0x1d1c7: MOV BX, AX",
+        "0x1d1c9: ADD BX, 0x11c1",
+        "0x1d1cd: PUSH DS",
+        "0x1d1ce: POP ES",
+        "0x1d1cf: MOV AX, word ptr ES:[BX]",
+        "0x1d1d2: PUSH AX",
+        "0x1d1d3: MOV AX, [0x5b86]",
+        "0x1d1d6: MOV DX, 0x1a",
+        "0x1d1d9: MUL DX",
+        "0x1d1db: MOV BX, AX",
+        "0x1d1dd: ADD BX, 0x11c1",
+        "0x1d1e1: PUSH DS",
+        "0x1d1e2: POP ES",
+        "0x1d1e3: MOV AX, word ptr ES:[BX + 0x2]",
+        "0x1d1e7: MOV BX, word ptr [0x784a]",
+        "0x1d1eb: PUSH AX",
+        "0x1d1ec: MOV AL, byte ptr [BX + 0x5bb1]",
+        "0x1d1f0: CBW",
+        "0x1d1f1: MOV DX, AX",
+        "0x1d1f3: POP AX",
+        "0x1d1f4: MUL DX",
+        "0x1d1f6: POP DX",
+        "0x1d1f7: SUB DX, AX",
+        "0x1d1f9: PUSH DX",
+        "0x1d1fa: CALLF 0x1000:2e27",
+        "0x1d1ff: POP CX",
+        "0x1d200: MOV AX, [0x5b86]",
+        "0x1d203: MOV DX, 0x1a",
+        "0x1d206: MUL DX",
+        "0x1d208: MOV BX, AX",
+        "0x1d20a: ADD BX, 0x11c1",
+        "0x1d20e: PUSH DS",
+        "0x1d20f: POP ES",
+        "0x1d210: MOV AL, byte ptr ES:[BX + 0x18]",
+        "0x1d214: ADD byte ptr [0x5b92], AL",
+        "0x1d218: JMP 0x1000:d223",
+        "0x1d21a: MOV BX, word ptr [0x784a]",
+        "0x1d21e: MOV byte ptr [BX + 0x5b93], 0x3",
+        "0x1d223: MOV AX, [0x784a]",
+        "0x1d226: MOV BX, 0x3",
+        "0x1d229: CWD",
+        "0x1d22a: IDIV BX",
+        "0x1d22c: MOV BX, AX",
+        "0x1d22e: SHL BX, 0x1",
+        "0x1d230: INC word ptr [BX + 0x7850]",
+        "0x1d234: MOV AX, word ptr [BX + 0x7850]",
+        "0x1d238: CMP AX, 0x3",
+        "0x1d23b: JNZ 0x1000:d242",
+        "0x1d23d: MOV AX, 0x1",
+        "0x1d240: JMP 0x1000:d244",
+        "0x1d242: XOR AX, AX",
+        "0x1d244: PUSH AX",
+        "0x1d245: CALLF 0x1000:9125",
+        "0x1d24a: POP CX",
+        "0x1d24b: PUSH SI",
+        "0x1d24c: CALLF 0x1000:e591",
+        "0x1d251: POP CX",
+        "0x1d252: CALLF 0x1000:bd7d",
+        "0x1d257: CMP AX, 0xd",
+        "0x1d25a: JNZ 0x1000:d252",
+        "0x1d25c: MOV word ptr [0x4c6e], 0x0",
+        "0x1d262: POP SI",
+        "0x1d263: MOV SP, BP",
+        "0x1d265: POP BP",
+        "0x1d266: RETF"
+      ],
+      "limitations": [
+        "Instruction text and ordering are Ghidra-specific representations.",
+        "The fast path does not invoke the decompiler or scan whole-program names and strings."
+      ]
+    },
+    "limitations": [
+      "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "This fast path reads only the requested function and does not invoke the decompiler or whole-program string/name inventories.",
+      "Instruction text is Ghidra-specific and does not claim textual equivalence with Hopper output.",
+      "macOS sessions require a matching executable Ghidra native decompiler; REA checks for it but does not build native components or change Gatekeeper quarantine state.",
+      "DOS MZ uses 16-bit x86 real mode with the Ghidra load segment 0x1000. Returned addresses are linear byte coordinates; they do not identify a unique segment:offset alias.",
+      "Static DOS analysis does not emulate BIOS, DOS interrupts, device ports, or self-modifying unpacking code. Packed targets require a separately identified unpacked artifact for original-program analysis; appended overlays are not the initialized load module."
+    ]
+  },
+  "previousRecoveredModuleInstructions": [
+    {
+      "module": 8502,
+      "sourceSHA256": "36bded14f32ab9a04839568970a70cf40adcb8e1575a54c5329848b98ad26c68",
+      "loadedMapping": "module offset+0x10000",
+      "assembly": [
+        "; Original module offset0x00bf; ev_c2c282f57a0395ca046f350b7ec36abcb697839cdc72c355a248d58d0f2b3e11\n0x00bf: PUSH BP\n0x00c0: MOV BP, SP\n0x00c2: PUSH SI\n0x00c3: XOR SI, SI\n0x00c5: JMP 0x1000:0107\n0x00c7: PUSH SI\n0x00c8: CALL 0x1000:0119\n0x00cb: POP CX\n0x00cc: MOV AX, 0x1b\n0x00cf: PUSH AX\n0x00d0: MOV AX, 0x6\n0x00d3: PUSH AX\n0x00d4: CALL 0x1000:002c\n0x00d7: POP CX\n0x00d8: POP CX\n0x00d9: PUSH word ptr [BP + 0x4]\n0x00dc: CALL 0x1000:0582\n0x00df: POP CX\n0x00e0: MOV AX, 0x11\n0x00e3: PUSH AX\n0x00e4: PUSH word ptr [0x5fa]\n0x00e8: PUSH word ptr [0x5f8]\n0x00ec: PUSH word ptr [0x5f6]\n0x00f0: PUSH word ptr [0x5f4]\n0x00f4: MOV AX, 0x15\n0x00f7: PUSH AX\n0x00f8: CALL 0x1000:002c\n0x00fb: ADD SP, 0xc\n0x00fe: MOV AX, 0x8\n0x0101: PUSH AX\n0x0102: CALL 0x1000:002c\n0x0105: POP CX\n0x0106: INC SI\n0x0107: LES BX, [0x5f0]\n0x010b: LES BX, ES:[BX + 0x8]\n0x010f: MOV AX, word ptr ES:[BX]\n0x0112: CMP AX, SI\n0x0114: JG 0x1000:00c7\n0x0116: POP SI\n0x0117: POP BP\n0x0118: RET\n",
+        "; Original module offset0x0582; ev_e66b3848f3a64403d7e22f9730c740026b55529ef7667cb103f9137ff20c6476\n0x0582: PUSH BP\n0x0583: MOV BP, SP\n0x0585: SUB SP, 0x2\n0x0588: PUSH SI\n0x0589: PUSH DI\n0x058a: MOV AX, [0x5f8]\n0x058d: SUB AX, word ptr [0x5f4]\n0x0591: INC AX\n0x0592: MOV word ptr [BP + -0x2], AX\n0x0595: MOV DI, 0x1\n0x0598: MOV SI, word ptr [0x5fa]\n0x059c: DEC SI\n0x059d: JMP 0x1000:05d7\n0x059f: MOV AX, 0xa\n0x05a2: MOV BX, DI\n0x05a4: INC DI\n0x05a5: CWD\n0x05a6: IDIV BX\n0x05a8: ADD AX, 0x5\n0x05ab: PUSH AX\n0x05ac: MOV AX, 0xc\n0x05af: PUSH AX\n0x05b0: CALL 0x1000:002c\n0x05b3: POP CX\n0x05b4: POP CX\n0x05b5: PUSH word ptr [0x28]\n0x05b9: PUSH word ptr [BP + 0x4]\n0x05bc: PUSH word ptr [BP + -0x2]\n0x05bf: PUSH SI\n0x05c0: PUSH word ptr [0x5f4]\n0x05c4: MOV AX, 0x10\n0x05c7: PUSH AX\n0x05c8: CALL 0x1000:002c\n0x05cb: ADD SP, 0xc\n0x05ce: MOV AX, 0xe\n0x05d1: PUSH AX\n0x05d2: CALL 0x1000:002c\n0x05d5: POP CX\n0x05d6: DEC SI\n0x05d7: CMP SI, word ptr [0x5f6]\n0x05db: JGE 0x1000:059f\n0x05dd: POP DI\n0x05de: POP SI\n0x05df: MOV SP, BP\n0x05e1: POP BP\n0x05e2: RET\n"
+      ]
+    },
+    {
+      "module": 8514,
+      "sourceSHA256": "a641fa0d79d5057f9151b0bc952270717d427706ea539a03616f5e0cc3b022fc",
+      "loadedMapping": "module offset+0x10000",
+      "assembly": [
+        "; Original module offset0x0271; ev_b4e3972463d7aaba5bcc13fba24d7ec1edb3ba3474a51e693a61085b98e575bf\n0x0271: PUSH BP\n0x0272: MOV BP, SP\n0x0274: SUB SP, 0xa\n0x0277: PUSH SI\n0x0278: PUSH DI\n0x0279: LES BX, [0x650]\n0x027d: LES BX, ES:[BX + 0x8]\n0x0281: MOV AX, word ptr ES:[BX]\n0x0284: MOV word ptr [BP + -0x2], AX\n0x0287: MOV BX, word ptr [BP + -0x2]\n0x028a: ADD BX, -0x2\n0x028d: SHL BX, 0x1\n0x028f: MOV SI, word ptr [BX + 0x640]\n0x0293: ADD SI, 0x35\n0x0296: LES BX, [0x650]\n0x029a: LES BX, ES:[BX + 0x18]\n0x029e: PUSH word ptr ES:[BX]\n0x02a1: CALL 0x1000:0389\n0x02a4: POP CX\n0x02a5: MOV DI, AX\n0x02a7: MOV BX, word ptr [BP + -0x2]\n0x02aa: ADD BX, -0x2\n0x02ad: SHL BX, 0x1\n0x02af: MOV AX, word ptr [BX + 0x648]\n0x02b3: MOV word ptr [BP + -0x8], AX\n0x02b6: PUSH word ptr [0x28]\n0x02ba: MOV AX, 0xcc\n0x02bd: PUSH AX\n0x02be: MOV AX, DI\n0x02c0: INC AX\n0x02c1: INC AX\n0x02c2: PUSH AX\n0x02c3: MOV AX, SI\n0x02c5: INC AX\n0x02c6: INC AX\n0x02c7: PUSH AX\n0x02c8: MOV AX, DI\n0x02ca: ADD AX, 0xfffe\n0x02cd: PUSH AX\n0x02ce: MOV AX, SI\n0x02d0: ADD AX, 0xfffe\n0x02d3: PUSH AX\n0x02d4: MOV AX, 0x19\n0x02d7: PUSH AX\n0x02d8: CALL 0x1000:002c\n0x02db: ADD SP, 0xe\n0x02de: MOV word ptr [BP + -0xa], 0x1\n0x02e3: JMP 0x1000:0378\n0x02e6: MOV AX, SI\n0x02e8: ADD AX, word ptr [BP + -0x8]\n0x02eb: MOV word ptr [BP + -0x6], AX\n0x02ee: MOV AX, word ptr [BP + -0xa]\n0x02f1: ADD AX, 0x6\n0x02f4: SHL AX, 0x1\n0x02f6: SHL AX, 0x1\n0x02f8: LES BX, [0x650]\n0x02fc: ADD BX, AX\n0x02fe: LES BX, ES:[BX]\n0x0301: PUSH word ptr ES:[BX]\n0x0304: CALL 0x1000:0389\n0x0307: POP CX\n0x0308: MOV word ptr [BP + -0x4], AX\n0x030b: MOV AX, 0xcc\n0x030e: PUSH AX\n0x030f: MOV AX, 0x1\n0x0312: PUSH AX\n0x0313: PUSH word ptr [BP + -0x4]\n0x0316: PUSH word ptr [BP + -0x6]\n0x0319: PUSH DI\n0x031a: PUSH SI\n0x031b: CALL 0x1000:045a\n0x031e: ADD SP, 0xc\n0x0321: PUSH word ptr [0x28]\n0x0325: MOV AX, 0xcc\n0x0328: PUSH AX\n0x0329: MOV AX, word ptr [BP + -0x4]\n0x032c: INC AX\n0x032d: INC AX\n0x032e: PUSH AX\n0x032f: MOV AX, word ptr [BP + -0x6]\n0x0332: INC AX\n0x0333: INC AX\n0x0334: PUSH AX\n0x0335: MOV AX, word ptr [BP + -0x4]\n0x0338: ADD AX, 0xfffe\n0x033b: PUSH AX\n0x033c: MOV AX, word ptr [BP + -0x6]\n0x033f: ADD AX, 0xfffe\n0x0342: PUSH AX\n0x0343: MOV AX, 0x19\n0x0346: PUSH AX\n0x0347: CALL 0x1000:002c\n0x034a: ADD SP, 0xe\n0x034d: MOV SI, word ptr [BP + -0x6]\n0x0350: MOV DI, word ptr [BP + -0x4]\n0x0353: MOV AX, 0x1d\n0x0356: PUSH AX\n0x0357: MOV AX, 0x6\n0x035a: PUSH AX\n0x035b: CALL 0x1000:002c\n0x035e: POP CX\n0x035f: POP CX\n0x0360: MOV AX, 0x96\n0x0363: PUSH AX\n0x0364: MOV AX, 0x7\n0x0367: PUSH AX\n0x0368: CALL 0x1000:002c\n0x036b: POP CX\n0x036c: POP CX\n0x036d: MOV AX, 0x8\n0x0370: PUSH AX\n0x0371: CALL 0x1000:002c\n0x0374: POP CX\n0x0375: INC word ptr [BP + -0xa]\n0x0378: MOV AX, word ptr [BP + -0xa]\n0x037b: CMP AX, word ptr [BP + -0x2]\n0x037e: JGE 0x1000:0383\n0x0380: JMP 0x1000:02e6\n0x0383: POP DI\n0x0384: POP SI\n0x0385: MOV SP, BP\n0x0387: POP BP\n0x0388: RET\n"
+      ]
+    },
+    {
+      "module": 8520,
+      "sourceSHA256": "d75a2470acde4fcdcb3e9aa55fff8ab4d2ae308d8f1f745c1fcda196df85027d",
+      "loadedMapping": "module offset+0x10000",
+      "assembly": [
+        "; Original module offset0x0311; ev_e865e5cf18b47509bdeb8cd3673dfe651f434d02894498e2973baa33b4528a26\n0x0311: PUSH BP\n0x0312: MOV BP, SP\n0x0314: SUB SP, 0xa\n0x0317: PUSH SI\n0x0318: PUSH DI\n0x0319: LES BX, [0x7ec]\n0x031d: LES BX, ES:[BX + 0x8]\n0x0321: MOV AX, word ptr ES:[BX]\n0x0324: MOV word ptr [BP + -0x2], AX\n0x0327: MOV BX, word ptr [BP + -0x2]\n0x032a: ADD BX, -0x2\n0x032d: SHL BX, 0x1\n0x032f: MOV SI, word ptr [BX + 0x7dc]\n0x0333: ADD SI, 0x35\n0x0336: LES BX, [0x7ec]\n0x033a: LES BX, ES:[BX + 0x18]\n0x033e: PUSH word ptr ES:[BX]\n0x0341: CALL 0x1000:0529\n0x0344: POP CX\n0x0345: MOV DI, AX\n0x0347: MOV BX, word ptr [BP + -0x2]\n0x034a: ADD BX, -0x2\n0x034d: SHL BX, 0x1\n0x034f: MOV AX, word ptr [BX + 0x7e4]\n0x0353: MOV word ptr [BP + -0x8], AX\n0x0356: PUSH word ptr [0x28]\n0x035a: MOV AX, 0xcc\n0x035d: PUSH AX\n0x035e: MOV AX, DI\n0x0360: INC AX\n0x0361: INC AX\n0x0362: PUSH AX\n0x0363: MOV AX, SI\n0x0365: INC AX\n0x0366: INC AX\n0x0367: PUSH AX\n0x0368: MOV AX, DI\n0x036a: ADD AX, 0xfffe\n0x036d: PUSH AX\n0x036e: MOV AX, SI\n0x0370: ADD AX, 0xfffe\n0x0373: PUSH AX\n0x0374: MOV AX, 0x19\n0x0377: PUSH AX\n0x0378: CALL 0x1000:002c\n0x037b: ADD SP, 0xe\n0x037e: MOV word ptr [BP + -0xa], 0x1\n0x0383: JMP 0x1000:0418\n0x0386: MOV AX, SI\n0x0388: ADD AX, word ptr [BP + -0x8]\n0x038b: MOV word ptr [BP + -0x6], AX\n0x038e: MOV AX, word ptr [BP + -0xa]\n0x0391: ADD AX, 0x6\n0x0394: SHL AX, 0x1\n0x0396: SHL AX, 0x1\n0x0398: LES BX, [0x7ec]\n0x039c: ADD BX, AX\n0x039e: LES BX, ES:[BX]\n0x03a1: PUSH word ptr ES:[BX]\n0x03a4: CALL 0x1000:0529\n0x03a7: POP CX\n0x03a8: MOV word ptr [BP + -0x4], AX\n0x03ab: MOV AX, 0xcc\n0x03ae: PUSH AX\n0x03af: MOV AX, 0x1\n0x03b2: PUSH AX\n0x03b3: PUSH word ptr [BP + -0x4]\n0x03b6: PUSH word ptr [BP + -0x6]\n0x03b9: PUSH DI\n0x03ba: PUSH SI\n0x03bb: CALL 0x1000:05fa\n0x03be: ADD SP, 0xc\n0x03c1: PUSH word ptr [0x28]\n0x03c5: MOV AX, 0xcc\n0x03c8: PUSH AX\n0x03c9: MOV AX, word ptr [BP + -0x4]\n0x03cc: INC AX\n0x03cd: INC AX\n0x03ce: PUSH AX\n0x03cf: MOV AX, word ptr [BP + -0x6]\n0x03d2: INC AX\n0x03d3: INC AX\n0x03d4: PUSH AX\n0x03d5: MOV AX, word ptr [BP + -0x4]\n0x03d8: ADD AX, 0xfffe\n0x03db: PUSH AX\n0x03dc: MOV AX, word ptr [BP + -0x6]\n0x03df: ADD AX, 0xfffe\n0x03e2: PUSH AX\n0x03e3: MOV AX, 0x19\n0x03e6: PUSH AX\n0x03e7: CALL 0x1000:002c\n0x03ea: ADD SP, 0xe\n0x03ed: MOV SI, word ptr [BP + -0x6]\n0x03f0: MOV DI, word ptr [BP + -0x4]\n0x03f3: MOV AX, 0x1d\n0x03f6: PUSH AX\n0x03f7: MOV AX, 0x6\n0x03fa: PUSH AX\n0x03fb: CALL 0x1000:002c\n0x03fe: POP CX\n0x03ff: POP CX\n0x0400: MOV AX, 0x96\n0x0403: PUSH AX\n0x0404: MOV AX, 0x7\n0x0407: PUSH AX\n0x0408: CALL 0x1000:002c\n0x040b: POP CX\n0x040c: POP CX\n0x040d: MOV AX, 0x8\n0x0410: PUSH AX\n0x0411: CALL 0x1000:002c\n0x0414: POP CX\n0x0415: INC word ptr [BP + -0xa]\n0x0418: MOV AX, word ptr [BP + -0xa]\n0x041b: CMP AX, word ptr [BP + -0x2]\n0x041e: JGE 0x1000:0423\n0x0420: JMP 0x1000:0386\n0x0423: LES BX, [0x7ec]\n0x0427: LES BX, ES:[BX + 0xc]\n0x042b: CMP word ptr ES:[BX], 0x1\n0x042f: JG 0x1000:0434\n0x0431: JMP 0x1000:0523\n0x0434: MOV BX, word ptr [BP + -0x2]\n0x0437: ADD BX, -0x2\n0x043a: SHL BX, 0x1\n0x043c: MOV SI, word ptr [BX + 0x7dc]\n0x0440: ADD SI, 0x35\n0x0443: LES BX, [0x7ec]\n0x0447: LES BX, ES:[BX + 0x2c]\n0x044b: PUSH word ptr ES:[BX]\n0x044e: CALL 0x1000:0529\n0x0451: POP CX\n0x0452: MOV DI, AX\n0x0454: MOV BX, word ptr [BP + -0x2]\n0x0457: ADD BX, -0x2\n0x045a: SHL BX, 0x1\n0x045c: MOV AX, word ptr [BX + 0x7e4]\n0x0460: MOV word ptr [BP + -0x8], AX\n0x0463: PUSH word ptr [0x28]\n0x0467: MOV AX, 0x11\n0x046a: PUSH AX\n0x046b: MOV AX, DI\n0x046d: INC AX\n0x046e: PUSH AX\n0x046f: MOV AX, SI\n0x0471: INC AX\n0x0472: PUSH AX\n0x0473: MOV AX, DI\n0x0475: DEC AX\n0x0476: PUSH AX\n0x0477: MOV AX, SI\n0x0479: DEC AX\n0x047a: PUSH AX\n0x047b: MOV AX, 0x19\n0x047e: PUSH AX\n0x047f: CALL 0x1000:002c\n0x0482: ADD SP, 0xe\n0x0485: MOV word ptr [BP + -0xa], 0x1\n0x048a: JMP 0x1000:0518\n0x048d: MOV AX, SI\n0x048f: ADD AX, word ptr [BP + -0x8]\n0x0492: MOV word ptr [BP + -0x6], AX\n0x0495: MOV AX, word ptr [BP + -0xa]\n0x0498: ADD AX, 0xb\n0x049b: SHL AX, 0x1\n0x049d: SHL AX, 0x1\n0x049f: LES BX, [0x7ec]\n0x04a3: ADD BX, AX\n0x04a5: LES BX, ES:[BX]\n0x04a8: PUSH word ptr ES:[BX]\n0x04ab: CALL 0x1000:0529\n0x04ae: POP CX\n0x04af: MOV word ptr [BP + -0x4], AX\n0x04b2: MOV AX, 0x11\n0x04b5: PUSH AX\n0x04b6: XOR AX, AX\n0x04b8: PUSH AX\n0x04b9: PUSH word ptr [BP + -0x4]\n0x04bc: PUSH word ptr [BP + -0x6]\n0x04bf: PUSH DI\n0x04c0: PUSH SI\n0x04c1: CALL 0x1000:05fa\n0x04c4: ADD SP, 0xc\n0x04c7: PUSH word ptr [0x28]\n0x04cb: MOV AX, 0x11\n0x04ce: PUSH AX\n0x04cf: MOV AX, word ptr [BP + -0x4]\n0x04d2: INC AX\n0x04d3: PUSH AX\n0x04d4: MOV AX, word ptr [BP + -0x6]\n0x04d7: INC AX\n0x04d8: PUSH AX\n0x04d9: MOV AX, word ptr [BP + -0x4]\n0x04dc: DEC AX\n0x04dd: PUSH AX\n0x04de: MOV AX, word ptr [BP + -0x6]\n0x04e1: DEC AX\n0x04e2: PUSH AX\n0x04e3: MOV AX, 0x19\n0x04e6: PUSH AX\n0x04e7: CALL 0x1000:002c\n0x04ea: ADD SP, 0xe\n0x04ed: MOV SI, word ptr [BP + -0x6]\n0x04f0: MOV DI, word ptr [BP + -0x4]\n0x04f3: MOV AX, 0x1d\n0x04f6: PUSH AX\n0x04f7: MOV AX, 0x6\n0x04fa: PUSH AX\n0x04fb: CALL 0x1000:002c\n0x04fe: POP CX\n0x04ff: POP CX\n0x0500: MOV AX, 0x96\n0x0503: PUSH AX\n0x0504: MOV AX, 0x7\n0x0507: PUSH AX\n0x0508: CALL 0x1000:002c\n0x050b: POP CX\n0x050c: POP CX\n0x050d: MOV AX, 0x8\n0x0510: PUSH AX\n0x0511: CALL 0x1000:002c\n0x0514: POP CX\n0x0515: INC word ptr [BP + -0xa]\n0x0518: MOV AX, word ptr [BP + -0xa]\n0x051b: CMP AX, word ptr [BP + -0x2]\n0x051e: JGE 0x1000:0523\n0x0520: JMP 0x1000:048d\n0x0523: POP DI\n0x0524: POP SI\n0x0525: MOV SP, BP\n0x0527: POP BP\n0x0528: RET\n"
+      ]
+    }
+  ],
+  "analysisDerivatives": [
+    {
+      "template": 8508,
+      "sourceSHA256": "c18769cfdeb9eb498ee448641495e68e6dfbd19f854792ae26311f37928605c0",
+      "derivedFile": "template-213c-analysis.EXE",
+      "derivedSHA256": "24cabb5cf940c81c88c1cccbc9de344fd649583fe759a7b87ab0f1bf26ac5497",
+      "originalPayloadUnchanged": true,
+      "mapping": "module offset+0x10000 loaded; offset+32 derivative file"
+    },
+    {
+      "template": 8518,
+      "sourceSHA256": "3cccac8881b3b3e5126365614e09abc6c06047324f09b41f852a213f2c4a5bec",
+      "derivedFile": "template-2146-analysis.EXE",
+      "derivedSHA256": "64ba7bd6eaf06c6820fc2464902b10973fd123c3bb40d74dcec05a4b0b44739b",
+      "originalPayloadUnchanged": true,
+      "mapping": "module offset+0x10000 loaded; offset+32 derivative file"
+    },
+    {
+      "template": 8504,
+      "sourceSHA256": "a019ae3218bf6b2cc3ad4f635ea758338b468b39b012fb42497a2e72f609fde1",
+      "derivedFile": "template-2138-analysis.EXE",
+      "derivedSHA256": "326fc4b3b49235d26f1507c98cb66185fad96a5546d52f70feb15889f1492ea0",
+      "originalPayloadUnchanged": true,
+      "mapping": "module offset+0x10000 loaded; offset+32 derivative file"
+    },
+    {
+      "template": 8512,
+      "sourceSHA256": "71485f9cb5fb070a695a68db021709318c5468d8ae9f0bbf1d7889a2935008cc",
+      "derivedFile": "template-2140-analysis.EXE",
+      "derivedSHA256": "87f65a1436a4c009ad4570710457285d41886cbedd3dba2d4d07986c0558924b",
+      "originalPayloadUnchanged": true,
+      "mapping": "module offset+0x10000 loaded; offset+32 derivative file"
+    }
+  ]
+}

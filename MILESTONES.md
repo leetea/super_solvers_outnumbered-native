@@ -25,6 +25,7 @@ documented history, not backdated Git commits.
 | 0.19 | Persisted original player reactions,200IRQ collision words/costs and actor foreground order | 675 checks; ordinary boundary impact, natural type25 hit/recovery and vertical jump/landing; all reaction/facing combinations and resume headless |
 | 0.20 | Original room-camera pan lifecycle and recharge pose/scroll/auxiliary updates | 713 checks; local-video pan evidence; ordinary room camera and empty recharge with continued Telly/projectile motion |
 | 0.21 | Original adventure Telly introduction, seven-frame code card, capture/rejection waits and persisted presentation | 740 checks; native-window reference drill shows card at900, return at1000 and lightning secret; rejection animation/message observed; original card sequence corroborated from local video; fresh ordinary full adventure remains pending |
+| 0.22 | Timed bars, measurement needles, line plots and cassette arrivals; deferred question input and persisted sound cursors | 771 checks including1280 endpoint comparisons; native plot/bar fixtures and ordinary Cartoon cassette159→300/clues; measurement source/video/headless evidence; remaining activity effects and final full adventure pending |
 
 The full-game goal is **not complete**. The ordinary winning loop is now verified. Next are
 opening/File presentation and transitions,

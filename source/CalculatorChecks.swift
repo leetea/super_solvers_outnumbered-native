@@ -91,7 +91,7 @@ func nativeCalculatorChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["version04_partial_number_migrates_to_calculator"] = view.session.calculator?.entry == "644" && view.session.valid
     let bank = try JSONDecoder().decode(ChallengeBank.self,from: Data(contentsOf: root.appendingPathComponent("challenges.json")))
     let bar = bank.cases.first { $0.id == 9010 && $0.seed == 1 && $0.variant == 0 }!
-    view.open(bar); try view.render(); try view.canvas.writePNG(to: output.appendingPathComponent("native-interviews-bar-chart.png"))
+    view.open(bar);try view.advanceActivityPresentation(irqTicks: 10_000); try view.render(); try view.canvas.writePNG(to: output.appendingPathComponent("native-interviews-bar-chart.png"))
     checks["bar_chart_original_fixture_values"] = try (3...6).map { try bar.originalWord(at: $0) } == [6,3,9,3] && bar.originalWord(at: 8) == 0 && bar.originalWord(at: 9) == 3
     return checks
 }

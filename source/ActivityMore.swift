@@ -1,35 +1,35 @@
 import Foundation
 
-// Direct Swift translations of recovered static endpoints of additional
+// Direct Swift translations of recovered endpoints and timed snapshots of
 // original activity drawing routines. No original machine code is interpreted.
 struct ActivityMore {
     let content: OriginalContent
     static let supportedHotspots: Set<Int> = [1, 5, 8, 9]
 
-    func draw(_ challenge: OriginalChallenge, on canvas: NativeCanvas) throws -> ActivityRenderSupport {
+    func draw(_ challenge: OriginalChallenge, on canvas: NativeCanvas,progress: NativeActivityPlan.Frame? = nil) throws -> ActivityRenderSupport {
         switch challenge.hotspot {
         case 1:
             guard challenge.bitmap_record_id == 8503 else { throw ContentError.invalid("Unexpected original bar-chart bitmap") }
-            try barChart(challenge,on: canvas)
-            return .recoveredStatic(template: 8502,omittedAnimation: "Original upward bar-growth delays and sound; driver palette details remain under analysis")
+            try barChart(challenge,on: canvas,progress: progress)
+            return .recoveredStatic(template: 8502,omittedAnimation: "Native timeline restores bar growth and sound; full driver palette details remain under analysis")
         case 5:
             guard challenge.bitmap_record_id == 8509 else {
                 throw ContentError.invalid("Unexpected original measurement bitmap")
             }
-            try measurement(challenge, on: canvas)
-            return .recoveredStatic(template: 8508, omittedAnimation: "Original incremental slider movement and backing-surface copy animation; driver masking remains under analysis")
+            try measurement(challenge, on: canvas,progress: progress)
+            return .recoveredStatic(template: 8508, omittedAnimation: "Native timeline restores slider motion; exact original backing-surface driver masks remain under analysis")
         case 8:
             guard [8515,8521].contains(challenge.bitmap_record_id) else {
                 throw ContentError.invalid("Unexpected original line-chart bitmap")
             }
-            try lineChart(challenge, on: canvas)
-            return .recoveredStatic(template: challenge.bitmap_record_id-1, omittedAnimation: "Original point-by-point plotting delays and sounds; driver palette details remain under analysis")
+            try lineChart(challenge, on: canvas,progress: progress)
+            return .recoveredStatic(template: challenge.bitmap_record_id-1, omittedAnimation: "Native timeline restores point plotting and sound; driver palette details remain under analysis")
         case 9:
             guard challenge.bitmap_record_id == 8519 else {
                 throw ContentError.invalid("Unexpected original cassette bitmap")
             }
-            try cassettes(challenge, on: canvas)
-            return .recoveredStatic(template: 8518, omittedAnimation: "Original timed cassette arrival and per-row audio effects; driver masking remains under analysis")
+            try cassettes(challenge, on: canvas,progress: progress)
+            return .recoveredStatic(template: 8518, omittedAnimation: "Native timeline restores cassette order and sound; driver masking remains under analysis")
         default:
             return .unsupported(template: challenge.bitmap_record_id-1,
                                 missing: "This original activity's dynamic graphics have not yet been translated.")
@@ -40,7 +40,7 @@ struct ActivityMore {
         canvas.draw(try content.bitmap(String(format: "TEMPLATE.GRA.%04x", challenge.bitmap_record_id)), x: 8, y: 19)
     }
 
-    private func barChart(_ challenge: OriginalChallenge,on canvas: NativeCanvas) throws {
+    private func barChart(_ challenge: OriginalChallenge,on canvas: NativeCanvas,progress: NativeActivityPlan.Frame?) throws {
         let count = try challenge.originalWord(at: 2), baseline = try challenge.originalWord(at: 8)
         let interval = try challenge.originalWord(at: 9), theme = try challenge.originalWord(at: 18)
         guard (1...5).contains(count), interval > 0, (0...3).contains(theme) else { throw ContentError.invalid("Invalid original bar-chart scale") }
@@ -70,12 +70,13 @@ struct ActivityMore {
             guard (19...125).contains(top) else { throw ContentError.invalid("Original bar exceeds recovered chart extent") }
             //8502:0582 grows filled scanlines124 down through top. The
             //following15e3:01db call outlines inclusive bounds through125.
-            canvas.fill(left,top,18,125-top,[3,5,2,12][theme])
-            canvas.border(left,top,18,126-top,0)
+            let rows = min(125-top,progress?.marks[i] ?? 125-top)
+            canvas.fill(left,125-rows,18,rows,[3,5,2,12][theme])
+            if progress == nil || progress!.completed > i { canvas.border(left,top,18,126-top,0) }
         }
     }
 
-    private func measurement(_ challenge: OriginalChallenge, on canvas: NativeCanvas) throws {
+    private func measurement(_ challenge: OriginalChallenge, on canvas: NativeCanvas,progress: NativeActivityPlan.Frame?) throws {
         let readings = try (24...26).map { try challenge.originalWord(at: $0) }
         guard readings.allSatisfy({ (0...9).contains($0) }) else {
             throw ContentError.invalid("Original measurement control is outside 0 through 9")
@@ -95,11 +96,12 @@ struct ActivityMore {
             // row136, then moves one pixel upward for reading*9 increments.
             // Static endpoint is therefore136-reading*9. Relative cache10018
             // addresses ordinal18 of the appended ROOMS resource file.
-            canvas.draw(pointer, x: columns[index], y: 136-readings[index]*9, transparent: true)
+            let step = progress?.marks[index] ?? readings[index]*9
+            if step >= 0 { canvas.draw(pointer, x: columns[index], y: 136-step, transparent: true) }
         }
     }
 
-    private func cassettes(_ challenge: OriginalChallenge, on canvas: NativeCanvas) throws {
+    private func cassettes(_ challenge: OriginalChallenge, on canvas: NativeCanvas,progress: NativeActivityPlan.Frame?) throws {
         let amounts = try (0..<4).map { try challenge.originalWord(at: $0) }
         guard amounts.allSatisfy({ $0 >= 0 }) else { throw ContentError.invalid("Negative original cassette amount") }
         let unit = try challenge.originalString(at: 4)
@@ -111,6 +113,7 @@ struct ActivityMore {
         // Reversing the static traversal produces identical final placements.
         let names = ["A", "B", "C", "D"]
         for index in 0..<4 {
+            if progress?.marks[index] == 0 { continue }
             let row = 46+index*20
             canvas.draw(cassette, x: 56, y: row)
             canvas.text(names[index], font: font, x: 83, y: row+5, color: 0)
@@ -120,7 +123,7 @@ struct ActivityMore {
         }
     }
 
-    private func lineChart(_ challenge: OriginalChallenge, on canvas: NativeCanvas) throws {
+    private func lineChart(_ challenge: OriginalChallenge, on canvas: NativeCanvas,progress: NativeActivityPlan.Frame?) throws {
         let compact = challenge.bitmap_record_id == 8521
         let count = try challenge.originalWord(at: 2)
         let baseline = try challenge.originalWord(at: 4)
@@ -168,7 +171,8 @@ struct ActivityMore {
             let color: UInt8 = seriesIndex == 0 ? 12 : 0
             let halfWidth = seriesIndex == 0 ? 1 : 0
             var previous: (Int,Int)?
-            for index in 0..<count {
+            let visible = min(count,progress?.marks[seriesIndex] ?? count)
+            for index in 0..<visible {
                 let point = (firstX+index*spacing, y(try challenge.originalWord(at: (seriesIndex == 0 ? 6 : 11)+index)))
                 if let previous { originalPlotLine(previous.0,previous.1,point.0,point.1,halfWidth: halfWidth,color:color,on:canvas) }
                 let radius = seriesIndex == 0 ? 2 : 1

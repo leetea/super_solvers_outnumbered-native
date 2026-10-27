@@ -8,7 +8,7 @@ app="$build_dir/Outnumbered Native Development.app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources/assets"
 xcrun swiftc -O -target arm64-apple-macosx12.0 -module-cache-path "$source_dir/module-cache" -framework Cocoa \
   "$source_dir/TutorialChecks.swift" "$source_dir/GameTutorial.swift" "$source_dir/Tutorial.swift" "$source_dir/TutorialText.swift" "$source_dir/Scores.swift" "$source_dir/GameScores.swift" "$source_dir/ScoreChecks.swift" "$source_dir/Game.swift" "$source_dir/GameSettings.swift" "$source_dir/PracticePresentation.swift" "$source_dir/GameMenus.swift" "$source_dir/MenuChecks.swift" "$source_dir/Help.swift" "$source_dir/GameHelp.swift" "$source_dir/HelpChecks.swift" "$source_dir/RoomCamera.swift" "$source_dir/GameRoomCamera.swift" "$source_dir/RoomCameraChecks.swift" "$source_dir/FountainMotionChecks.swift" "$source_dir/PlayerMotion.swift" "$source_dir/GamePlayerMotion.swift" "$source_dir/PlayerMotionChecks.swift" "$source_dir/Movement.swift" "$source_dir/MovementChecks.swift" "$source_dir/TransitionActors.swift" "$source_dir/TransitionActorChecks.swift" "$source_dir/ElevatorTransition.swift" "$source_dir/GameElevatorTransition.swift" "$source_dir/ElevatorTransitionChecks.swift" "$source_dir/DoorTransition.swift" "$source_dir/GameDoorTransition.swift" "$source_dir/DoorTransitionChecks.swift" "$source_dir/World.swift" "$source_dir/Decoder.swift" "$source_dir/QuestionSetup.swift" "$source_dir/QuestionSetupChecks.swift" "$source_dir/Endings.swift" "$source_dir/GameEndings.swift" "$source_dir/EndingRenderer.swift" "$source_dir/EndingChecks.swift" "$source_dir/NativeCanvas.swift" \
-  "$source_dir/ChallengeRenderer.swift" "$source_dir/ActivityTemplates.swift" "$source_dir/ActivityMore.swift" "$source_dir/ActivityFinal.swift" "$source_dir/ActivityFinalChecks.swift" "$source_dir/GameActivityState.swift" "$source_dir/Encounter.swift" "$source_dir/DrillPresentation.swift" "$source_dir/DrillPresentationChecks.swift" "$source_dir/Telly.swift" \
+  "$source_dir/ChallengeRenderer.swift" "$source_dir/ActivityTemplates.swift" "$source_dir/ActivityMore.swift" "$source_dir/ActivityFinal.swift" "$source_dir/ActivityFinalChecks.swift" "$source_dir/GameActivityState.swift" "$source_dir/ActivityPresentation.swift" "$source_dir/GameActivityPresentation.swift" "$source_dir/ActivityPresentationChecks.swift" "$source_dir/Encounter.swift" "$source_dir/DrillPresentation.swift" "$source_dir/DrillPresentationChecks.swift" "$source_dir/Telly.swift" \
   "$source_dir/LiveWire.swift" "$source_dir/Fountain.swift" "$source_dir/Calculator.swift" "$source_dir/GameCalculator.swift" "$source_dir/CalculatorChecks.swift" "$source_dir/Session.swift" "$source_dir/IntegrationChecks.swift" "$source_dir/EncounterChecks.swift" "$source_dir/EnergyLiveWireChecks.swift" "$source_dir/NativeApp.swift" "$source_dir/GameEncounters.swift" \
   -o "$app/Contents/MacOS/OutnumberedNative"
 # Only decoded data resources and offline-rendered PCM are included. Original
@@ -28,8 +28,8 @@ cat > "$app/Contents/Info.plist" <<'PLIST'
 <key>CFBundleIdentifier</key><string>local.outnumbered.native.development</string>
 <key>CFBundleName</key><string>Outnumbered Native Development</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>0.21.0</string>
-<key>CFBundleVersion</key><string>21</string>
+<key>CFBundleShortVersionString</key><string>0.22.0</string>
+<key>CFBundleVersion</key><string>22</string>
 <key>LSMinimumSystemVersion</key><string>12.0</string>
 <key>NSHighResolutionCapable</key><true/>
 </dict></plist>

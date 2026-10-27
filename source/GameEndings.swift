@@ -8,7 +8,7 @@ extension NativeGameView {
         let masterLine = reason == .midnight ? 0 : (session.generator.nextRandomValue()%101 < 50 ? 0 : 1)
         session.activeEnding = NativeEnding(reason: reason,room: room,tier: session.decoder.difficulty,initialEnergy: session.energy,initialMinutes: session.clock.elapsedMinutes,initialScore: session.score,initialLifetime: session.lifetimePoints,playerDialogue: playerLine,masterDialogue: masterLine)
         if session.runID == nil { session.runID = UUID() }
-        session.activeChallenge = nil; session.activeDrill = nil; session.activeZap = nil
+        session.activeChallenge = nil;session.activityPresentation = nil; session.activeDrill = nil; session.activeZap = nil
         session.activeFountain = nil; session.activeCollision = nil; session.playerMotion = nil; session.liveWire?.clear(); clearTelly()
         if reason != .midnight { disableRoomCamera() }
         while session.clock.pauseDepth > 0 { session.clock.resume() }

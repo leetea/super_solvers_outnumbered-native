@@ -1,0 +1,69 @@
+{
+  "milestone": "0.22",
+  "checkCount": 771,
+  "fixtureObservations": [
+    {
+      "images": [
+        "gui-plot-start-0.22.png",
+        "gui-plot-mid-0.22.png"
+      ],
+      "meaning": "Command-G draws first red segment, then second-series segment on black question side with Pause; held Enter2000ms during plotting leaves it active."
+    },
+    {
+      "image": "gui-plot-answer-0.22.png",
+      "meaning": "After panel appears, answer0 accepted for300."
+    },
+    {
+      "images": [
+        "gui-bars-growing-0.22.png",
+        "gui-bars-answer-0.22.png"
+      ],
+      "meaning": "Command-B shows partial first bar without outline, then completed chart and answer25 accepted for300."
+    }
+  ],
+  "ordinaryObservations": [
+    {
+      "image": "gui-ordinary-cartoon-entry-final-0.22.png",
+      "meaning": "Continue existing Full Game Check verification adventure, walk from upper Sound hallway to Cartoon, ordinary door entry."
+    },
+    {
+      "image": "gui-cassettes-arriving-0.22.png",
+      "meaning": "Ordinary Up at cassette activity shows only D and C during arrival; question side black."
+    },
+    {
+      "image": "gui-cassettes-question-0.22.png",
+      "meaning": "All A80/B79/C89/D12 shown after arrival, generated question asks B+A."
+    },
+    {
+      "image": "gui-cassettes-answer-0.22.png",
+      "meaning": "159 accepted first try, score0\u2192300."
+    },
+    {
+      "image": "gui-cassettes-clues-0.22.png",
+      "meaning": "Ordinary return/decoder shows four Cartoon clues, no secret pieces, score300."
+    }
+  ],
+  "normalQuitSaved": {
+    "scene": 13,
+    "playerUnit": 31,
+    "facing": 1,
+    "energy": 9,
+    "pendingRecharge": 2,
+    "score": 300,
+    "completedHotspots": [
+      9
+    ],
+    "elapsedMinutes": 154,
+    "activeChallenge": false,
+    "activePresentation": false
+  },
+  "limits": [
+    "No new ordinary full-game win; historical full-win evidence remains0.14.",
+    "Measurement motion checked against original code, all320 endpoints and local video, not native-window interaction.",
+    "Partial animation restore checked headlessly, not a GUI crash/quit at a specific frame.",
+    "The earlier gui-ordinary-hallway-before-entry image is hallway after a jump, not successful door-entry evidence.",
+    "No save/seed edits or forced enemies in ordinary navigation; isolated fixtures tested separately.",
+    "Sound requests/stops checked without perceptual listening claim."
+  ],
+  "quit": "Normal application Quit; current native GUI process closed."
+}

@@ -47,6 +47,7 @@ struct NativeSession: Codable {
     var liveWire: OriginalLiveWire?
     var calculator: NativeCalculator?
     var calculatorEnabled: Bool?
+    var activityPresentation: NativeActivityPresentation?
     var activityStates: [Int:OriginalActivityState]?
     var questionSetup: OriginalQuestionSetup?
     var migratedQuestionSetup: Bool?
@@ -97,6 +98,7 @@ struct NativeSession: Codable {
         (liveWire == nil || liveWire!.hasValidPersistenceState) &&
         (activeDoor == nil || (activeDoor!.valid && activeElevator == nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil && activeEnding == nil && position == (activeDoor!.destinationApplied ? activeDoor!.destination : activeDoor!.origin))) &&
         (activeElevator == nil || (activeElevator!.valid && activeDoor == nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil && activeEnding == nil && position == (activeElevator!.destinationApplied ? activeElevator!.exitPosition : activeElevator!.origin))) &&
+        (activityPresentation == nil || activeChallenge.map { activityPresentation!.valid(for: $0) } == true) &&
         (calculator == nil || calculator!.valid) &&
         (activityStates == nil || activityStates!.allSatisfy { [4,7].contains($0.key) && $0.value.hotspot == $0.key && $0.value.valid })
     }

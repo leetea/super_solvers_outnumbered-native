@@ -48,6 +48,7 @@ extension NativeGameView {
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
     }
     func pulseZap() {
+        if isActivityPresenting { pulseActivityPresentation();return }
         if session != nil && session.activeCollision != nil { pulseCollision();return }
         if session != nil && session.activeElevator != nil { pulseElevator(); return }
         if session != nil && session.activeDoor != nil { pulseDoor(); return }
