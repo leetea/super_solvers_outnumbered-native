@@ -121,11 +121,11 @@ func nativeIntegrationChecks(root: URL) throws {
         let elevator = view.world.scenes[hall].first { $0.kind == 2 }!
         view.session = NativeSession(profileID: UUID(),seed: 1)
         view.session.position = NativePosition(scene: hall,playerUnit: hall*38+elevator.startUnit,cameraUnit: hall*38,facing: hall%5 == 0 ? -1 : 1)
-        view.interact()
+        view.interact(); view.advanceElevator(irqTicks: 10_000)
         checks["native_elevator_exit_facing_hall_\(hall)"] = view.session.position.scene == OriginalWorld.elevatorDestination(from: hall) && view.session.position.facing == (hall%5 == 0 ? 1 : -1)
     }
     view.session.position = NativePosition(scene: 0,playerUnit: 7,cameraUnit: 0,facing: 1)
-    view.interact()
+    view.interact(); view.advanceElevator(irqTicks: 10_000)
     checks["native_left_elevator"] = view.session.position.scene == 5 && view.session.position.playerUnit == 202 && view.session.position.cameraUnit == 190
     view.session.position = NativePosition(scene: 4,playerUnit: 185,cameraUnit: 152,facing: 1)
     view.move(100)
@@ -133,6 +133,7 @@ func nativeIntegrationChecks(root: URL) throws {
     view.referenceMode = false
     view.session.clock.pause(); view.save()
     checks["transient_decoder_pause_not_saved_into_exploration"] = try view.saves.load(view.session.profileID)?.clock.pauseDepth == 0
+    checks.merge(try nativeElevatorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeDoorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeEncounterChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeEnergyLiveWireChecks(root: root,output: output)) { _,new in new }

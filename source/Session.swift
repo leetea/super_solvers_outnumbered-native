@@ -38,6 +38,7 @@ struct NativeSession: Codable {
     var energyMachineSlot: Int?
     var activeFountain: NativeFountain?
     var activeDoor: NativeDoorTransition?
+    var activeElevator: NativeElevatorTransition?
     var liveWire: OriginalLiveWire?
     var calculator: NativeCalculator?
     var calculatorEnabled: Bool?
@@ -85,7 +86,8 @@ struct NativeSession: Codable {
         (energyMachineSlot == nil || OriginalWorld.energyMachineCandidates.contains(energyMachineSlot!)) &&
         (activeFountain == nil || (activeFountain!.valid && activeDrill == nil && activeZap == nil && activeChallenge == nil && (activeFountain!.awardIssued ? pendingRecharge == 0 : pendingRecharge == activeFountain!.credits))) &&
         (liveWire == nil || liveWire!.hasValidPersistenceState) &&
-        (activeDoor == nil || (activeDoor!.valid && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil && activeEnding == nil && position == (activeDoor!.destinationApplied ? activeDoor!.destination : activeDoor!.origin))) &&
+        (activeDoor == nil || (activeDoor!.valid && activeElevator == nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil && activeEnding == nil && position == (activeDoor!.destinationApplied ? activeDoor!.destination : activeDoor!.origin))) &&
+        (activeElevator == nil || (activeElevator!.valid && activeDoor == nil && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil && activeEnding == nil && position == (activeElevator!.destinationApplied ? activeElevator!.exitPosition : activeElevator!.origin))) &&
         (calculator == nil || calculator!.valid) &&
         (activityStates == nil || activityStates!.allSatisfy { [4,7].contains($0.key) && $0.value.hotspot == $0.key && $0.value.valid })
     }

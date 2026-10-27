@@ -110,3 +110,6 @@ Milestone0.15 adds staged room-door entrances and exits using the recovered walk
 
 
 Current verification status0.15: ordinary native win/restart/replay was established at0.14; staged room-door transitions, aligned returns and elevator final facing are now implemented with504 checks. Older milestone paragraphs above retain their historical verification limits. Full elevator animation/scroll, collision/timed effects, opening/File/sign-in and remaining presentation/audio fidelity are still required.
+
+
+Milestone0.16 adds the original staged elevators: approach/shrunken/front poses, four mirrored-panel frames with source23IRQ waits, eight vertical bands with source23IRQ waits and correct direction, one-time travel sound/destination changes, final side-specific facing, input lockout and persistent travel progress. All563 native checks pass. Final native-window trips verified both left-side directions and corrected the viewport padding seam; right-side origins and save/resume have headless coverage. Existing resources remain unchanged. Camera/boundary edge cases, auxiliary actor stepping during synchronous transitions, collision/knockback/occlusion, timed activities, opening/File/sign-in, queued inputs and remaining ending/palette/audio fidelity still prevent complete-game status. See elevator-transition-recovery.md and gui-observations-0.16.json.

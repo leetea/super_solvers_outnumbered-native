@@ -12,18 +12,14 @@ documented history, not backdated Git commits.
 | 0.6 | Native contexts for all ten activity families |213 checks;3,170 cases rendered;30 generation cases then unresolved |
 | 0.7 | Original startup selection, eligibility, bands and RNG boundary; all3,200 cases recovered |245 checks; extracted app verified and packaged source rebuilt; Junior165 and music106 accepted in native windows |
 | 0.8 | Scripted hideout reveal, progressive bonuses, win/loss results, persistent lifetime/rank updates and replay; corrected room backgrounds |269 checks; native window reached Game 11,680 / Total 64,275 and replay; normal save/restart/result-commit recovery checked in temporary player directories; extracted app and source rebuild verified |
-
 | 0.9 | Player menus, custom settings, independent Drill for Skill and unfinished-game continuation; replay preserves decoder pools |309 checks; native-window settings/practice flow; extracted app and source rebuild verified; original UI/practice animations remain pending |
-
 | 0.10 | Original eight-topic help,22 pages and four illustrations, source navigation and practice-only help |332 checks; native window navigation and state preservation; extracted app/source rebuild verified |
-
 | 0.11 | Original lifetime and high-game score tables, persistent top ten and pre-win ranks |353 checks; native score display/return-to-input; extracted app and source rebuild verified |
-
 | 0.12 | Independent music/sound controls and original new-user guidance/state |382 checks; native window message/options flow; extracted app and source rebuild verified |
-
 | 0.13 | Original practice introduction/result scripts, sound wait, counters and timer |469 checks; native practice window flow; portable app/source and repository rebuild checks |
-
 | 0.14 | Ordinary adventure win, persisted score/rank and fresh replay verified | Unchanged 0.13 app; all five rooms, four natural Telly captures, News Room decision, 6,350 total; normal quit/relaunch and score tables verified |
+| 0.15 | Staged room-door entrances/exits, persistent transition progress and aligned returns; elevator final facing | 504 native checks; ordinary News doorway window captures; unpaced-frame timing uses documented native adaptation; elevator animation remains pending |
+| 0.16 | Staged elevator panels, vertical travel, persistent progress and input lockout | 563 checks; both left-side directions in final native window; all four origins and save/resume headless; detailed camera/actor fidelity still pending |
 
 The full-game goal is **not complete**. The ordinary winning loop is now verified. Next are
 opening/File presentation and transitions,
@@ -68,5 +64,3 @@ repeated sets, visible questions and deterministic animation repainting.
 Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
 timed activities, palette/audio calibration, ending refinements and a full
 natural adventure playthrough remain. See practice-presentation-recovery.md.
-
-| 0.15 | Staged room-door entrances/exits, persistent transition progress and aligned returns; elevator final facing | 504 native checks; ordinary News doorway window captures; unpaced-frame timing uses documented native adaptation; elevator animation remains pending |

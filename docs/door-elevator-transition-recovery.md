@@ -8,7 +8,7 @@ Entrance locates the hall door and aligns the player's global X to scene*38 + ob
 
 Elevator ends at screen unit12 for origins0/5, unit24 for origins4/9. After the exit animation it explicitly faces right for origins0/5 and left for origins4/9. NativeApp previously retained the input facing. Four elevator checks now begin with the opposite facing and assert the original exit facing.
 
-Endpoint corrections are implemented. Native room-door staging is now integrated in DoorTransition.swift and GameDoorTransition.swift; elevator staging is still pending. 504 checks now pass, and an ordinary News entrance/exit was observed in the native window. Complete frame/timing parity is not claimed.
+Endpoint corrections are implemented. Native room-door staging is now integrated in DoorTransition.swift and GameDoorTransition.swift; elevator staging is now implemented in0.16; see elevator-transition-recovery.md. 504 checks now pass, and an ordinary News entrance/exit was observed in the native window. Complete frame/timing parity is not claimed.
 
 ## Original room sequence
 
@@ -30,4 +30,4 @@ verification/local-elevator-transition-contact-0.15.png samples the local MKV fr
 
 ## Remaining work
 
-Room-door staging now preserves alignment/pose/panel order, suppresses input during the original synchronous sequence, retains IRQ time without main-loop minute polling, initializes the destination once at the midpoint, and stores the stage in a new optional native-save field. Legacy saves omit that field. Verify native-window flow and resume behavior, then implement the elevator pose/panel/viewport stages. Room-door stages form milestone0.15; elevator animation remains a subsequent required milestone. Packaging/publication status is tracked in repository-sync.json. Broader scroll/knockback/occlusion and timed activity effects remain part of the full-game goal.
+Room-door staging now preserves alignment/pose/panel order, suppresses input during the original synchronous sequence, retains IRQ time without main-loop minute polling, initializes the destination once at the midpoint, and stores the stage in a new optional native-save field. Legacy saves omit that field. Verify native-window flow and resume behavior, the elevator pose/panel/viewport stages are now implemented in0.16. Room-door stages form milestone0.15; elevator staging now forms milestone0.16; detailed camera and auxiliary actor parity remain required. Packaging/publication status is tracked in repository-sync.json. Broader scroll/knockback/occlusion and timed activity effects remain part of the full-game goal.

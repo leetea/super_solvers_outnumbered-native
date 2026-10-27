@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.15
+## Current verified milestone: 0.16
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,9 +16,9 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**504 integration checks pass.** The app ZIP passes strict signature verification
+**563 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.15.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.16.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
 [music/message recovery](docs/music-messages-recovery.md) and
@@ -140,3 +140,6 @@ Previous verification milestone: [0.14 ordinary win and restart](docs/ordinary-p
 
 
 Milestone0.15 implements staged room-door transitions and corrects elevator exit facing. See [transition recovery and limits](docs/door-elevator-transition-recovery.md) and [native-window observations](docs/gui-observations-0.15.json). Full elevator animation and other remaining full-game fidelity work are still pending.
+
+
+Milestone0.16 adds the original staged elevators: approach/shrunken/front poses, four mirrored-panel frames with source23IRQ waits, eight vertical bands with source23IRQ waits and correct direction, one-time travel sound/destination changes, final side-specific facing, input lockout and persistent travel progress. All563 native checks pass. Final native-window trips verified both left-side directions and corrected the viewport padding seam; right-side origins and save/resume have headless coverage. Existing resources remain unchanged. Camera/boundary edge cases, auxiliary actor stepping during synchronous transitions, collision/knockback/occlusion, timed activities, opening/File/sign-in, queued inputs and remaining ending/palette/audio fidelity still prevent complete-game status. See elevator-transition-recovery.md and gui-observations-0.16.json.

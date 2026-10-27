@@ -54,7 +54,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     override var acceptsFirstResponder: Bool { true }
     override var isFlipped: Bool { true }
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-        if session?.activeDoor != nil { return false }
+        if isTransitioning { return false }
         if menuItem.action == #selector(toggleCalculator(_:)) {
             menuItem.state = session?.calculatorEnabled == false ? .off : .on
             return session != nil
@@ -170,7 +170,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             do { try advanceEnding() } catch { present(error) }
             return
         }
-        if session.activeZap != nil || session.activeFountain != nil || session.activeDoor != nil { needsDisplay = true; return }
+        if session.activeZap != nil || session.activeFountain != nil || isTransitioning { needsDisplay = true; return }
         // Original IRQ time continues while questions/decoder pause displayed
         // game minutes. Resume restores the remaining minute deadline.
         if screen != .title { session.clock.pollAfterIRQTicks(UInt64(OriginalWorld.frameIRQTicks)) }
@@ -234,15 +234,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if let object = world.object(scene: scene, overlappingPlayerAt: unit,energyMachineSlot: session.energyMachineSlot) {
             if object.kind == 1 {
                 if OriginalWorld.roomScene(throughHallway: scene) != nil || (scene >= 10 && session.returnPosition != nil) { beginDoor(object); return }
-            } else if object.kind == 2, let destination = OriginalWorld.elevatorDestination(from: scene) {
-                let local = OriginalWorld.elevatorExitScreenUnit(from: scene)!
-                session.position.scene = destination
-                session.position.playerUnit = destination*38+local
-                session.position.cameraUnit = destination < 5 ? (destination == 0 ? 0 : 152) : (destination == 5 ? 190 : 342)
-                //135d:039b exits left elevators facing right, right ones left.
-                session.position.facing = scene%5 == 0 ? 1 : -1
-                clearTelly()
-                effect(scene < 5 ? 22 : 21); save(); return
+            } else if object.kind == 2, OriginalWorld.elevatorDestination(from: scene) != nil {
+                beginElevator(object); return
             } else if object.kind == 9 {
                 beginFountain(object); return
             } else if let hotspot = object.challengeIndex {
@@ -284,7 +277,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     override func keyDown(with event: NSEvent) {
         let key = event.keyCode
-        if session?.activeDoor != nil { return }
+        if isTransitioning { return }
         if [.practice,.drill].contains(screen) { cancelTutorialTimer() }
         if screen == .ending { return }
         if key == 120 { showPlayerMenu(); return }
@@ -380,7 +373,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let alert = NSAlert(); alert.messageText = "Match Rule"; alert.informativeText = text; alert.runModal()
     }
     override func mouseDown(with event: NSEvent) {
-        if session?.activeDoor != nil { return }
+        if isTransitioning { return }
         if screen == .ending { return }
         if screen == .results { continueAfterResults(); return }
         if session != nil && (session.activeZap != nil || session.activeFountain != nil) { return }
@@ -451,12 +444,13 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             canvas.text(prompt,font: font,x: 8,y: 176,color: 15,wrapWidth: 201)
         }
     }
-    func drawWorld() throws {
+    func drawWorldBackdrop(_ p: NativePosition) throws {
         canvas.fill(0,12,320,148,1)
         canvas.fill(5,15,310,143,8)
+        // Local elevator footage has two black bottom rows158/159; the room
+        // bitmap ends at157. Leaving158 blue exposes a seam during scrolling.
+        canvas.fill(5,158,310,1,0)
         canvas.clip = (8,15,304,143)
-        let doorFrame = session.activeDoor?.currentFrame
-        let p = doorFrame?.position ?? session.position
         if p.scene < 10 {
             canvas.fill(8,15,304,16,0)
             for i in 0..<38 { try sprite(137+(p.cameraUnit+i)%38,x: 8+i*8,y: 31,transparent: false) }
@@ -478,6 +472,15 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         } else if let selector = OriginalWorld.backgroundSelector(forRoom: p.scene) {
             canvas.draw(try content.bitmap(String(format: "DMOCKET.GRA.%04x",selector)),x: 0,y: 15)
         }
+    }
+    func drawWorld() throws {
+        let doorFrame = session.activeDoor?.currentFrame
+        let elevator = session.activeElevator
+        let elevatorFrame = elevator?.currentFrame
+        if let elevator, let frame = elevatorFrame, frame.scrollPixels > 0 { try drawElevatorScroll(elevator,frame.scrollPixels); return }
+        let p = elevatorFrame?.position ?? doorFrame?.position ?? session.position
+        try drawWorldBackdrop(p)
+        if let elevator, let frame = elevatorFrame, frame.drawsPanels { try drawElevatorBase(elevator,frame) }
         try drawTellyAndProjectile()
         try drawLiveWire()
         let moving = held.contains(123) || held.contains(124)
@@ -498,7 +501,12 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             let firing = frames[min(2,zap.elapsedIRQTicks/10)]
             frame = firing.ordinal; x = firing.xUnits*8; y = firing.yPixels
         }
+        if let elevatorFrame {
+            frame = elevatorFrame.ordinal ?? 0; y = elevatorFrame.y
+            if let elevator, elevatorFrame.drawsPanels && elevatorFrame.playerInFront { try drawElevatorPanels(elevator,elevatorFrame) }
+        }
         try sprite(frame,x: x,y: y,flipped: p.facing < 0)
+        if let elevator, let elevatorFrame, elevatorFrame.drawsPanels && !elevatorFrame.playerInFront { try drawElevatorPanels(elevator,elevatorFrame) }
         if let zap = session.activeZap, zap.elapsedIRQTicks >= 30, !zap.schedule.beamFrames.isEmpty {
             let index = min(5,(zap.elapsedIRQTicks-30)/10), beam = zap.schedule.beamFrames[index]
             try sprite(beam.ordinal,x: beam.xUnits*8,y: beam.yPixels,flipped: p.facing < 0)

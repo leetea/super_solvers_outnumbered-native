@@ -54,6 +54,7 @@ extension NativeGameView {
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
     }
     func pulseZap() {
+        if session != nil && session.activeElevator != nil { pulseElevator(); return }
         if session != nil && session.activeDoor != nil { pulseDoor(); return }
         if session != nil && session.activeFountain != nil { pulseFountain(); return }
         let now = ProcessInfo.processInfo.systemUptime

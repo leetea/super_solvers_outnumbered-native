@@ -1,0 +1,26 @@
+{
+  "milestone": "0.16.0",
+  "nativeCheckCount": 563,
+  "ordinaryControlsUsed": true,
+  "temporaryPlayerDirectory": "/private/tmp/outnumbered-016-gui-players",
+  "observed": [
+    "Continued copied temporary Junior replay; walked to left elevator",
+    "Origin0 to5: final native window captured two hallways during vertical travel and completed exit beside cactus",
+    "Origin5 to0: final native window captured reverse vertical travel and completed exit beside couch",
+    "Both final-build scroll captures have black joins without the earlier blue padding row; menu and HUD stay fixed",
+    "No fixtures, forced seeds, save edits or forced spawns used for these window trips"
+  ],
+  "screenshots": {
+    "gui-elevator-up-scroll-final-0.16.png": "60b60d10173bfcb9041fc7a32d36f473b14c4eec98f4bebe3478ab180b23f9a5",
+    "gui-elevator-up-exit-final-0.16.png": "b2bb6c26ca690c774f544569c4c79119f754b9ff8f3bc9197839e40d7d6cdddf",
+    "gui-elevator-down-scroll-final-0.16.png": "a719ba56dd32dcf20cbef7549436e0a9c05f5635fc26e86efa9a6704501d9579",
+    "gui-elevator-down-exit-final-0.16.png": "0f86169d9283f11da6a6377a6b21c8cd4316b2fae880bd91d6dadea66b417061"
+  },
+  "codeIdentity": "gui-0.16-code-identity.json",
+  "limits": [
+    "Right-side elevator origins4/9 and mid-travel save/resume checked headlessly, not in the native window",
+    "Snapshots do not prove every animation frame or perceptual audio parity",
+    "Detailed camera/bounds, auxiliary actor stepping and full mask/palette fidelity remain work",
+    "Pre-final captures without final in their names are diagnostic and do not verify the shipped code"
+  ]
+}

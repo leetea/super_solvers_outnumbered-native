@@ -1,0 +1,18 @@
+{
+  "bundleSHA256": "d10eb58c3b830148c881013d86b4d5bc3de48182e14f488a366984945cc113e1",
+  "runtimeZipSHA256": "9c9122eccf15c98bb86b29113bea01d9b70d2361e50080cdd5f2453de21d425d",
+  "sourceZipSHA256": "60a209cc9496283c1964044738b3348b08601b6bc3a45fb0bf635db7a7d47f7c",
+  "nativeArchitecture": "arm64",
+  "runtimeDependencies": "Apple system frameworks and system Swift libraries only",
+  "relocatedSignatureVerified": true,
+  "relocatedHeadlessPassed": true,
+  "relocatedHeadlessCheckCount": 563,
+  "sourceArchiveRebuildVerified": true,
+  "sourceArchiveRebuildCheckCount": 563,
+  "noDOSExecutableOrCompiledTemplateCodeInRuntime": true,
+  "originalArchiveSHA256": "6766fbaa4152436ec1096bf1a06c5889a7b82f25b5ee33bb7583629b8252dd14",
+  "localVideoSHA256": "6960fb011e044a141e75e734e35140ff5c6c62e8e3440bf78f96d27baf957205",
+  "completeGame": false,
+  "milestone": "0.16.0",
+  "runtimeDataSHA256": "4226c2bc5320fda667a864a3e900e737d4c4aebbdb70f8157daa67c6927b290e"
+}

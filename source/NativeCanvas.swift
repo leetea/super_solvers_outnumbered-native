@@ -79,6 +79,18 @@ final class NativeCanvas {
     static let palette: [(UInt8,UInt8,UInt8)] = [(0,0,0),(0,0,170),(0,170,0),(0,170,170),(170,0,0),(170,0,170),(170,85,0),(170,170,170),(85,85,85),(85,85,255),(85,255,85),(85,255,255),(255,85,85),(255,85,255),(255,255,85),(255,255,255)]
     private(set) var pixels = [UInt8](repeating: 0, count: width*height)
     var clip: (x: Int, y: Int, width: Int, height: Int)?
+    //135d:039b copies x0..311,y14..159 in eight bands; HUD/menu stay put.
+    func compositeElevatorViewport(source: [UInt8],destination: [UInt8],insertedPixels: Int,movingDown: Bool) {
+        guard source.count == pixels.count, destination.count == pixels.count else { return }
+        let amount = max(0,min(146,insertedPixels))
+        for row in 0..<146 {
+            let fromDestination = movingDown ? row < amount : row >= 146-amount
+            let sourceRow = movingDown ? (fromDestination ? 146-amount+row : row-amount) : (fromDestination ? row-(146-amount) : row+amount)
+            let image = fromDestination ? destination : source
+            let offset = (14+sourceRow)*Self.width
+            pixels.replaceSubrange((14+row)*Self.width..<(14+row)*Self.width+312,with: image[offset..<offset+312])
+        }
+    }
     func clear(_ color: UInt8 = 0) { pixels = [UInt8](repeating: color & 15, count: Self.width*Self.height) }
     func pixel(_ x: Int, _ y: Int, _ color: UInt8) {
         guard (0..<Self.width).contains(x), (0..<Self.height).contains(y) else { return }
