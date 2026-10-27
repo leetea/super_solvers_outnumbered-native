@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.13
+## Current verified milestone: 0.15
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,9 +16,9 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**469 integration checks pass.** The app ZIP passes strict signature verification
+**504 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.13.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.15.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
 [music/message recovery](docs/music-messages-recovery.md) and
@@ -136,4 +136,7 @@ timed activities, palette/audio calibration, ending refinements and a full
 natural adventure playthrough remain. See practice-presentation-recovery.md.
 
 
-Latest verification milestone: [0.14 ordinary win and restart](docs/ordinary-playthrough-0.14.md). The application binary and 469-check package remain version 0.13; 0.14 records additional ordinary native-window evidence.
+Previous verification milestone: [0.14 ordinary win and restart](docs/ordinary-playthrough-0.14.md). At0.14, the application binary and469-check package remained version0.13;0.14 recorded additional ordinary native-window evidence.
+
+
+Milestone0.15 implements staged room-door transitions and corrects elevator exit facing. See [transition recovery and limits](docs/door-elevator-transition-recovery.md) and [native-window observations](docs/gui-observations-0.15.json). Full elevator animation and other remaining full-game fidelity work are still pending.

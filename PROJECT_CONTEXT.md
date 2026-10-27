@@ -104,3 +104,9 @@ repeated sets, visible questions and deterministic animation repainting.
 Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
 timed activities, palette/audio calibration, ending refinements and a full
 natural adventure playthrough remain. See practice-presentation-recovery.md.
+
+
+Milestone0.15 adds staged room-door entrances and exits using the recovered walking/rear/front/shrunken poses, panel order, aligned hallway return and source24IRQ pose waits. Native input is locked during the synchronous sequence. Transition state persists across native saves and destination initialization runs once after restoration. Legacy saves remain readable. All504 checks pass locally and ordinary News entrance/exit poses were captured in the native window. Elevator final facing is corrected, but its animation/vertical scroll remain unfinished. Unpaced original viewport copies are presented for4IRQ ticks natively; this is an explicit timing adaptation, not original-CPU-speed parity. See door-elevator-transition-recovery.md.
+
+
+Current verification status0.15: ordinary native win/restart/replay was established at0.14; staged room-door transitions, aligned returns and elevator final facing are now implemented with504 checks. Older milestone paragraphs above retain their historical verification limits. Full elevator animation/scroll, collision/timed effects, opening/File/sign-in and remaining presentation/audio fidelity are still required.

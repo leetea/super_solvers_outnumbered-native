@@ -68,3 +68,5 @@ repeated sets, visible questions and deterministic animation repainting.
 Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
 timed activities, palette/audio calibration, ending refinements and a full
 natural adventure playthrough remain. See practice-presentation-recovery.md.
+
+| 0.15 | Staged room-door entrances/exits, persistent transition progress and aligned returns; elevator final facing | 504 native checks; ordinary News doorway window captures; unpaced-frame timing uses documented native adaptation; elevator animation remains pending |

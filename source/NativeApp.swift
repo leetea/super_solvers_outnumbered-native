@@ -54,6 +54,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     override var acceptsFirstResponder: Bool { true }
     override var isFlipped: Bool { true }
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        if session?.activeDoor != nil { return false }
         if menuItem.action == #selector(toggleCalculator(_:)) {
             menuItem.state = session?.calculatorEnabled == false ? .off : .on
             return session != nil
@@ -169,7 +170,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             do { try advanceEnding() } catch { present(error) }
             return
         }
-        if session.activeZap != nil || session.activeFountain != nil { needsDisplay = true; return }
+        if session.activeZap != nil || session.activeFountain != nil || session.activeDoor != nil { needsDisplay = true; return }
         // Original IRQ time continues while questions/decoder pause displayed
         // game minutes. Resume restores the remaining minute deadline.
         if screen != .title { session.clock.pollAfterIRQTicks(UInt64(OriginalWorld.frameIRQTicks)) }
@@ -232,20 +233,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let unit = scene < 10 ? session.position.playerUnit-(scene*38) : session.position.playerUnit
         if let object = world.object(scene: scene, overlappingPlayerAt: unit,energyMachineSlot: session.energyMachineSlot) {
             if object.kind == 1 {
-                if let room = OriginalWorld.roomScene(throughHallway: scene) {
-                    session.returnPosition = session.position
-                    session.position = NativePosition(scene: room, playerUnit: 5, cameraUnit: 0, facing: 1)
-                    clearTelly()
-                    attemptLiveWire()
-                    save(); showNewUserMessage(5); return
-                } else if scene >= 10, let prior = session.returnPosition {
-                    session.position = prior; session.returnPosition = nil; clearTelly(); session.liveWire?.clear(); save(); return
-                }
+                if OriginalWorld.roomScene(throughHallway: scene) != nil || (scene >= 10 && session.returnPosition != nil) { beginDoor(object); return }
             } else if object.kind == 2, let destination = OriginalWorld.elevatorDestination(from: scene) {
                 let local = OriginalWorld.elevatorExitScreenUnit(from: scene)!
                 session.position.scene = destination
                 session.position.playerUnit = destination*38+local
                 session.position.cameraUnit = destination < 5 ? (destination == 0 ? 0 : 152) : (destination == 5 ? 190 : 342)
+                //135d:039b exits left elevators facing right, right ones left.
+                session.position.facing = scene%5 == 0 ? 1 : -1
                 clearTelly()
                 effect(scene < 5 ? 22 : 21); save(); return
             } else if object.kind == 9 {
@@ -289,6 +284,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     override func keyDown(with event: NSEvent) {
         let key = event.keyCode
+        if session?.activeDoor != nil { return }
         if [.practice,.drill].contains(screen) { cancelTutorialTimer() }
         if screen == .ending { return }
         if key == 120 { showPlayerMenu(); return }
@@ -384,6 +380,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let alert = NSAlert(); alert.messageText = "Match Rule"; alert.informativeText = text; alert.runModal()
     }
     override func mouseDown(with event: NSEvent) {
+        if session?.activeDoor != nil { return }
         if screen == .ending { return }
         if screen == .results { continueAfterResults(); return }
         if session != nil && (session.activeZap != nil || session.activeFountain != nil) { return }
@@ -458,7 +455,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         canvas.fill(0,12,320,148,1)
         canvas.fill(5,15,310,143,8)
         canvas.clip = (8,15,304,143)
-        let p = session.position
+        let doorFrame = session.activeDoor?.currentFrame
+        let p = doorFrame?.position ?? session.position
         if p.scene < 10 {
             canvas.fill(8,15,304,16,0)
             for i in 0..<38 { try sprite(137+(p.cameraUnit+i)%38,x: 8+i*8,y: 31,transparent: false) }
@@ -489,6 +487,12 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if fireFrames > 0 { frame = 47+(3-fireFrames)%3 }
         if let fountain = session.activeFountain { frame = fountain.playerFrame }
         var x = (p.scene < 10 ? p.playerUnit-p.cameraUnit : p.playerUnit)*8
+        if let doorFrame {
+            frame = doorFrame.ordinal; y = doorFrame.y
+            if let ordinal = doorFrame.doorOrdinal, let door = session.activeDoor {
+                try sprite(ordinal,x: (door.hallway.scene*38+door.doorStartUnit-door.hallway.cameraUnit)*8,y: 49)
+            }
+        }
         if let zap = session.activeZap {
             let frames = zap.schedule.playerFrames
             let firing = frames[min(2,zap.elapsedIRQTicks/10)]

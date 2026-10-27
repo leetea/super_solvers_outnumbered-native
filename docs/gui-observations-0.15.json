@@ -1,0 +1,25 @@
+{
+  "milestone": "0.15.0",
+  "nativeCheckCount": 504,
+  "ordinaryControlsUsed": true,
+  "temporaryPlayers": "/private/tmp/outnumbered-015-gui-players",
+  "observed": [
+    "Continued copied temporary ordinary Junior replay",
+    "Walked left from Reception to News doorway",
+    "Up triggered staged entrance; native window captured front pose while emerging inside News",
+    "Up at interior exit triggered staged exit; native window captured rear pose",
+    "Return completed at hallway1 globalunit53 camera46 facingright; returnPosition and activeDoor cleared"
+  ],
+  "screenshots": {
+    "gui-door-entry-mid-0.15.png": "a3f784afc88e78c391d4fc43ebebf020e6b4e3618fd839b85f90b48e671333db",
+    "gui-door-exit-mid-0.15.png": "d6eb59300048c0eb84ad7583d9d00a8e1ef5e66bd03b807c57d422973f0b3466"
+  },
+  "codeIdentity": "gui-0.15-code-identity.json",
+  "limits": [
+    "Two native-window snapshots do not establish every animation frame or original-machine timing parity",
+    "Midpoint save/resume and one-time RNG initialization verified by native headless checks, not by GUI quit precisely at midpoint",
+    "Native display interval4IRQ for unpaced memory-copy loops; original pose waits24IRQ",
+    "Elevator animation remains pending; only final facing corrected",
+    "Complete game remains unfinished"
+  ]
+}

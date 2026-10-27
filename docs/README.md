@@ -1,4 +1,4 @@
-# Outnumbered Native Development Build 0.13
+# Outnumbered Native Development Build 0.15
 
 Open `Outnumbered Native Development.app` on an Apple Silicon Mac with macOS12 or later. This is a playable development milestone toward the complete game, not the finished game.
 
@@ -8,7 +8,7 @@ From the title screen, Return opens the player menu. Create or select a player, 
 
 Choose **Game → Reference Telly Drill** (Command-D) to play the recording's six questions. Answers are **19,12,22,7,22,3**. Correct answers earn50 each; at least five correct answers earn a code piece and100 more. Feedback pauses are automatic, and the game clock keeps running. This checkpoint uses an isolated native session.
 
-The app includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, all ten activity families, decoder logic, recharge, LiveWire, the calculator and native saves. It now includes the original scripted hideout reveal, progressive bonuses, win/loss outcomes, lifetime points and replay. Separate custom game/practice settings, player switching, practice counters and unfinished-game continuation are now connected. Original opening/menu animations, detailed ending/transition effects, collision presentation, palette and full-playthrough validation remain incomplete. This is not a complete or pixel-exact game.
+The app includes Telly encounters, zaps, thrown tricks, generated math drills, code capture, room traversal, all ten activity families, decoder logic, recharge, LiveWire, the calculator and native saves. It now includes the original scripted hideout reveal, progressive bonuses, win/loss outcomes, lifetime points and replay. Separate custom game/practice settings, player switching, practice counters and unfinished-game continuation are now connected. Original opening/menu animations, detailed ending/transition effects, collision presentation, palette and complete fidelity validation remain incomplete. This is not a complete or pixel-exact game.
 
 Native player files are separate from DOS assets:
 
@@ -87,3 +87,6 @@ repeated sets, visible questions and deterministic animation repainting.
 Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
 timed activities, palette/audio calibration, ending refinements and a full
 natural adventure playthrough remain. See practice-presentation-recovery.md.
+
+
+Milestone0.15 adds staged room-door entrances and exits using the recovered walking/rear/front/shrunken poses, panel order, aligned hallway return and source24IRQ pose waits. Native input is locked during the synchronous sequence. Transition state persists across native saves and destination initialization runs once after restoration. Legacy saves remain readable. All504 checks pass locally and ordinary News entrance/exit poses were captured in the native window. Elevator final facing is corrected, but its animation/vertical scroll remain unfinished. Unpaced original viewport copies are presented for4IRQ ticks natively; this is an explicit timing adaptation, not original-CPU-speed parity. See door-elevator-transition-recovery.md.

@@ -98,10 +98,32 @@ func nativeIntegrationChecks(root: URL) throws {
     view.session = NativeSession(profileID: UUID(),seed: 1)
     view.screen = .world
     let hallway = NativePosition(scene: 1,playerUnit: 52,cameraUnit: 38,facing: 1)
-    view.session.position = hallway; view.interact()
-    checks["native_news_door_enter"] = view.session.position.scene == 10 && view.session.position.playerUnit == 5 && view.session.returnPosition == hallway
-    view.interact()
-    checks["native_news_door_return_position"] = view.session.position == hallway && view.session.returnPosition == nil
+    let alignedHallway = NativePosition(scene: 1,playerUnit: 53,cameraUnit: 38,facing: 1)
+    view.session.position = hallway; view.interact(); view.advanceDoor(irqTicks: 10_000)
+    checks["native_news_door_enter"] = view.session.position.scene == 10 && view.session.position.playerUnit == 5 && view.session.returnPosition == alignedHallway
+    view.interact(); view.advanceDoor(irqTicks: 10_000)
+    checks["native_news_door_return_position"] = view.session.position == alignedHallway && view.session.returnPosition == nil
+    // Both facing directions and all five off-centre door approaches must
+    // restore the original aligned global/screen position, not the Up key site.
+    for hall in [1,3,6,7,8] {
+        let door = view.world.scenes[hall].first { $0.kind == 1 }!
+        for facing in [-1,1] {
+            view.session = NativeSession(profileID: UUID(),seed: 1)
+            let camera = hall*38
+            view.session.position = NativePosition(scene: hall,playerUnit: hall*38+door.startUnit-4,cameraUnit: camera,facing: facing)
+            view.interact(); view.advanceDoor(irqTicks: 10_000)
+            let inside = view.session.position.scene == OriginalWorld.roomScene(throughHallway: hall)
+            view.interact(); view.advanceDoor(irqTicks: 10_000)
+            checks["native_door_aligned_return_hall_\(hall)_facing_\(facing)"] = inside && view.session.position == NativePosition(scene: hall,playerUnit: hall*38+door.startUnit+1,cameraUnit: camera,facing: 1) && view.session.returnPosition == nil
+        }
+    }
+    for hall in [0,4,5,9] {
+        let elevator = view.world.scenes[hall].first { $0.kind == 2 }!
+        view.session = NativeSession(profileID: UUID(),seed: 1)
+        view.session.position = NativePosition(scene: hall,playerUnit: hall*38+elevator.startUnit,cameraUnit: hall*38,facing: hall%5 == 0 ? -1 : 1)
+        view.interact()
+        checks["native_elevator_exit_facing_hall_\(hall)"] = view.session.position.scene == OriginalWorld.elevatorDestination(from: hall) && view.session.position.facing == (hall%5 == 0 ? 1 : -1)
+    }
     view.session.position = NativePosition(scene: 0,playerUnit: 7,cameraUnit: 0,facing: 1)
     view.interact()
     checks["native_left_elevator"] = view.session.position.scene == 5 && view.session.position.playerUnit == 202 && view.session.position.cameraUnit == 190
@@ -111,6 +133,7 @@ func nativeIntegrationChecks(root: URL) throws {
     view.referenceMode = false
     view.session.clock.pause(); view.save()
     checks["transient_decoder_pause_not_saved_into_exploration"] = try view.saves.load(view.session.profileID)?.clock.pauseDepth == 0
+    checks.merge(try nativeDoorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeEncounterChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeEnergyLiveWireChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeCalculatorChecks(root: root,output: output)) { _,new in new }

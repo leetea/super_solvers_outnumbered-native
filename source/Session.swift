@@ -37,6 +37,7 @@ struct NativeSession: Codable {
     var playerHasMoved: Bool?
     var energyMachineSlot: Int?
     var activeFountain: NativeFountain?
+    var activeDoor: NativeDoorTransition?
     var liveWire: OriginalLiveWire?
     var calculator: NativeCalculator?
     var calculatorEnabled: Bool?
@@ -84,6 +85,7 @@ struct NativeSession: Codable {
         (energyMachineSlot == nil || OriginalWorld.energyMachineCandidates.contains(energyMachineSlot!)) &&
         (activeFountain == nil || (activeFountain!.valid && activeDrill == nil && activeZap == nil && activeChallenge == nil && (activeFountain!.awardIssued ? pendingRecharge == 0 : pendingRecharge == activeFountain!.credits))) &&
         (liveWire == nil || liveWire!.hasValidPersistenceState) &&
+        (activeDoor == nil || (activeDoor!.valid && activeChallenge == nil && activeDrill == nil && activeZap == nil && activeFountain == nil && activeEnding == nil && position == (activeDoor!.destinationApplied ? activeDoor!.destination : activeDoor!.origin))) &&
         (calculator == nil || calculator!.valid) &&
         (activityStates == nil || activityStates!.allSatisfy { [4,7].contains($0.key) && $0.value.hotspot == $0.key && $0.value.valid })
     }
