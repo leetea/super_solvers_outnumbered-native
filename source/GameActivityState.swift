@@ -16,6 +16,7 @@ extension NativeGameView {
         session.activityStates?[challenge.hotspot] = state
     }
     @objc func referenceSpinner() { activityCheckpoint(id: 9120,hotspot: 3,scene: 12) }
+    @objc func referenceTelevision() { activityCheckpoint(id: 9020,hotspot: 6,scene: 14) }
     @objc func referenceMusic() { activityCheckpoint(id: 9050,hotspot: 4,scene: 15) }
     @objc func referenceSupplies() { activityCheckpoint(id: 9040,hotspot: 7,scene: 14) }
     @objc func referenceJuniorQuestions() {

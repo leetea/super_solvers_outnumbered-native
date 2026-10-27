@@ -87,5 +87,65 @@ func nativeActivityEffectsChecks(root: URL,output: URL) throws -> [String:Bool] 
         try view.advanceActivityPresentation(irqTicks: 10000)
         checks["native_\(name)_effect_retains_prepared_row_rng_and_unlocks"] = !view.isActivityPresenting && view.session.generator.randomState == rng && view.session.valid
     }
+    let tv = bank.cases.first { $0.id == 9020 && $0.seed == 1 && $0.variant == 0 }!
+    let noise = try NativeActivityPlan(tv)
+    checks["television_sixty_six_IRQ_pairs_restore_at360"] = noise.duration == 360 && noise.frames.count == 61 && noise.frame(at: 0).marks.count == 100 && noise.frame(at: 5).marks.count == 100 && noise.frame(at: 6).marks.isEmpty && noise.frame(at: 12).marks.count == 100 && noise.frame(at: 24).marks.count == 98 && noise.frame(at: 348).marks.count == 72 && noise.frame(at: 354).marks.isEmpty
+    checks["television_caller_stack_range_fixture_not_plain_rand"] = Array(noise.frame(at: 0).marks.prefix(10)) == [52,61,40,45,90,85,34,70,29,121] && Array(noise.frame(at: 12).marks.prefix(10)) == [61,37,30,89,95,66,63,119,81,69]
+    checks["television_exact2580_draws_and_original_fixture_states"] = noise.randomSteps.count == 30 && noise.randomSteps.prefix(3).map(\.drawCount) == [100,200,298] && noise.randomSteps.prefix(3).map(\.state) == [2654337172,1340861360,3535864326] && noise.randomSteps.last?.state == 2042767204 && noise.randomSteps.last?.drawCount == 2580
+    checks["television_sound23_stop_three_IRQ_then_three_IRQ"] = noise.sounds.count == 120 && noise.sounds.map(\.at) == Array(stride(from: 0,to: 360,by: 3)) && noise.sounds.enumerated().allSatisfy { $0.element.index == ($0.offset%2 == 0 ? 23 : nil) }
+    var masksCorrect = true
+    for (offset,mask) in [0xfc,0xfe,0xff,0xff,0xff,0xff,0xfc,0x7e].enumerated() {
+        a.clear(1);a.xorTelevisionNoise([80+offset,40])
+        for x in 0..<320 {
+            let changed = (80..<88).contains(x) && mask & (0x80 >> (x-80)) != 0
+            masksCorrect = masksCorrect && a.pixels[40*320+x] == (changed ? 15 : 1)
+        }
+    }
+    checks["television_original_EGA_masks_all_eight_x_alignments"] = masksCorrect
+    a.clear(5);let solid = a.pixels;a.xorTelevisionNoise([31,40,31,40])
+    checks["television_duplicate_noise_spans_cancel_in_order"] = a.pixels == solid
+    a.xorTelevisionNoise(noise.frame(at: 0).marks);a.xorTelevisionNoise(noise.frame(at: 0).marks)
+    checks["television_second_XOR_restores_every_original_pixel"] = a.pixels == solid
+    var endpoints = 0,extents = true
+    for challenge in bank.cases where challenge.hotspot == 6 {
+        let timeline = try NativeActivityPlan(challenge)
+        a.clear();b.clear()
+        _ = try ActivityTemplates(content: content).draw(challenge,on: a)
+        _ = try ActivityTemplates(content: content).draw(challenge,on: b,progress: timeline.frame(at: 360))
+        if a.pixels == b.pixels { endpoints += 1 }
+        for frame in timeline.frames {
+            extents = extents && frame.marks.count%2 == 0
+            for i in stride(from: 0,to: frame.marks.count,by: 2) {
+                extents = extents && (29...164).contains(frame.marks[i]) && (29...123).contains(frame.marks[i+1])
+            }
+        }
+    }
+    checks["television_all320_endpoints_equal_original_table"] = endpoints == 320
+    checks["television_all320_native_point_coordinates_within_source_extents"] = extents
+    view.session = NativeSession(profileID: UUID(),seed: 1,lifetimePoints: 30000)
+    view.session.position = NativePosition(scene: 14,playerUnit: 15,cameraUnit: 0,facing: 1)
+    view.open(tv);let firstState = view.session.generator.randomState
+    checks["television_native_open_consumes_only_first100_draws"] = firstState == 2654337172 && view.session.activityPresentation?.appliedRandomCount == 100 && view.session.valid
+    try view.render();let noisy = view.canvas.pixels
+    try view.canvas.writePNG(to: output.appendingPathComponent("native-television-static-start.png"))
+    try view.render();view.questionCharacter("1");view.submitQuestion()
+    checks["television_paint_and_early_input_do_not_change_stream_or_rewards"] = noisy == view.canvas.pixels && view.session.generator.randomState == firstState && view.session.attempts[6]?.input == "" && view.session.score == 0
+    try view.advanceActivityPresentation(irqTicks: 6);try view.render()
+    try view.canvas.writePNG(to: output.appendingPathComponent("native-television-static-cleared.png"))
+    checks["television_clear_iteration_consumes_no_random_draws"] = view.session.generator.randomState == firstState && view.session.activityPresentation?.appliedRandomCount == 100
+    view.session = try JSONDecoder().decode(NativeSession.self,from: JSONEncoder().encode(view.session!))
+    try view.advanceActivityPresentation(irqTicks: 5)
+    checks["television_partial_save_waits_until_next_twelve_IRQ_deadline"] = view.session.generator.randomState == firstState && view.session.valid
+    try view.advanceActivityPresentation(irqTicks: 1)
+    checks["television_resume_consumes_second100_draws_once"] = view.session.generator.randomState == 1340861360 && view.session.activityPresentation?.appliedRandomCount == 200
+    try view.advanceActivityPresentation(irqTicks: 336)
+    checks["television_final_noise_phase_has2580_draws_before_last_pair"] = view.session.generator.randomState == 2042767204 && view.session.activityPresentation?.elapsedIRQTicks == 348
+    try view.advanceActivityPresentation(irqTicks: 11)
+    checks["television_last_clear_wait_keeps_question_locked"] = view.isActivityPresenting && view.session.activityPresentation?.elapsedIRQTicks == 359 && view.session.generator.randomState == 2042767204
+    try view.advanceActivityPresentation(irqTicks: 1)
+    var afterTV = view.session.generator
+    checks["television_360IRQ_unlocks_next_gameplay_draw6746"] = !view.isActivityPresenting && view.session.valid && afterTV.nextRandomValue() == 6746
+    for character in "168" { view.questionCharacter(String(character)) };view.submitQuestion()
+    checks["television_post_effect_answer_awards300_and_room_clues"] = view.session.score == 300 && view.session.completed.contains(6) && view.session.pendingRecharge == 2 && view.session.decoder.completedRoomCount == 1
     return checks
 }

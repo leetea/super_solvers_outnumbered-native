@@ -1,0 +1,66 @@
+{
+  "milestone": "0.24.0",
+  "completeGame": false,
+  "codeIdentity": "gui-0.24-code-identity.json",
+  "isolatedNativeData": true,
+  "realUserFilesUntouched": true,
+  "referenceCheckpoint": {
+    "id": 9020,
+    "seed": 1,
+    "variant": 0,
+    "answer": 168,
+    "score": 300,
+    "observed": [
+      "TV noise spans over the table",
+      "clear phase before question panel",
+      "question/calculator after sequence",
+      "first-try answer300",
+      "Equipment clues in decoder"
+    ],
+    "captures": [
+      "gui-television-noise-0.24.png",
+      "gui-television-static-0.24.png",
+      "gui-television-ready-0.24.png",
+      "gui-television-answer-0.24.png",
+      "gui-television-clues-0.24.png"
+    ]
+  },
+  "ordinaryCampaign": {
+    "profile": "copied Full Game Check",
+    "started": "Continue Game from0.23 ordinary prize run at300",
+    "route": "Game Show exit, right elevator up, upper hallway traversal with an incidental Cartoon-room cassette visit, Equipment door284/room14, TV hotspot6 atplayer32",
+    "question": "Duck feet88 pairs plus134 more",
+    "answer": 222,
+    "scoreBefore": 300,
+    "scoreAfter": 600,
+    "clues": "Game Show and Equipment rows visible; no secret-code pieces earned in this run",
+    "captures": [
+      "gui-television-ordinary-effect-0.24.png",
+      "gui-television-ordinary-ready-0.24.png",
+      "gui-television-ordinary-answer-0.24.png",
+      "gui-television-ordinary-clues-0.24.png"
+    ],
+    "rawFinal": {
+      "position": {
+        "cameraUnit": 0,
+        "playerUnit": 32,
+        "facing": 1,
+        "scene": 14
+      },
+      "score": 600,
+      "completed": [
+        2,
+        6
+      ],
+      "energy": 8,
+      "pendingRecharge": 4
+    },
+    "quit": "Normal app-menu Quit while decoder paused"
+  },
+  "limits": [
+    "Static ABI/control-flow derivation, no live DOS register trace.",
+    "Supplied local playthrough has no TV-table static checkpoint.",
+    "Screenshots do not prove exact IRQ/frame synchronization or perceptual audio parity.",
+    "Palette, bitmap masking and final complete-playthrough validation remain open."
+  ]
+}

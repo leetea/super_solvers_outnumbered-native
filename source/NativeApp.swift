@@ -608,6 +608,7 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
             let songs = NSMenuItem(title: "Reference Cartoon Songs Question",action: #selector(NativeGameView.referenceSongs),keyEquivalent: "g"); songs.target = game; gameMenu.addItem(songs)
             let bars = NSMenuItem(title: "Bar Chart Checkpoint",action: #selector(NativeGameView.referenceBarChart),keyEquivalent: "b"); bars.target = game; gameMenu.addItem(bars)
             let spinner = NSMenuItem(title: "Spinner Checkpoint",action: #selector(NativeGameView.referenceSpinner),keyEquivalent: "1"); spinner.target = game; gameMenu.addItem(spinner)
+            let television = NSMenuItem(title: "Television Checkpoint",action: #selector(NativeGameView.referenceTelevision),keyEquivalent: "t"); television.target = game; gameMenu.addItem(television)
             let music = NSMenuItem(title: "Music Chart Checkpoint",action: #selector(NativeGameView.referenceMusic),keyEquivalent: "2"); music.target = game; gameMenu.addItem(music)
             let supplies = NSMenuItem(title: "Equipment List Checkpoint",action: #selector(NativeGameView.referenceSupplies),keyEquivalent: "3"); supplies.target = game; gameMenu.addItem(supplies)
             let questions = NSMenuItem(title: "Junior Questions Checkpoint",action: #selector(NativeGameView.referenceJuniorQuestions),keyEquivalent: "4"); questions.target = game; gameMenu.addItem(questions)

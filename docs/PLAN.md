@@ -2,9 +2,9 @@
 
 Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers Outnumbered. The original DOS executable, graphics drivers and DOS/PC CPU environment are not part of the finished app. Keep original assets and the supplied reference video unchanged.
 
-## Current verified state — 0.23, October27,2026
+## Current verified state — 0.24, October27,2026
 
-800 native checks pass. The ordinary full adventure win and normal
+818 native checks pass. The ordinary full adventure win and normal
 quit/relaunch/replay were established at0.14; later fidelity milestones still
 require a fresh complete playthrough before final completion.0.15–0.18 add
 original staged doors/elevators, transition actor/RNG updates and camera rules.
@@ -19,7 +19,8 @@ The0.20 camera/recharge milestone implements the room ceiling camera
 scroll and auxiliary-actor lifecycle. The0.21 milestone restores adventure Telly introduction, code-card capture,
 rejection and persisted result waits. The0.22 milestone restores timed bars, needles, line plots and cassettes.
 The0.23 milestone restores prize RNG/price/outline effects, spinner highlights, music flashes and equipment headers.
-Next resolve the TV command23 caller/range arguments and static effect, opening/File/sign-in,
+The0.24 milestone resolves TV caller-stack range arguments and restores its static effect.
+Next recover opening/File/sign-in presentation,
 queued input, ending refinements and palette/audio calibration. Keep the
 original completion criteria below; cosmetic fidelity and complete-loop
 validation remain part of the requested end state. Detailed source-mask and
@@ -49,7 +50,7 @@ check. See player-impact-recovery.md and DEVELOPMENT-STATUS.md.
 - `work/reimplementation/`: expanded native source, original resource catalog, decoded images/fonts/audio, question VM recovery, references and static evidence.
 - `work/reimplementation/reference-media/source.json`: local video identity and measured tracks. Derived PNG frames and mono PCM are analysis copies only.
 - `work/reimplementation/REFERENCE-OVERRIDE.md`: local-video replacement instruction and workspace migration.
-- `outputs/Outnumbered Native Development.app`: current0.23 ARM64 development app with800 checks. All ten activity families, source-derived question setup, ordinary winning loop, core menus/custom/practice/help/scores, music/message options, staged traversal, camera rules, enemies, drills, zaps, recharge and player reactions are integrated. Checkpoint commands are isolated reference sessions, not ordinary-play evidence. Read the current status and milestone verification for remaining gaps; this is separate from the preserved first prototype.
+- `outputs/Outnumbered Native Development.app`: current0.24 ARM64 development app with818 checks. All ten activity families, source-derived question setup, ordinary winning loop, core menus/custom/practice/help/scores, music/message options, staged traversal, camera rules, enemies, drills, zaps, recharge and player reactions are integrated. Checkpoint commands are isolated reference sessions, not ordinary-play evidence. Read the current status and milestone verification for remaining gaps; this is separate from the preserved first prototype.
 - `work/reimplementation/DEVELOPMENT-STATUS.md`: implemented behavior, verification, known approximations and next work. Treat this alongside this checklist when continuing.
 
 Current workspace is `.`. Earlier work was copied from the previous Codex directory without modifying that directory; compiler caches were omitted.
@@ -148,3 +149,6 @@ Milestone0.20 restores the room ceiling security camera (correcting the earlier 
 
 
 Milestone0.23 restores prize price/outline flashes and their original retry-based random consumption, spinner highlights, Great Eight music-header flashes and Equipment List header cycles. Native saves retain the initial random stream and applied checkpoint cursor; repainting cannot advance it, and future phases do not consume it early. Question/input appear only after the recovered waits.800 native checks pass, including1280 endpoint comparisons, exact54-draw prize fixture/next-draw validation, partial restore and prior0.22 compatibility. Native windows separately verify spinner/music/equipment answers and a normal new-game prize activity17→300points with Game Show clues. The TV static effect remains pending because its command23 aliases a bounded-range helper with unresolved caller arguments. Opening/File/sign-in, queued input, driver masks/palette/audio, ending refinements and a fresh complete playthrough still prevent complete-game status. See activity-effects-recovery.md.
+
+
+Milestone0.24 restores the television-table noise introduction:60 paired XOR phases with original sound/waits and2580 random draws. Focused caller-stack recovery establishes the no-argument range bounds0..8512; the native effect preserves the EGA byte masks, including its same-byte crossing quirk.818 checks pass, covering320 static endpoints, independent coordinates/stream states, save/resume, input lockout and every byte alignment. Native windows verified the isolated168→300 checkpoint and a normal Equipment TV activity222→600 total/room clues. All nine activity families with timed drawing now have native schedules; the map needs no such intro. This does not establish complete campaign/pixel/audio identity. Opening/File/sign-in, queued input, remaining mask/palette/ending/audio refinements and a fresh full ordinary win remain required. See television-effect-recovery.md.

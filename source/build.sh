@@ -28,8 +28,8 @@ cat > "$app/Contents/Info.plist" <<'PLIST'
 <key>CFBundleIdentifier</key><string>local.outnumbered.native.development</string>
 <key>CFBundleName</key><string>Outnumbered Native Development</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>0.23.0</string>
-<key>CFBundleVersion</key><string>23</string>
+<key>CFBundleShortVersionString</key><string>0.24.0</string>
+<key>CFBundleVersion</key><string>24</string>
 <key>LSMinimumSystemVersion</key><string>12.0</string>
 <key>NSHighResolutionCapable</key><true/>
 </dict></plist>

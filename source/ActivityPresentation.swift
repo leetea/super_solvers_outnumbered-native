@@ -6,7 +6,7 @@ struct NativeActivityPlan {
     struct Frame { let at: Int;let marks: [Int];let completed: Int }
     struct Sound: Equatable { let at: Int;let index: Int? } //nil is original stop
     struct RandomStep { let at: Int;let state: UInt32;let drawCount: Int }
-    static let hotspots: Set<Int> = [1,2,3,4,5,7,8,9]
+    static let hotspots: Set<Int> = [1,2,3,4,5,6,7,8,9]
     let frames: [Frame]
     let sounds: [Sound]
     let duration: Int
@@ -15,7 +15,7 @@ struct NativeActivityPlan {
         self.frames = frames;self.sounds = sounds;self.duration = duration;self.randomSteps = randomSteps
     }
     init(_ challenge: OriginalChallenge,randomState: UInt32? = nil) throws {
-        if [2,3,4,7].contains(challenge.hotspot) { self = try Self.effects(challenge,randomState: randomState);return }
+        if [2,3,4,6,7].contains(challenge.hotspot) { self = try Self.effects(challenge,randomState: randomState);return }
         guard Self.hotspots.contains(challenge.hotspot) else { throw ContentError.invalid("No recovered activity timeline") }
         var frames: [Frame] = [],sounds: [Sound] = [],time = 0
         func frame(_ marks: [Int],_ completed: Int = 0) { frames.append(Frame(at: time,marks: marks,completed: completed)) }

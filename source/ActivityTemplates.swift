@@ -78,7 +78,8 @@ struct ActivityTemplates {
                 throw ContentError.invalid("Unexpected original television bitmap")
             }
             try drawTelevisionTable(challenge, on: canvas)
-            return .recoveredStatic(template: 8512, omittedAnimation: "Original 60-step introductory television-static effect")
+            if let progress { canvas.xorTelevisionNoise(progress.marks) }
+            return .recoveredStatic(template: 8512, omittedAnimation: "Native timeline restores the60-step XOR effect and caller-stack random bounds; full driver palette/mask parity remains under analysis")
         default:
             return .unsupported(template: challenge.bitmap_record_id - 1,
                                 missing: "Dynamic chart, label, scale or object drawing has not yet been translated from this original template.")

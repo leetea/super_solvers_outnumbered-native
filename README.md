@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.23
+## Current verified milestone: 0.24
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,16 +16,17 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**800 integration checks pass.** The app ZIP passes strict signature verification
+**818 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.23.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.24.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
 [music/message recovery](docs/music-messages-recovery.md) and
 [practice presentation](docs/practice-presentation-recovery.md) and
 [adventure Telly presentation](docs/drill-presentation-recovery.md) and
 [timed charts/sliders/cassettes](docs/activity-timing-recovery.md) and
-[prize/spinner/music/equipment effects](docs/activity-effects-recovery.md).
+[prize/spinner/music/equipment effects](docs/activity-effects-recovery.md) and
+[television static](docs/television-effect-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
 Original opening/menu animations,
@@ -161,3 +162,8 @@ Milestone0.20 restores the room ceiling security camera (correcting the earlier 
 
 
 Milestone0.23 restores prize price/outline flashes and their original retry-based random consumption, spinner highlights, Great Eight music-header flashes and Equipment List header cycles. Native saves retain the initial random stream and applied checkpoint cursor; repainting cannot advance it, and future phases do not consume it early. Question/input appear only after the recovered waits.800 native checks pass, including1280 endpoint comparisons, exact54-draw prize fixture/next-draw validation, partial restore and prior0.22 compatibility. Native windows separately verify spinner/music/equipment answers and a normal new-game prize activity17→300points with Game Show clues. The TV static effect remains pending because its command23 aliases a bounded-range helper with unresolved caller arguments. Opening/File/sign-in, queued input, driver masks/palette/audio, ending refinements and a fresh complete playthrough still prevent complete-game status. See activity-effects-recovery.md.
+
+
+Milestone0.24 restores the television-table noise introduction:60 paired XOR phases with original sound/waits and2580 random draws. Focused caller-stack recovery establishes the no-argument range bounds0..8512; the native effect preserves the EGA byte masks, including its same-byte crossing quirk.818 checks pass, covering320 static endpoints, independent coordinates/stream states, save/resume, input lockout and every byte alignment. Native windows verified the isolated168→300 checkpoint and a normal Equipment TV activity222→600 total/room clues. All nine activity families with timed drawing now have native schedules; the map needs no such intro. This does not establish complete campaign/pixel/audio identity. Opening/File/sign-in, queued input, remaining mask/palette/ending/audio refinements and a fresh full ordinary win remain required. See television-effect-recovery.md.
+
+Command-T opens the isolated television-table checkpoint (answer168).
