@@ -6,6 +6,7 @@ struct NativeElevatorTransition: Codable {
     let origin: NativePosition
     let startUnit: Int
     var elapsedIRQTicks = 0
+    var auxiliaryFramesApplied: Int? = 0 // nil in pre-0.17 saves
     var destinationApplied = false
     var travelSoundStarted = false
     struct Frame {
@@ -34,7 +35,7 @@ struct NativeElevatorTransition: Codable {
         }
         let delta = aligned.playerUnit-origin.playerUnit
         if delta != 0 { for offset in 1...abs(delta) {
-            var position = origin; position.playerUnit += offset*(delta < 0 ? -1 : 1); position.facing = delta < 0 ? -1 : 1
+            var position = origin; position.playerUnit += offset*(delta < 0 ? -1 : 1); position.facing = origin.facing
             append(position,1+(offset-1)%8,81,nil,false,true,0,false,4)
         } }
         for i in 0..<5 { append(aligned,9+i,78-i*3) }
@@ -49,15 +50,16 @@ struct NativeElevatorTransition: Codable {
         return result
     }
     var duration: Int { frames.reduce(0) { $0+$1.ticks } }
-    var currentFrame: Frame {
+    var currentFrameIndex: Int {
         var remainder = elapsedIRQTicks
-        for frame in frames { if remainder < frame.ticks { return frame }; remainder -= frame.ticks }
-        return frames.last!
+        for (index,frame) in frames.enumerated() { if remainder < frame.ticks { return index }; remainder -= frame.ticks }
+        return frames.count-1
     }
+    var currentFrame: Frame { frames[currentFrameIndex] }
     var valid: Bool {
         guard origin.valid, OriginalWorld.elevatorDestination(from: origin.scene) != nil,
               startUnit == (origin.scene%5 == 0 ? 6 : 18) else { return false }
         let frame = currentFrame
-        return (0...duration).contains(elapsedIRQTicks) && destinationApplied == frame.destination && travelSoundStarted == (frame.scrollPixels > 0 || frame.destination)
+        return (0...duration).contains(elapsedIRQTicks) && (auxiliaryFramesApplied == nil || auxiliaryFramesApplied == currentFrameIndex+1) && destinationApplied == frame.destination && travelSoundStarted == (frame.scrollPixels > 0 || frame.destination)
     }
 }

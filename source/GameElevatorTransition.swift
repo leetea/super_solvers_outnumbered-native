@@ -6,21 +6,37 @@ extension NativeGameView {
         session.activeElevator = NativeElevatorTransition(origin: session.position,startUnit: object.startUnit)
         held.removeAll(); jumpStep = nil; status = ""
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
+        advanceElevator(irqTicks: 0)
         save(); needsDisplay = true
     }
     func advanceElevator(irqTicks: Int) {
         guard var elevator = session.activeElevator else { return }
+        let first = elevator.auxiliaryFramesApplied ?? elevator.currentFrameIndex+1
         let ticks = max(0,min(irqTicks,elevator.duration-elevator.elapsedIRQTicks))
         elevator.elapsedIRQTicks += ticks
         session.clock.pollAfterIRQTicks(UInt64(ticks),processMinute: false)
-        let frame = elevator.currentFrame
-        if !elevator.travelSoundStarted && (frame.scrollPixels > 0 || frame.destination) {
-            effect(elevator.origin.scene < 5 ? 22 : 21); elevator.travelSoundStarted = true
-        }
-        if !elevator.destinationApplied && frame.destination {
-            session.position = elevator.exitPosition; clearTelly()
-            elevator.destinationApplied = true
-        }
+        let frames = elevator.frames, last = elevator.currentFrameIndex
+        if first <= last { for index in first...last {
+            let frame = frames[index]
+            if !elevator.travelSoundStarted && frame.scrollPixels > 0 {
+                //135d:039b clears enemy/projectile and calls148a(0) once
+                //after the panels close, before sound and the scroll bands.
+                clearTelly()
+                updateTransitionActors(at: elevator.aligned)
+                effect(elevator.origin.scene < 5 ? 22 : 21); elevator.travelSoundStarted = true
+            }
+            if !elevator.destinationApplied && frame.destination {
+                session.position = elevator.exitPosition; clearTelly()
+                elevator.destinationApplied = true
+            }
+            if frame.scrollPixels == 0 {
+                var prior = index == 0 ? elevator.origin : frames[index-1].position
+                if frame.destination { prior = frame.position }
+                prior.cameraUnit = frame.position.cameraUnit
+                updateTransitionActors(at: prior,playerStepSound: transitionWalkSound(at: frame.position,ordinal: frame.ordinal))
+            }
+        } }
+        elevator.auxiliaryFramesApplied = last+1
         session.activeElevator = elevator
         if elevator.elapsedIRQTicks >= elevator.duration {
             session.position = elevator.finalPosition

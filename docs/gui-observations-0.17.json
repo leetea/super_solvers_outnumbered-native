@@ -1,0 +1,26 @@
+{
+  "milestone": "0.17.0",
+  "nativeCheckCount": 582,
+  "ordinaryControlsUsed": true,
+  "temporaryPlayers": "/private/tmp/outnumbered-017-gui-players",
+  "observed": [
+    "Continued copied ordinary Junior replay; walked from left elevator to News",
+    "Naturally spawned Telly was present before doorway entry",
+    "During rear doorway pose, Telly had advanced toward the doorway and the existing projectile continued moving",
+    "Entrance, normal room exit and left elevator vertical travel completed; no fixture or save edit used"
+  ],
+  "screenshots": {
+    "gui-transition-telly-before-0.17.png": "9fbfd77211be1007537e342b398d70b97081fe7486ffe42bcc2f90b6afc39b54",
+    "gui-transition-telly-during-0.17.png": "2993b249e262906d5ad05a2a7b9d5304efd4ca66c385c0609ecc5b1640e4a14c",
+    "gui-transition-room-after-0.17.png": "f5e3026b0b73435131489d821c9c87cd8be9cd0a843be7e3910201bc3cf989db",
+    "gui-transition-hall-return-0.17.png": "eb70127c3803dd017bd21ef132f10a95681b8f4dee4bcb8871e31228dcf6d643",
+    "gui-transition-elevator-scroll-0.17.png": "d88b4d0dfdd3b36b87e15ebcb32260407052224be3b39eac748475695512d0af",
+    "gui-transition-elevator-exit-0.17.png": "fd233342b966076f4bdb133631c1075f5b92e8431ee403b113a37eaa124ce24e"
+  },
+  "codeIdentity": "gui-0.17-code-identity.json",
+  "limits": [
+    "Exact RNG call counts, timer-batch equivalence, LiveWire and cursor migration are headless source-driven checks, not inferred from screenshots",
+    "Historical pre-0.17 RNG is not retroactively repaired",
+    "Detailed camera/bounds, collision/occlusion and energy-machine eye animation remain unfinished"
+  ]
+}

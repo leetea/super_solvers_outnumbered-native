@@ -8,6 +8,7 @@ struct NativeDoorTransition: Codable {
     let hallway: NativePosition
     let doorStartUnit: Int
     var elapsedIRQTicks = 0
+    var auxiliaryFramesApplied: Int? = 0 // nil in pre-0.17 saves
     var destinationApplied = false
     struct Frame {
         let position: NativePosition
@@ -28,7 +29,7 @@ struct NativeDoorTransition: Codable {
             for offset in 1...abs(delta) {
                 var position = origin
                 position.playerUnit += offset*(delta < 0 ? -1 : 1)
-                position.facing = delta < 0 ? -1 : 1
+                position.facing = origin.facing
                 result.append(Frame(position: position,ordinal: 1+(offset-1)%8,y: 81,doorOrdinal: nil,ticks: 4,destination: false))
             }
         }
@@ -53,15 +54,16 @@ struct NativeDoorTransition: Codable {
         return result
     }
     var duration: Int { frames.reduce(0) { $0+$1.ticks } }
-    var currentFrame: Frame {
-        var remaining = elapsedIRQTicks
-        for frame in frames { if remaining < frame.ticks { return frame }; remaining -= frame.ticks }
-        return frames.last!
+    var currentFrameIndex: Int {
+        var remainder = elapsedIRQTicks
+        for (index,frame) in frames.enumerated() { if remainder < frame.ticks { return index }; remainder -= frame.ticks }
+        return frames.count-1
     }
+    var currentFrame: Frame { frames[currentFrameIndex] }
     var valid: Bool {
         guard origin.valid, hallway.valid, OriginalWorld.roomScene(throughHallway: hallway.scene) != nil,
               (1...30).contains(doorStartUnit), hallway.playerUnit == hallway.scene*38+doorStartUnit+1,
               hallway.facing == 1, entering ? origin.scene == hallway.scene : origin.scene == OriginalWorld.roomScene(throughHallway: hallway.scene) else { return false }
-        return (0...duration).contains(elapsedIRQTicks) && destinationApplied == (currentFrame.destination || elapsedIRQTicks == duration)
+        return (0...duration).contains(elapsedIRQTicks) && (auxiliaryFramesApplied == nil || auxiliaryFramesApplied == currentFrameIndex+1) && destinationApplied == (currentFrame.destination || elapsedIRQTicks == duration)
     }
 }

@@ -13,21 +13,32 @@ extension NativeGameView {
         held.removeAll(); jumpStep = nil; status = ""
         if entering { effect(3) }
         lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
+        advanceDoor(irqTicks: 0)
         save(); needsDisplay = true
     }
     func advanceDoor(irqTicks: Int) {
         guard var door = session.activeDoor else { return }
+        let first = door.auxiliaryFramesApplied ?? door.currentFrameIndex+1
         let ticks = max(0,min(irqTicks,door.duration-door.elapsedIRQTicks))
         door.elapsedIRQTicks += ticks
         session.clock.pollAfterIRQTicks(UInt64(ticks),processMinute: false)
-        if !door.destinationApplied && door.currentFrame.destination {
-            door.destinationApplied = true
-            session.position = door.destination
-            session.returnPosition = door.entering ? door.hallway : nil
-            clearTelly(); session.liveWire?.clear()
-            if door.entering { attemptLiveWire() }
-            else { effect(door.hallway.scene < 5 ? 1 : 2) }
-        }
+        let frames = door.frames, last = door.currentFrameIndex
+        if first <= last { for index in first...last {
+            let frame = frames[index]
+            if !door.destinationApplied && frame.destination {
+                door.destinationApplied = true
+                session.position = door.destination
+                session.returnPosition = door.entering ? door.hallway : nil
+                clearTelly(); session.liveWire?.clear()
+                if door.entering { attemptLiveWire() }
+                else { effect(door.hallway.scene < 5 ? 1 : 2) }
+            }
+            var prior = index == 0 ? door.origin : frames[index-1].position
+            if frame.destination { prior = frame.position }
+            prior.cameraUnit = frame.position.cameraUnit
+            updateTransitionActors(at: prior,playerStepSound: transitionWalkSound(at: frame.position,ordinal: frame.ordinal))
+        } }
+        door.auxiliaryFramesApplied = last+1
         session.activeDoor = door
         if door.elapsedIRQTicks >= door.duration {
             session.activeDoor = nil

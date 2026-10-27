@@ -13,7 +13,7 @@ func nativeDoorTransitionChecks(root: URL,output: URL) throws -> [String:Bool] {
     let door = view.session.activeDoor!
     checks["door_transition_starts_before_room_swap"] = view.session.position.scene == 1 && door.entering && door.valid
     let phases = door.frames
-    checks["door_alignment_walks_to_original_target"] = Array(phases.prefix(3)).map { $0.position.playerUnit } == [51,52,53] && phases[2].position.facing == 1
+    checks["door_alignment_walks_to_original_target"] = Array(phases.prefix(3)).map { $0.position.playerUnit } == [51,52,53] && phases[2].position.facing == -1
     let backward = phases.filter { (9...13).contains($0.ordinal) && $0.doorOrdinal == nil }
     checks["door_original_rear_pose_coordinates"] = backward.map(\.ordinal) == [9,10,11,12,13] && backward.map(\.y) == [78,75,72,69,66] && backward.allSatisfy { $0.ticks == 24 }
     checks["door_original_open_panels"] = phases.compactMap(\.doorOrdinal).prefix(3).elementsEqual([134,135,136])
@@ -34,7 +34,9 @@ func nativeDoorTransitionChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["door_room_switch_sets_return_and_front_pose"] = view.session.position.scene == 10 && view.session.returnPosition?.playerUnit == 53 && view.session.activeDoor?.currentFrame.ordinal == 23
     checks["door_irq_counter_runs_without_displayed_minutes"] = view.session.clock.counterTicks == counter+UInt64(midpoint) && view.session.clock.elapsedMinutes == 0
     let encoder = JSONEncoder(); encoder.outputFormatting = .sortedKeys
-    let generator = try encoder.encode(view.session.generator)
+    var expectedGenerator = view.session.generator
+    _ = expectedGenerator.nextRandomValue()
+    let generator = try encoder.encode(expectedGenerator)
     try view.saves.save(view.session)
     let restored = try view.saves.load(view.session.profileID)!
     checks["door_midpoint_save_retains_stage_and_position"] = restored.valid && restored.activeDoor?.elapsedIRQTicks == midpoint && restored.activeDoor?.destinationApplied == true && restored.position == view.session.position
