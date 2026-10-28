@@ -23,7 +23,7 @@ func nativeIntegrationChecks(root: URL) throws {
         checks["video_cartoon_songs_both_series_and_answer"] = try (6...10).map { try songs.originalWord(at: $0) } == expected && (11...15).map { try songs.originalWord(at: $0) } == expected && songs.answer == 0
         activityCanvas.clear(); _ = try ActivityMore(content: content).draw(songs,on: activityCanvas)
         let points = [(64,97),(86,97),(108,80),(130,97),(152,46)]
-        checks["video_cartoon_songs_original_plot_positions"] = points.allSatisfy { x,y in activityCanvas.pixels[y*320+x] == 0 && activityCanvas.pixels[(y-2)*320+x] == 12 }
+        checks["video_cartoon_songs_original_plot_positions"] = points.allSatisfy { x,y in activityCanvas.pixels[y*320+x] == 1 && activityCanvas.pixels[(y-2)*320+x] == 12 }
     } else { checks["video_cartoon_songs_fixture_present"] = false }
     checks["original_font_fremont_measurement"] = font.width(of: "Fremont") == 51
     checks["original_font_dallas_measurement"] = font.width(of: "Dallas") == 33
@@ -140,6 +140,7 @@ func nativeIntegrationChecks(root: URL) throws {
     checks.merge(try nativeFountainMotionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeElevatorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeDoorTransitionChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativePaletteChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeKeyboardChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeSignInChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeOpeningChecks(root: root,output: output)) { _,new in new }

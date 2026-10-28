@@ -421,18 +421,18 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     func drawHUD(for visibleScreen: Screen? = nil) throws {
         let visibleScreen = visibleScreen ?? screen
-        canvas.fill(0,160,320,40,1)
+        canvas.fill(0,160,320,40,0)
         canvas.draw(try content.bitmap("FASTLOAD.GRA.057"),x: 0,y: 0)
         try sprite(56,x: 216,y: 162,transparent: false)
         let font = try content.font("MOCKET.DAT.1393")
         let minute = session.clock.elapsedMinutes
         let hour = (21+minute/60)%12
         let time = session.clock.expired ? "12:00A.M." : "\(hour == 0 ? 12 : hour):\(String(format: "%02d",minute%60))P.M."
-        canvas.fill(254,163,58,10,0)
+        canvas.fill(254,163,58,10,1)
         canvas.text(session.clock.roomChallengeActive && visibleScreen != .ending && visibleScreen != .results ? "Pause" : time,font: try content.font("MOCKET.DAT.1396"),x: 256,y: 164,color: 14)
-        canvas.fill(256,176,48,8,0)
+        canvas.fill(256,176,48,8,1)
         canvas.fill(256,176,min(48,max(0,session.energy)*2),8,14)
-        canvas.fill(254,188,58,8,0)
+        canvas.fill(254,188,58,8,1)
         canvas.text(String(format: "%06d", Int(session.score)),font: font,x: 254,y: 187,color: 14)
         if visibleScreen == .world {
             let prompt = status.isEmpty ? "\u{86} to See Decoder" : status
@@ -440,14 +440,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         }
     }
     func drawWorldBackdrop(_ p: NativePosition) throws {
-        canvas.fill(0,12,320,148,1)
+        canvas.fill(0,12,320,148,0)
         canvas.fill(5,15,310,143,8)
         // Local elevator footage has two black bottom rows158/159; the room
         // bitmap ends at157. Leaving158 blue exposes a seam during scrolling.
-        canvas.fill(5,158,310,1,0)
+        canvas.fill(5,158,310,1,1)
         canvas.clip = (8,15,304,143)
         if p.scene < 10 {
-            canvas.fill(8,15,304,16,0)
+            canvas.fill(8,15,304,16,1)
             for i in 0..<38 { try sprite(137+(p.cameraUnit+i)%38,x: 8+i*8,y: 31,transparent: false) }
             let floor = p.scene/5
             for scene in floor*5..<floor*5+5 {
@@ -506,12 +506,12 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         }
         if let flash = session.activeCollision, let word = flash.effect.impactSprite { try sprite(word,x: flash.xUnit*8,y: 52) }
         canvas.clip = nil
-        canvas.border(4,14,312,146,0)
+        canvas.border(4,14,312,146,1)
     }
     func drawQuestion() throws {
         guard let challenge = session.activeChallenge else { return }
         let attempt = session.attempts[challenge.hotspot] ?? RoomAttempt()
-        canvas.fill(4,14,isActivityPresenting ? 312 : 184,146,0)
+        canvas.fill(4,14,isActivityPresenting ? 312 : 184,146,1)
         if challenge.hotspot == 0 { try renderer.draw(challenge,on: canvas) }
         else if ActivityTemplates.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityTemplates(content: content).draw(challenge,on: canvas,progress: activityPresentationFrame(challenge)) }
         else if ActivityMore.supportedHotspots.contains(challenge.hotspot) { _ = try ActivityMore(content: content).draw(challenge,on: canvas,progress: activityPresentationFrame(challenge)) }
@@ -519,14 +519,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if isActivityPresenting { return }
         canvas.draw(try content.bitmap("ROOMS.GRA.017"),x: 188,y: 15)
         let small = try content.font("MOCKET.DAT.1396"), ui = try content.font("MOCKET.DAT.1393")
-        canvas.text(challenge.question,font: small,x: 200,y: 32,color: 0,wrapWidth: 105,lineHeight: 9)
+        canvas.text(challenge.question,font: small,x: 200,y: 32,color: 1,wrapWidth: 105,lineHeight: 9)
         if attempt.result == .editing {
             if usesCalculator {
                 canvas.draw(try content.bitmap("ROOMS.GRA.016"),x: 188,y: 138)
                 let calculator = session.calculator ?? NativeCalculator()
-                canvas.text(calculator.display,font: ui,x: 229-ui.width(of: calculator.display),y: 148,color: 0)
-                if let operation = calculator.operation { canvas.text(operation.glyph,font: ui,x: 237,y: 148,color: 0) }
-            } else { canvas.text(attempt.input,font: ui,x: 208,y: 141,color: 0) }
+                canvas.text(calculator.display,font: ui,x: 229-ui.width(of: calculator.display),y: 148,color: 1)
+                if let operation = calculator.operation { canvas.text(operation.glyph,font: ui,x: 237,y: 148,color: 1) }
+            } else { canvas.text(attempt.input,font: ui,x: 208,y: 141,color: 1) }
             if attempt.wrongAnswers == 1 {
                 canvas.text("That's not correct.",font: ui,x: 12,y: 163,color: 15)
                 canvas.text("Read the question.",font: ui,x: 12,y: 173,color: 15)
@@ -538,7 +538,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 canvas.text(challenge.hint,font: small,x: 12,y: 158,color: 1,wrapWidth: 170,lineHeight: 8)
             }
         } else {
-            canvas.text(attempt.input,font: ui,x: 208,y: 141,color: 0)
+            canvas.text(attempt.input,font: ui,x: 208,y: 141,color: 1)
             canvas.text(attempt.result == .correct ? "That's correct." : "That's not correct.",font: ui,x: 12,y: 163,color: 15)
             if attempt.result == .failed { canvas.text("The correct answer is \(challenge.answer).",font: ui,x: 12,y: 173,color: 15) }
         }
@@ -559,14 +559,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             }
         }
         canvas.border(172,17+selectedRoom*28,137,27,14)
-        canvas.fill(5,163,211,34,0)
+        canvas.fill(5,163,211,34,1)
         canvas.clip = (4,162,212,36)
         canvas.draw(try content.bitmap("DMOCKET.GRA.1771"),x: 4,y: 162,transparent: true)
         canvas.clip = nil
     }
     func render(_ visibleScreen: Screen? = nil) throws {
         let visibleScreen = visibleScreen ?? screen
-        canvas.clip = nil; canvas.clear(0)
+        canvas.clip = nil; canvas.clear(1)
         if visibleScreen == .help { try render(helpReturn); try drawOriginalHelp(); return }
         if visibleScreen == .scores { try render(scoreReturn); try drawScores(); return }
         if visibleScreen == .title { try drawOpening(); return }

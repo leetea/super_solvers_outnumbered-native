@@ -229,7 +229,7 @@ extension NativeGameView {
         if practice.presentation == .questions { try drawDrill(practice.drill) }
         else { canvas.draw(try content.bitmap("DMOCKET.GRA.157c"),x: 0,y: 15) }
         // Practice replaces the adventure footer with its original counter art.
-        canvas.fill(4,162,205,36,11); canvas.fill(5,163,203,34,0)
+        canvas.fill(4,162,205,36,11); canvas.fill(5,163,203,34,1)
         canvas.draw(try content.bitmap("DRILL.GRA.013"),x: 208,y: 162)
         if practice.elapsedSeconds > 0 {
             let minutes = practice.elapsedSeconds/60

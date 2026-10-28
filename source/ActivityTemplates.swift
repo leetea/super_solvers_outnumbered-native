@@ -103,8 +103,8 @@ struct ActivityTemplates {
             let amount = try challenge.originalWord(at: index + 1)
             guard amount >= 0 else { throw ContentError.invalid("Invalid original prize amount") }
             let text = "$\(amount)"
-            let color = progress?.marks[index] ?? 0
-            if color >= 0 { canvas.text(text, font: font, x: centers[index] - font.width(of: text)/2, y: rows[index], color: color == 1 ? 0 : UInt8(color)) }
+            let color = progress?.marks[index] ?? 1
+            if color >= 0 { canvas.text(text, font: font, x: centers[index] - font.width(of: text)/2, y: rows[index], color: UInt8(color)) }
         }
         if let marks = progress?.marks, marks[4] >= 0 {
             let i = marks[4]
@@ -121,15 +121,15 @@ struct ActivityTemplates {
         let titleFont = try content.font("MOCKET.DAT.1393")
         let rowFont = try content.font("MOCKET.DAT.1396")
         let title = try challenge.originalString(at: 24)
-        canvas.text(title, font: titleFont, x: 10 + (174-titleFont.width(of: title))/2, y: 29, color: 0)
+        canvas.text(title, font: titleFont, x: 10 + (174-titleFont.width(of: title))/2, y: 29, color: 1)
         for index in 0..<6 {
             let row = 45 + index*13
             let label = try challenge.originalString(at: 5 + index)
             let number = String(try challenge.originalWord(at: 11 + index))
             let unit = try challenge.originalString(at: 17 + index)
-            canvas.text(label, font: rowFont, x: 30, y: row, color: 0)
-            canvas.text(number, font: rowFont, x: 133-rowFont.width(of: number), y: row, color: 0)
-            canvas.text(unit, font: rowFont, x: 139, y: row, color: 0)
+            canvas.text(label, font: rowFont, x: 30, y: row, color: 1)
+            canvas.text(number, font: rowFont, x: 133-rowFont.width(of: number), y: row, color: 1)
+            canvas.text(unit, font: rowFont, x: 139, y: row, color: 1)
         }
     }
 }

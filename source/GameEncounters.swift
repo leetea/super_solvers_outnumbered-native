@@ -277,7 +277,7 @@ extension NativeGameView {
         canvas.draw(try content.bitmap(String(format: "DRILL.GRA.%03d",tv)),x: 76,y: 28,transparent: true)
         if capture {
             //104b:04c0 uses eight-pixel byte columns, unlike bitmap X/4.
-            canvas.fill(152,53,40,37,0)
+            canvas.fill(152,53,40,37,1)
             canvas.draw(try content.bitmap(String(format: "DRILL.GRA.%03d",presentation!.sprite)),x: 152,y: 55,transparent: true)
         }
         let font = try content.font("MOCKET.DAT.1394"), small = try content.font("MOCKET.DAT.1396"), ui = try content.font("MOCKET.DAT.1393")

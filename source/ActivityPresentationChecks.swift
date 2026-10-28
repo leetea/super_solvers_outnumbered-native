@@ -58,7 +58,7 @@ func nativeActivityPresentationChecks(root: URL,output: URL) throws -> [String:B
     if let escape = NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "\u{1b}",charactersIgnoringModifiers: "\u{1b}",isARepeat: false,keyCode: 53) { view.keyDown(with: escape) }
     checks["activity_blocks_early_answers_calculator_and_escape"] = view.session.attempts[8]?.input == "" && view.session.attempts[8]?.wrongAnswers == 0 && view.screen == .question && view.session.score == 0
     try view.render();try view.canvas.writePNG(to: output.appendingPathComponent("native-cartoon-plot-start.png"))
-    checks["activity_question_side_stays_black_during_source_intro"] = (19..<158).allSatisfy { y in (188..<312).allSatisfy { x in view.canvas.pixels[y*320+x] == 0 } }
+    checks["activity_question_side_stays_black_during_source_intro"] = (19..<158).allSatisfy { y in (188..<312).allSatisfy { x in view.canvas.pixels[y*320+x] == 1 } }
     let initial = view.canvas.pixels
     try view.advanceActivityPresentation(irqTicks: 600)
     try view.render();try view.canvas.writePNG(to: output.appendingPathComponent("native-cartoon-plot-second-series.png"))

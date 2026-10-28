@@ -162,15 +162,15 @@ extension NativeGameView {
         let font = try content.font("MOCKET.DAT.1393"),prompt = "Press \u{85} to continue."
         switch opening.stage {
         case .title:
-            canvas.text(prompt,font: font,x: 40,y: 146,color: 0)
+            canvas.text(prompt,font: font,x: 40,y: 146,color: 1)
         case .objectiveWipe,.tellyWipe,.animationWipe:
             canvas.fill(18,16,219,144,7)
         case .objective,.telly:
             canvas.fill(18,16,219,144,15)
             let first = opening.stage == .objective ? 0 : 12
-            for row in 0..<12 { canvas.text(OriginalOpening.lines[first+row],font: font,x: 26,y: 18+row*10,color: 0) }
+            for row in 0..<12 { canvas.text(OriginalOpening.lines[first+row],font: font,x: 26,y: 18+row*10,color: 1) }
             canvas.draw(try content.bitmap(opening.stage == .objective ? "OPENING.GRA.028" : "OPENING.GRA.029"),x: 160,y: 30,transparent: true)
-            canvas.text(prompt,font: font,x: 40,y: 145,color: 0)
+            canvas.text(prompt,font: font,x: 40,y: 145,color: 1)
         case .animation:
             var index = 0,time = opening.elapsed
             while index < 2 && time >= OriginalOpening.scriptDurations[index] { time -= OriginalOpening.scriptDurations[index];index += 1 }

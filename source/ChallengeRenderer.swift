@@ -48,7 +48,7 @@ struct ChallengeRenderer {
         guard challenge.hotspot == 0 else { throw ContentError.invalid("This activity is not available in this development build.") }
         canvas.draw(try content.bitmap(String(format: "TEMPLATE.GRA.%04x", challenge.bitmap_record_id)), x: 8, y: 19)
         let font = try content.font("MOCKET.DAT.1393")
-        canvas.text(challenge.title, font: font, x: 96-font.width(of: challenge.title)/2, y: 21, color: 0)
+        canvas.text(challenge.title, font: font, x: 96-font.width(of: challenge.title)/2, y: 21, color: 1)
         let cities = challenge.strings(group: 2), values = challenge.strings(group: 4)
         for (i, city) in cities.enumerated() {
             guard values.indices.contains(i), let coordinate = coordinates.entries.first(where: { $0.city == city }) else {
@@ -56,9 +56,9 @@ struct ChallengeRenderer {
             }
             let cityX = max(11, min(177-font.width(of: city), coordinate.label_anchor.x-font.width(of: city)/2))
             let valueX = max(11, min(177-font.width(of: values[i]), coordinate.label_anchor.x-font.width(of: values[i])/2))
-            canvas.text(city, font: font, x: cityX, y: coordinate.label_anchor.y, color: 0)
-            canvas.text(values[i], font: font, x: valueX, y: coordinate.label_anchor.y+10, color: 0)
-            canvas.fill(coordinate.marker_coordinate.x,coordinate.marker_coordinate.y,2,2,0)
+            canvas.text(city, font: font, x: cityX, y: coordinate.label_anchor.y, color: 1)
+            canvas.text(values[i], font: font, x: valueX, y: coordinate.label_anchor.y+10, color: 1)
+            canvas.fill(coordinate.marker_coordinate.x,coordinate.marker_coordinate.y,2,2,1)
         }
     }
 }

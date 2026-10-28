@@ -76,8 +76,8 @@ final class OriginalContent {
 
 final class NativeCanvas {
     static let width = 320, height = 200
-    static let palette: [(UInt8,UInt8,UInt8)] = [(0,0,0),(0,0,170),(0,170,0),(0,170,170),(170,0,0),(170,0,170),(170,85,0),(170,170,170),(85,85,85),(85,85,255),(85,255,85),(85,255,255),(255,85,85),(255,85,255),(255,255,85),(255,255,255)]
-    private(set) var pixels = [UInt8](repeating: 0, count: width*height)
+    static let palette: [(UInt8,UInt8,UInt8)] = [(0,0,170),(0,0,0),(0,170,0),(0,170,170),(170,0,0),(170,0,170),(170,85,0),(170,170,170),(85,85,85),(85,85,255),(85,255,85),(85,255,255),(255,85,85),(255,85,255),(255,255,85),(255,255,255)]
+    private(set) var pixels = [UInt8](repeating: 1, count: width*height)
     var clip: (x: Int, y: Int, width: Int, height: Int)?
     //135d:039b copies x0..311,y14..159 in eight bands; HUD/menu stay put.
     func compositeElevatorViewport(source: [UInt8],destination: [UInt8],insertedPixels: Int,movingDown: Bool) {
@@ -91,7 +91,7 @@ final class NativeCanvas {
             pixels.replaceSubrange((14+row)*Self.width..<(14+row)*Self.width+312,with: image[offset..<offset+312])
         }
     }
-    func clear(_ color: UInt8 = 0) { pixels = [UInt8](repeating: color & 15, count: Self.width*Self.height) }
+    func clear(_ color: UInt8 = 1) { pixels = [UInt8](repeating: color & 15, count: Self.width*Self.height) }
     func pixel(_ x: Int, _ y: Int, _ color: UInt8) {
         guard (0..<Self.width).contains(x), (0..<Self.height).contains(y) else { return }
         if let clip, !(clip.x..<clip.x+clip.width).contains(x) || !(clip.y..<clip.y+clip.height).contains(y) { return }
@@ -111,11 +111,10 @@ final class NativeCanvas {
         for row in 0..<bitmap.height {
             for column in 0..<bitmap.width {
                 let value = bitmap.pixels[row*bitmap.width+column]
-                // Local-video comparison of static menu/wall/player artwork
-                // establishes index 1 as opaque black in the bitmap path.
-                // Native fill/text color 1 remains blue. Full driver masking
-                // semantics remain separately under recovery.
-                if !transparent || value != 0 { pixel(x + (flipped ? bitmap.width-1-column : column),y+row,value == 1 ? 0 : value) }
+                //104b:0298 swaps palette entries 0/1 at display setup.
+                //Keep original indices for masking and XOR; zero is the
+                //transparent key, while one is opaque black.
+                if !transparent || value != 0 { pixel(x + (flipped ? bitmap.width-1-column : column),y+row,value) }
             }
         }
     }

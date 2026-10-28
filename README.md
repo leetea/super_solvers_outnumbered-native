@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.27
+## Current verified milestone: 0.28
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,9 +16,9 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**911 integration checks pass.** The app ZIP passes strict signature verification
+**924 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.27.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.28.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
 [music/message recovery](docs/music-messages-recovery.md) and
@@ -29,7 +29,8 @@ and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [television static](docs/television-effect-recovery.md) and
 [original opening](docs/opening-presentation-recovery.md) and
 [member sign-in and File menus](docs/signin-file-recovery.md) and
-[keyboard polling](docs/keyboard-recovery.md).
+[keyboard polling](docs/keyboard-recovery.md) and
+[EGA palette recovery](docs/palette-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
 Remaining original confirmation/settings presentation, modifier/alternate input,
@@ -187,3 +188,6 @@ Ctrl-R on the sign-in list opens Remove Member. Native removal preserves the mem
 Milestone0.27 adds recovered last-key world polling, deferred ordinary keys through synchronous gameplay actions, separately tracked held controls and original right-walking priority. Held Up/diagonal requests repeat after landing; Space follows first-make/repeat/release flags at game frames. Practice keeps early Enter through its result animation/sound wait, while new answer fields discard keys from preceding drawing/feedback. 911 checks pass, including input queue ordering/flush, deferred door delivery, physical movement across menus, release/priority/landing, editor lockout and queued practice continuation. Native focus loss clears input as a platform adaptation. BIOS buffer capacity/overflow, alternate modifier/keyboard-type handling, remaining dialog/ending input, palette/mask/audio refinements and a fresh complete ordinary adventure remain unverified; this is not the complete game. See keyboard-recovery.md.
 
 Gameplay keys are polled on game frames. Hold movement keys and hold Space briefly to zap. F1/F2/Tab pressed during synchronous gameplay sequences wait until those sequences finish; later queued keys can supersede earlier ones. Keys during question drawing or drill feedback do not answer the next problem.
+
+
+Milestone0.28 restores the original EGA palette swap (index0 blue, index1 black), retains all original bitmap indices through drawing, and applies the same palette to text and primitives. Source pen11h remains black for final prize prices; random pen0 remains blue. Black/white selection and TV XOR now preserve the low plane. Local MKV31/33/110s corroborates black member text, selected rows, menu footers and plot/background colors. 924 checks pass, including thirteen palette/index/RGBA/compositing checks. Full masks/occlusion, display/audio calibration, original dialogs/alternate input/endings and a fresh complete ordinary playthrough remain open. See palette-recovery.md.

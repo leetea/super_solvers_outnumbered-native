@@ -67,10 +67,10 @@ extension NativeGameView {
     }
     func drawElevatorScroll(_ elevator: NativeElevatorTransition,_ pixels: Int) throws {
         try drawWorldBackdrop(elevator.aligned)
-        canvas.border(4,14,312,146,0); let source = canvas.pixels
+        canvas.border(4,14,312,146,1); let source = canvas.pixels
         try drawWorldBackdrop(elevator.exitPosition)
-        canvas.border(4,14,312,146,0); let destination = canvas.pixels
+        canvas.border(4,14,312,146,1); let destination = canvas.pixels
         canvas.compositeElevatorViewport(source: source,destination: destination,insertedPixels: pixels,movingDown: elevator.origin.scene < 5)
-        canvas.clip = nil; canvas.border(4,14,312,146,0)
+        canvas.clip = nil; canvas.border(4,14,312,146,1)
     }
 }

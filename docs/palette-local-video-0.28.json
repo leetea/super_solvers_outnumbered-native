@@ -1,0 +1,113 @@
+{
+  "milestone": "0.28",
+  "source": "Local OutNumbered Gameplay.mkv",
+  "videoSHA256": "6960fb011e044a141e75e734e35140ff5c6c62e8e3440bf78f96d27baf957205",
+  "frames": [
+    {
+      "second": 31,
+      "file": "/private/tmp/outnumbered-028-reference-signin.png",
+      "sha256": "8b60e132d4dca4e67fa1f912460bce454d85aab5b31063e1fa30297f7e7e3a86",
+      "size": [
+        320,
+        200
+      ],
+      "samples": [
+        {
+          "x": 100,
+          "y": 199,
+          "RGB": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 290,
+          "y": 78,
+          "RGB": [
+            1,
+            0,
+            8
+          ]
+        },
+        {
+          "x": 45,
+          "y": 67,
+          "RGB": [
+            247,
+            251,
+            247
+          ]
+        }
+      ]
+    },
+    {
+      "second": 33,
+      "file": "/private/tmp/outnumbered-028-reference-playmenu.png",
+      "sha256": "79f085d1a7cd55d60e4afd4d06d1eda4d1cf915b22f8d0e3b3615aaaf0d5da37",
+      "size": [
+        320,
+        200
+      ],
+      "samples": [
+        {
+          "x": 100,
+          "y": 199,
+          "RGB": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 20,
+          "y": 20,
+          "RGB": [
+            83,
+            84,
+            251
+          ]
+        }
+      ]
+    },
+    {
+      "second": 110,
+      "file": "/private/tmp/outnumbered-028-reference-chart.png",
+      "sha256": "6c66f5d12d8c1c9ba9249d29524cf40fc82041775d93287a918a810ba0ac730c",
+      "size": [
+        320,
+        200
+      ],
+      "samples": [
+        {
+          "x": 5,
+          "y": 164,
+          "RGB": [
+            2,
+            10,
+            105
+          ]
+        },
+        {
+          "x": 200,
+          "y": 30,
+          "RGB": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 10,
+          "y": 14,
+          "RGB": [
+            91,
+            86,
+            186
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Qualitative static color reference only; not same native player/session, exact timeline or full-frame equality. No YouTube browsing."
+}

@@ -48,22 +48,22 @@ struct ActivityMore {
         let font = try content.font("MOCKET.DAT.1393"), small = try content.font("MOCKET.DAT.1396")
         for tick in 0..<6 {
             let text = String(baseline+tick*interval)
-            canvas.text(text,font: small,x: max(0,44-small.width(of: text)),y: 121-16*tick,color: 0)
+            canvas.text(text,font: small,x: max(0,44-small.width(of: text)),y: 121-16*tick,color: 1)
         }
         let vertical = try challenge.originalString(at: 16)
         var labelY = 85-(vertical.count*9-3)/2
         for letter in vertical {
             if letter == " " { labelY += 6 }
-            else { let text = String(letter); canvas.text(text,font: font,x: 21-font.width(of: text)/2,y: labelY,color: 0); labelY += 9 }
+            else { let text = String(letter); canvas.text(text,font: font,x: 21-font.width(of: text)/2,y: labelY,color: 1); labelY += 9 }
         }
         let spacing = (121-count*17)/(count+1)
         for i in 0..<count {
             let text = try challenge.originalString(at: 10+i)
-            canvas.text(text,font: small,x: (spacing+17)*i+spacing+56-small.width(of: text)/2,y: 127,color: 0)
+            canvas.text(text,font: small,x: (spacing+17)*i+spacing+56-small.width(of: text)/2,y: 127,color: 1)
         }
         let horizontal = try challenge.originalString(at: 15), title = try challenge.originalString(at: 17)
-        canvas.text(horizontal,font: font,x: 108-font.width(of: horizontal)/2,y: 137,color: 0)
-        canvas.text(title,font: font,x: 97-font.width(of: title)/2,y: 26,color: 0)
+        canvas.text(horizontal,font: font,x: 108-font.width(of: horizontal)/2,y: 137,color: 1)
+        canvas.text(title,font: font,x: 97-font.width(of: title)/2,y: 26,color: 1)
         for i in 0..<count {
             let value = try challenge.originalWord(at: 3+i)
             let left = 48+spacing+(17+spacing)*i, top = 125-(value-baseline)*16/interval
@@ -72,7 +72,7 @@ struct ActivityMore {
             //following15e3:01db call outlines inclusive bounds through125.
             let rows = min(125-top,progress?.marks[i] ?? 125-top)
             canvas.fill(left,125-rows,18,rows,[3,5,2,12][theme])
-            if progress == nil || progress!.completed > i { canvas.border(left,top,18,126-top,0) }
+            if progress == nil || progress!.completed > i { canvas.border(left,top,18,126-top,1) }
         }
     }
 
@@ -85,13 +85,13 @@ struct ActivityMore {
         try background(challenge, on: canvas)
         let font = try content.font("MOCKET.DAT.1393")
         // TEMPLATE8508 local0x0219..0x0250: title center99, top22.
-        canvas.text(title, font: font, x: 99-font.width(of: title)/2, y: 22, color: 0)
+        canvas.text(title, font: font, x: 99-font.width(of: title)/2, y: 22, color: 1)
         let centers = [34, 90, 146]
         let labels = ["100s", "10s", "1s"] // Original strings at8508:0x028c.
         let columns = [24, 80, 136] // Original table at8508:0x0280.
         let pointer = try content.bitmap("ROOMS.GRA.018")
         for index in 0..<3 {
-            canvas.text(labels[index], font: font, x: centers[index]-font.width(of: labels[index])/2, y: 39, color: 0)
+            canvas.text(labels[index], font: font, x: centers[index]-font.width(of: labels[index])/2, y: 39, color: 1)
             // The original copies the column to a backing surface, starts at
             // row136, then moves one pixel upward for reading*9 increments.
             // Static endpoint is therefore136-reading*9. Relative cache10018
@@ -116,10 +116,10 @@ struct ActivityMore {
             if progress?.marks[index] == 0 { continue }
             let row = 46+index*20
             canvas.draw(cassette, x: 56, y: row)
-            canvas.text(names[index], font: font, x: 83, y: row+5, color: 0)
+            canvas.text(names[index], font: font, x: 83, y: row+5, color: 1)
             let number = String(amounts[index])
-            canvas.text(number, font: font, x: 118-font.width(of: number), y: row+4, color: 0)
-            canvas.text(unit, font: font, x: 130, y: row+4, color: 0)
+            canvas.text(number, font: font, x: 118-font.width(of: number), y: row+4, color: 1)
+            canvas.text(unit, font: font, x: 130, y: row+4, color: 1)
         }
     }
 
@@ -137,22 +137,22 @@ struct ActivityMore {
         let font = try content.font("MOCKET.DAT.1393")
         let small = try content.font("MOCKET.DAT.1396")
         let title = try challenge.originalString(at: 17)
-        canvas.text(title, font: font, x: 101-font.width(of: title)/2, y: 22, color: 0)
+        canvas.text(title, font: font, x: 101-font.width(of: title)/2, y: 22, color: 1)
         let verticalLabel = try challenge.originalString(at: 18)
         var labelY = max(compact ? 38 : 41, (compact ? 72 : 82)-verticalLabel.count*9/2)
         for letter in verticalLabel {
             if letter == " " { labelY += 6 }
             else {
                 let text = String(letter)
-                canvas.text(text, font: font, x: 23-font.width(of: text)/2, y: labelY, color: 0)
+                canvas.text(text, font: font, x: 23-font.width(of: text)/2, y: labelY, color: 1)
                 labelY += 9
             }
         }
         let horizontalLabel = try challenge.originalString(at: 19)
-        canvas.text(horizontalLabel, font: font, x: 109-font.width(of: horizontalLabel)/2, y: compact ? 120 : 137, color: 0)
+        canvas.text(horizontalLabel, font: font, x: 109-font.width(of: horizontalLabel)/2, y: compact ? 120 : 137, color: 1)
         for tick in 0..<(compact ? 4 : 5) {
             let text = String(baseline+tick*interval)
-            canvas.text(text, font: small, x: 49-small.width(of: text), y: (compact ? 93 : 110)-17*tick, color: 0)
+            canvas.text(text, font: small, x: 49-small.width(of: text), y: (compact ? 93 : 110)-17*tick, color: 1)
         }
         // Identical four-entry spacing tables are embedded in8514:0630 and
         //8520:07cc. The plotting copies are at0640 and07dc respectively.
@@ -160,7 +160,7 @@ struct ActivityMore {
         let spacing = [56,37,28,22][count-2]
         for index in 0..<count {
             let text = try challenge.originalString(at: 20+index)
-            canvas.text(text, font: small, x: firstX+index*spacing-small.width(of: text)/2, y: compact ? 110 : 127, color: 0)
+            canvas.text(text, font: small, x: firstX+index*spacing-small.width(of: text)/2, y: compact ? 110 : 127, color: 1)
         }
         func y(_ value: Int) -> Int {
             let scaled = (value-baseline)*17
@@ -168,7 +168,7 @@ struct ActivityMore {
             return (compact ? 97 : 114)-scaled/interval-(scaled%interval > interval/2 ? 1 : 0)
         }
         for seriesIndex in 0..<series {
-            let color: UInt8 = seriesIndex == 0 ? 12 : 0
+            let color: UInt8 = seriesIndex == 0 ? 12 : 1
             let halfWidth = seriesIndex == 0 ? 1 : 0
             var previous: (Int,Int)?
             let visible = min(count,progress?.marks[seriesIndex] ?? count)
@@ -181,10 +181,10 @@ struct ActivityMore {
             }
         }
         if compact && series > 1 {
-            canvas.text(try challenge.originalString(at: 25), font: small, x: 53, y: 132, color: 0)
-            canvas.text(try challenge.originalString(at: 26), font: small, x: 53, y: 142, color: 0)
+            canvas.text(try challenge.originalString(at: 25), font: small, x: 53, y: 132, color: 1)
+            canvas.text(try challenge.originalString(at: 26), font: small, x: 53, y: 142, color: 1)
             originalPlotLine(14,137,49,137,halfWidth:1,color:12,on:canvas)
-            canvas.fill(14,147,36,1,0)
+            canvas.fill(14,147,36,1,1)
         }
     }
 

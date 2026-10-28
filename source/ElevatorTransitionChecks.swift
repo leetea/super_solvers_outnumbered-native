@@ -42,7 +42,7 @@ func nativeElevatorTransitionChecks(root: URL,output: URL) throws -> [String:Boo
         checks["elevator_resume_preserves_travel_and_rng_\(hall)"] = view.session.activeElevator?.currentFrame.scrollPixels == 90 && view.session.valid && restoredGenerator == generator
         try view.render();try view.canvas.writePNG(to: output.appendingPathComponent("native-elevator-\(hall)-scroll-middle.png"))
         let seamY = hall < 5 ? 104 : 70
-        checks["elevator_scroll_includes_original_viewport_border_\(hall)"] = (seamY-2...seamY).allSatisfy { row in (8..<312).allSatisfy { view.canvas.pixels[row*320+$0] == 0 } }
+        checks["elevator_scroll_includes_original_viewport_border_\(hall)"] = (seamY-2...seamY).allSatisfy { row in (8..<312).allSatisfy { view.canvas.pixels[row*320+$0] == 1 } }
         let untilExit = frames.prefix { !$0.destination }.reduce(0) { $0+$1.ticks }
         view.advanceElevator(irqTicks: untilExit-view.session.activeElevator!.elapsedIRQTicks)
         checks["elevator_destination_applied_after_full_scroll_\(hall)"] = view.session.position == elevator.exitPosition && view.session.activeElevator?.currentFrame.panel == 177

@@ -1,0 +1,37 @@
+{
+  "milestone": "0.28",
+  "finalCheckCount": 924,
+  "codeIdentity": "gui-0.28-code-identity.json",
+  "isolatedDataDirectory": "/private/tmp/outnumbered-028-gui-players",
+  "copiedPlayerFilesUnchanged": true,
+  "copiedFilesBefore": {
+    "profiles-v1.json": "262a094b3850c3caba430684ab06f42e5e328a79fcb1235de37f5fe448fc4444",
+    "session-3784E281-68B6-481A-A9E4-BA8DE6B05B39-v1.json": "3de2b76290bb82507899512d25c80023fb695baac4fb397d7a023be0eb8fcaaf",
+    "session-59000691-FAA1-4CA2-9BC8-8F6CBB975ADC-v1.json": "289c00722076da6cb862959acac96608d261bcc49a3145bce30df360d9a8e4d1"
+  },
+  "copiedFilesAfter": {
+    "session-59000691-FAA1-4CA2-9BC8-8F6CBB975ADC-v1.json": "289c00722076da6cb862959acac96608d261bcc49a3145bce30df360d9a8e4d1",
+    "profiles-v1.json": "262a094b3850c3caba430684ab06f42e5e328a79fcb1235de37f5fe448fc4444",
+    "session-3784E281-68B6-481A-A9E4-BA8DE6B05B39-v1.json": "3de2b76290bb82507899512d25c80023fb695baac4fb397d7a023be0eb8fcaaf"
+  },
+  "observations": [
+    "Original opening text and station entrance; final sign-in shows black text, black footer, white selected text on black.",
+    "Selected copied Nina member and acknowledged existing native trainee message; play menu has black text and footer.",
+    "Command-R isolated rainfall reference; labels and question black, blue footer maintained.",
+    "F1 help shows black topic text; F2 File shows black text and white selected text on black."
+  ],
+  "screenshots": [
+    "gui-palette-signin-0.28.png",
+    "gui-palette-play-menu-0.28.png",
+    "gui-palette-weather-0.28.png",
+    "gui-palette-help-0.28.png",
+    "gui-palette-file-0.28.png"
+  ],
+  "limits": [
+    "Isolated reference question, not ordinary complete campaign.",
+    "TV XOR and all16 bitmap index/RGBA evidence are headless checks, not GUI observation.",
+    "No exact full-frame/video/audio parity claim."
+  ],
+  "normalQuitRequested": true,
+  "normalQuitVerified": true
+}

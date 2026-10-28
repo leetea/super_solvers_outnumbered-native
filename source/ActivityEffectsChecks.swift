@@ -9,7 +9,7 @@ func nativeActivityEffectsChecks(root: URL,output: URL) throws -> [String:Bool] 
     checks["prize_original_eight_flashes_four_reveals_240_IRQ_fixture"] = plan.duration == 240 && plan.randomSteps.map(\.drawCount) == [4,9,17,21,26,31,34,37,38,40,41,54] && plan.randomSteps.map(\.state) == expectedStates
     checks["prize_original_random_selection_text_outline_fixture"] = (0..<8).map { plan.frame(at: $0*20).marks[4] } == [3,0,1,2,3,1,3,1] && (0..<8).map { plan.frame(at: $0*20).marks[5] } == [6,12,6,12,3,11,12,2]
     checks["prize_no_later_random_draws_before_next_flash"] = plan.randomSteps.last(where: { $0.at <= 19 })?.drawCount == 4 && plan.randomSteps.last(where: { $0.at <= 20 })?.drawCount == 9
-    checks["prize_final_unique_reveal_order_retains_first_exclusion"] = plan.frame(at: 160).marks.prefix(4) == [0,15,15,15] && plan.frame(at: 180).marks.prefix(4) == [0,15,15,0] && plan.frame(at: 200).marks.prefix(4) == [0,15,0,0] && plan.frame(at: 220).marks.prefix(4) == [0,0,0,0]
+    checks["prize_final_unique_reveal_order_retains_first_exclusion"] = plan.frame(at: 160).marks.prefix(4) == [1,15,15,15] && plan.frame(at: 180).marks.prefix(4) == [1,15,15,1] && plan.frame(at: 200).marks.prefix(4) == [1,15,1,1] && plan.frame(at: 220).marks.prefix(4) == [1,1,1,1]
     checks["prize_requests31_per_flash_reveal_without_extra_stop"] = plan.sounds.count == 12 && plan.sounds.allSatisfy { $0.index == 31 } && plan.sounds.map(\.at) == Array(stride(from: 0,to: 240,by: 20))
     let content = OriginalContent(root: root),a = NativeCanvas(),b = NativeCanvas()
     for hotspot in [2,3,4,7] {

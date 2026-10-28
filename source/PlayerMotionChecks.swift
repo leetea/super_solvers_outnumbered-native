@@ -90,7 +90,7 @@ func nativePlayerMotionChecks(root: URL,output: URL) throws -> [String:Bool] {
     for y in 4..<min(bitmap.height,player.height+4) { for x in 0..<min(bitmap.width,player.width) {
         let value = bitmap.pixels[y*bitmap.width+x], underneath = player.pixels[(y-4)*player.width+x]
         if value != 0 && underneath != 0 && value != underneath {
-            compared += 1;correct = correct && game.canvas.pixels[(77+y)*320+160+x] == (value == 1 ? 0 : value)
+            compared += 1;correct = correct && game.canvas.pixels[(77+y)*320+160+x] == value
         }
     } }
     checks["player_original_telly_foreground_at_opaque_overlap"] = compared > 0 && correct

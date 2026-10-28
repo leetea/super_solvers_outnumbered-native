@@ -50,12 +50,12 @@ extension NativeGameView {
             }
         }
         canvas.clip = nil
-        if let caption { canvas.text(caption.0,font: try content.font("MOCKET.DAT.1393"),x: caption.1,y: caption.2,color: 0,lineHeight: 10) }
+        if let caption { canvas.text(caption.0,font: try content.font("MOCKET.DAT.1393"),x: caption.1,y: caption.2,color: 1,lineHeight: 10) }
         if let bonus {
-            canvas.fill(64,16,192,60,0); canvas.fill(69,17,182,57,14); canvas.fill(74,20,172,51,11)
-            canvas.fill(78,23,164,45,12); canvas.fill(84,52,152,15,8); canvas.fill(86,53,148,13,0)
+            canvas.fill(64,16,192,60,1); canvas.fill(69,17,182,57,14); canvas.fill(74,20,172,51,11)
+            canvas.fill(78,23,164,45,12); canvas.fill(84,52,152,15,8); canvas.fill(86,53,148,13,1)
             let titleFont = try content.font("MOCKET.DAT.1392"), title = "! & % ( '"
-            for offset in 0..<6 { canvas.text(title,font: titleFont,x: 160-titleFont.width(of: title)/2+offset,y: 31-offset,color: 0) }
+            for offset in 0..<6 { canvas.text(title,font: titleFont,x: 160-titleFont.width(of: title)/2+offset,y: 31-offset,color: 1) }
             canvas.text(title,font: titleFont,x: 166-titleFont.width(of: title)/2,y: 25,color: bonus.0 == "Winning Game" ? 14 : 15)
             let text = bonus.0+": "+Int(bonus.1).formatted(.number.grouping(.automatic))
             let font = try content.font("MOCKET.DAT.1393")
@@ -69,7 +69,7 @@ extension NativeGameView {
             canvas.text("Press \u{85} to continue.",font: font,x: 20,y: 180,color: 15)
             return
         }
-        canvas.clear(0)
+        canvas.clear(1)
         for (index,y) in [(0,0),(16,45),(17,90),(18,134)] {
             canvas.draw(try content.bitmap(String(format: "TROPHY.GRA.%03d",index)),x: 0,y: y)
         }

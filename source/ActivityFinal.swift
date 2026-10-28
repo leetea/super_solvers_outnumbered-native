@@ -108,15 +108,15 @@ struct ActivityFinal {
         var font = large
         if !title.hasPrefix(" ") {
             font = small
-            canvas.text(title,font: small,x: 94-small.width(of: title)/2,y: 77,color: 0)
-            if title == "LAST" { canvas.text("SPIN",font: small,x: 94-small.width(of: "SPIN")/2,y: 100,color: 0) }
+            canvas.text(title,font: small,x: 94-small.width(of: title)/2,y: 77,color: 1)
+            if title == "LAST" { canvas.text("SPIN",font: small,x: 94-small.width(of: "SPIN")/2,y: 100,color: 1) }
             if subtitle.hasPrefix(" ") { canvas.fill(17,84,98,15,13) }
-            else { font = large; canvas.text(subtitle,font: large,x: 94-large.width(of: subtitle)/2,y: 88,color: 0) }
+            else { font = large; canvas.text(subtitle,font: large,x: 94-large.width(of: subtitle)/2,y: 88,color: 1) }
         }
         let xs = [87,122,136,136,122,87,53,39,39,53], ys = [23,36,57,81,102,115,102,81,57,36]
         for i in 0..<10 {
             let text = String(try challenge.originalWord(at: 5+i))
-            canvas.text(text,font: font,x: xs[i]+8-font.width(of: text)/2,y: ys[i]+19,color: 0)
+            canvas.text(text,font: font,x: xs[i]+8-font.width(of: text)/2,y: ys[i]+19,color: 1)
         }
         let selected = try progress?.marks.first ?? challenge.originalWord(at: 2)
         guard (0..<10).contains(selected) else { throw ContentError.invalid("Invalid original spinner position") }
@@ -132,8 +132,8 @@ struct ActivityFinal {
     private func music(_ challenge: OriginalChallenge,state: OriginalActivityState,on canvas: NativeCanvas) throws {
         guard challenge.bitmap_record_id == 8507 else { throw ContentError.invalid("Unexpected original music bitmap") }
         let font = try content.font("MOCKET.DAT.1393"), small = try content.font("MOCKET.DAT.1396")
-        canvas.text("Great Eight",font: font,x: 97-font.width(of: "Great Eight")/2,y: 20,color: 0)
-        canvas.text("Song",font: small,x: (113-small.width(of: "Song"))/2,y: 42,color: 0)
+        canvas.text("Great Eight",font: font,x: 97-font.width(of: "Great Eight")/2,y: 20,color: 1)
+        canvas.text("Song",font: small,x: (113-small.width(of: "Song"))/2,y: 42,color: 1)
         let headings = [["Last","Wk's","Pos."],["Weeks","on","Chart"],["Calls","This","Week"],["Calls","Last","Month"]]
         for column in 0..<2 {
             let selector = try challenge.originalWord(at: column)-3
@@ -141,38 +141,38 @@ struct ActivityFinal {
             for row in 0..<3 {
                 let text = headings[selector][row]
                 let x = column == 0 ? (247-small.width(of: text))/2 : (327-small.width(of: text))/2
-                canvas.text(text,font: small,x: x,y: [33,42,50][row],color: 0)
+                canvas.text(text,font: small,x: x,y: [33,42,50][row],color: 1)
             }
         }
         let right1 = (247+small.width(of: String(try challenge.originalWord(at: 9))))/2
         let right2 = (327+small.width(of: String(try challenge.originalWord(at: 11))))/2
         for (i,row) in state.rows.enumerated() {
-            canvas.text("\(i+1).",font: small,x: 13,y: row.labelY,color: 0)
-            canvas.text(row.name,font: small,x: 23,y: row.labelY,color: 0)
+            canvas.text("\(i+1).",font: small,x: 13,y: row.labelY,color: 1)
+            canvas.text(row.name,font: small,x: 23,y: row.labelY,color: 1)
             let first = String(row.first), second = String(row.second)
-            canvas.text(first,font: small,x: right1-small.width(of: first),y: row.valueY,color: 0)
-            canvas.text(second,font: small,x: right2-small.width(of: second),y: row.valueY,color: 0)
+            canvas.text(first,font: small,x: right1-small.width(of: first),y: row.valueY,color: 1)
+            canvas.text(second,font: small,x: right2-small.width(of: second),y: row.valueY,color: 1)
         }
     }
     private func equipment(_ challenge: OriginalChallenge,state: OriginalActivityState,on canvas: NativeCanvas,progress: NativeActivityPlan.Frame?) throws {
         guard challenge.bitmap_record_id == 8517 else { throw ContentError.invalid("Unexpected original equipment-list bitmap") }
         let font = try content.font("MOCKET.DAT.1393"), small = try content.font("MOCKET.DAT.1396")
-        canvas.text("Equipment List",font: font,x: 97-font.width(of: "Equipment List")/2,y: 20,color: 0)
+        canvas.text("Equipment List",font: font,x: 97-font.width(of: "Equipment List")/2,y: 20,color: 1)
         let colors: [UInt8] = [13,11,14,10]
         let rotation = progress.map { ($0.marks[0]+1)%4 } ?? 0
         for (i,column) in [(10,49),(60,55),(116,31),(148,34)].enumerated() { canvas.fill(column.0,32,column.1,28,colors[(i+rotation)%4]) }
         for (text,y,sum,offset) in [("Item",41,71,0),("Quantity",37,177,0),("on Hand",46,177,0),("Days",37,265,0),("Used",46,265,0),("Cost",33,333,0),("per",41,333,1),("Item",50,333,0)] {
-            canvas.text(text,font: small,x: (sum-small.width(of: text))/2+offset,y: y,color: 0)
+            canvas.text(text,font: small,x: (sum-small.width(of: text))/2+offset,y: y,color: 1)
         }
         let daysRight = (265+small.width(of: "180"))/2, costRight = (332+small.width(of: "$1500"))/2
         for row in state.rows {
             let parts = row.splitLabel ? row.name.components(separatedBy: " ") : [row.name]
-            for (i,part) in parts.enumerated() { canvas.text((i == 0 ? "" : " ")+part,font: small,x: 12,y: row.labelY+i*11,color: 0) }
+            for (i,part) in parts.enumerated() { canvas.text((i == 0 ? "" : " ")+part,font: small,x: 12,y: row.labelY+i*11,color: 1) }
             let quantity = String(row.first)+row.unit, days = String(row.second), cost = String(row.third!)
-            canvas.text(quantity,font: small,x: (177-small.width(of: quantity))/2,y: row.valueY,color: 0)
-            canvas.text(days,font: small,x: daysRight-small.width(of: days),y: row.valueY,color: 0)
-            canvas.text("$",font: small,x: costRight-small.width(of: "$1500"),y: row.valueY,color: 0)
-            canvas.text(cost,font: small,x: costRight-small.width(of: cost),y: row.valueY,color: 0)
+            canvas.text(quantity,font: small,x: (177-small.width(of: quantity))/2,y: row.valueY,color: 1)
+            canvas.text(days,font: small,x: daysRight-small.width(of: days),y: row.valueY,color: 1)
+            canvas.text("$",font: small,x: costRight-small.width(of: "$1500"),y: row.valueY,color: 1)
+            canvas.text(cost,font: small,x: costRight-small.width(of: cost),y: row.valueY,color: 1)
         }
     }
 }

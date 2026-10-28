@@ -28,7 +28,7 @@ extension NativeActivityPlan {
             for _ in 0..<4 {
                 var selected: Int
                 repeat { selected = draw(0,3) } while selected == previous || used.contains(selected)
-                used.insert(selected);previous = -1;checkpoint();prices[selected] = 0
+                used.insert(selected);previous = -1;checkpoint();prices[selected] = 1
                 frame(prices+[-1,14]);sound(31);time += 20
             }
             frame(prices+[-1,14])

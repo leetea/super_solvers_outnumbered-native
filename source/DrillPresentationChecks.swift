@@ -43,7 +43,7 @@ func nativeDrillPresentationChecks(root: URL,output: URL) throws -> [String:Bool
     checks["drill_success_starts_card_before_secret_or_hundred_point_award"] = view.session.activeDrill?.presentation?.stage == .capture && view.session.activeDrill?.presentation?.elapsedIRQTicks == 0 && view.session.score == 900 && view.session.decoder.capturedCount == 0 && view.session.valid
     try view.advanceDrill(irqTicks: 175)
     try view.render();try view.canvas.writePNG(to: output.appendingPathComponent("native-telly-spinning-code.png"))
-    checks["drill_card_clear_rectangle_uses_video_black_background"] = view.canvas.pixels[53*320+152] == 0 && view.canvas.pixels[54*320+191] == 0
+    checks["drill_card_clear_rectangle_uses_video_black_background"] = view.canvas.pixels[53*320+152] == 1 && view.canvas.pixels[54*320+191] == 1
     let stable = JSONEncoder();stable.outputFormatting = .sortedKeys
     let enemy = try stable.encode(view.session.telly), wire = try stable.encode(view.session.liveWire), rng = view.session.generator.randomState
     view.session = try JSONDecoder().decode(NativeSession.self,from: stable.encode(view.session!))
