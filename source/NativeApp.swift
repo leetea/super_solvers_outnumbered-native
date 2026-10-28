@@ -12,6 +12,9 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     let saves: NativeSessionStore
     let canvas = NativeCanvas()
     var screen = Screen.title
+    var opening = NativeOpeningPresentation()
+    var openingLastPulse = ProcessInfo.processInfo.systemUptime
+    var openingFraction = 0.0
     var session: NativeSession!
     var held: Set<UInt16> = []
     var timer: Timer?
@@ -144,7 +147,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     func step() {
         tick += 1
         guard modalDepth == 0 else { return }
-        if screen == .title { effect(0); return }
+        if screen == .title { if opening.showingPage { effect(0) };return }
         guard screen != .menu, screen != .scores else { return }
         if screen == .help && !helpPausesAdventure { return }
         if screen == .practice {
@@ -259,6 +262,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     override func keyDown(with event: NSEvent) {
         let key = event.keyCode
+        if screen == .title && key != 122 { openingKey(event);return }
         if isTransitioning { return }
         if [.practice,.drill].contains(screen) { cancelTutorialTimer() }
         if screen == .ending { return }
@@ -370,7 +374,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             return
         }
         if screen == .scores { closeScores(); return }
-        if screen == .title { showPlayerMenu(); return }
+        if screen == .title { opening.enter();needsDisplay = true;return }
         if screen == .menu {
             if x >= 34 && x < 286 && y >= 58 && y < 170 { menuSelection = min(Self.playerMenuItems.count-1,(y-58)/14); activatePlayerMenu(menuSelection) }
             return
@@ -557,7 +561,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         canvas.clip = nil; canvas.clear(0)
         if visibleScreen == .help { try render(helpReturn); try drawOriginalHelp(); return }
         if visibleScreen == .scores { try render(scoreReturn); try drawScores(); return }
-        if visibleScreen == .title { canvas.draw(try content.bitmap("OPENING.GRA.000"),x: 0,y: 0); return }
+        if visibleScreen == .title { try drawOpening(); return }
         if visibleScreen == .menu { try drawPlayerMenu(); return }
         if visibleScreen == .practice { try drawPractice(); return }
         try drawHUD(for: visibleScreen)

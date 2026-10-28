@@ -1,0 +1,32 @@
+{
+  "milestone": "0.25.0",
+  "finalCheckCount": 848,
+  "nativeWindowVerified": true,
+  "finalBuildObservations": [
+    "Objective page displays recovered text and original artwork",
+    "Held ordinary x key during entrance does not restart animation clock",
+    "Entrance reaches player menu automatically",
+    "Normal app quit completed; app absent from subsequent running-app inventory"
+  ],
+  "finalBuildCaptures": [
+    "gui-opening-objective-final-0.25.png",
+    "gui-opening-final-ignored-input-0.25.png",
+    "gui-opening-completed-final-0.25.png"
+  ],
+  "preceding847CheckBuildObservations": [
+    "Title, objective and Telly decoder pages advance one at a time with Enter",
+    "Escape exit question shown; No returns to same page",
+    "Recovered entrance and station arrival observed",
+    "Return to title allows replay"
+  ],
+  "scope": "Earlier captures without final in filename used the preceding 847-check build; the final build adds the ignored-key clock fix and its test. Final compiled sections and assets are matched by gui-0.25-code-identity.json.",
+  "copiedPlayerFilesUnchanged": true,
+  "copiedPlayerHashes": {
+    "profiles-v1.json": "36ff5e72a63d6f6a2a2270b9852febaa4638553589ff5119c138c34e6a843fe4",
+    "session-3784E281-68B6-481A-A9E4-BA8DE6B05B39-v1.json": "3de2b76290bb82507899512d25c80023fb695baac4fb397d7a023be0eb8fcaaf"
+  },
+  "originalUserDataUsed": false,
+  "perceptualAudioVerified": false,
+  "pixelExactDOSParityClaimed": false,
+  "completeGame": false
+}

@@ -4,6 +4,7 @@ extension NativeGameView {
     func closeHelp() {
         guard screen == .help else { return }
         screen = helpReturn
+        if screen == .title { openingLastPulse = ProcessInfo.processInfo.systemUptime }
         if helpPausesAdventure { session?.clock.resume() }
         helpPausesAdventure = false; helpBrowser = nil; needsDisplay = true
     }

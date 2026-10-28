@@ -1,4 +1,4 @@
-# Native reimplementation 0.24 — October 27, 2026
+# Native reimplementation 0.25 — October 27, 2026
 
 The complete-game goal remains active. This turn made concrete implementation progress; it was not a wait or a blocked turn.
 
@@ -6,7 +6,7 @@ The complete-game goal remains active. This turn made concrete implementation pr
 
 `outputs/Outnumbered Native Development.app` is a self-contained ARM64 Cocoa/Swift app. It loads decoded original image/font data and offline reconstructed PCM. It does not execute the DOS EXE, graphics drivers, compiled TEMPLATE drawing code, or a DOS/PC CPU emulator. The previous, invented-rules prototype remains separate and unchanged.
 
-Use **Game → Reference Rainfall Question** (Command-R) for answer644, or **Reference Telly Drill** (Command-D) for the six recorded answers19,12,22,7,22,3. These isolated Senior-rank checkpoints do not overwrite player saves. The drill starts at600 and reaches1,000 after six correct answers plus a lightning code piece. Its native decoder seed6908 is selected to match the three observed code symbols and Equipment hideout; it is not a recovered historical DOS seed. Return from the title now opens a player menu with separate native profiles, game/custom/practice choices and unfinished-game continuation.
+Use **Game → Reference Rainfall Question** (Command-R) for answer644, or **Reference Telly Drill** (Command-D) for the six recorded answers19,12,22,7,22,3. These isolated Senior-rank checkpoints do not overwrite player saves. The drill starts at600 and reaches1,000 after six correct answers plus a lightning code piece. Its native decoder seed6908 is selected to match the three observed code symbols and Equipment hideout; it is not a recovered historical DOS seed. The original opening now leads to a player menu with separate native profiles, game/custom/practice choices and unfinished-game continuation.
 
 Implemented in the development app:
 
@@ -157,3 +157,6 @@ Milestone0.23 restores prize price/outline flashes and their original retry-base
 
 
 Milestone0.24 restores the television-table noise introduction:60 paired XOR phases with original sound/waits and2580 random draws. Focused caller-stack recovery establishes the no-argument range bounds0..8512; the native effect preserves the EGA byte masks, including its same-byte crossing quirk.818 checks pass, covering320 static endpoints, independent coordinates/stream states, save/resume, input lockout and every byte alignment. Native windows verified the isolated168→300 checkpoint and a normal Equipment TV activity222→600 total/room clues. All nine activity families with timed drawing now have native schedules; the map needs no such intro. This does not establish complete campaign/pixel/audio identity. Opening/File/sign-in, queued input, remaining mask/palette/ending/audio refinements and a fresh full ordinary win remain required. See television-effect-recovery.md.
+
+
+Milestone0.25 restores the three-page opening with24 original instruction lines, Enter-keycap prompts,12000IRQ page deadlines and24IRQ grey wipes, followed by40 original sprite/sound commands in three scripts (320/160/1080IRQ). The native compositor retains source restore references and callback copy bounds, locks input during the entrance and hands off to the existing player menu.848 checks pass, including timeout cycling, sound boundaries, ignored-key clock stability, pure repainting and suspended-game preservation. Native windows show title/objective/Telly pages, Escape/No, flight and station frames, completion and replay. Copied profile/session files remain byte-for-byte unchanged. Native F1/click/exit-dialog adaptations and broader palette/mask/audio limits are explicit. Original File/sign-in, general input buffering, remaining ending refinements and a fresh complete ordinary win remain required. See opening-presentation-recovery.md.

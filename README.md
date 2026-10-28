@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.24
+## Current verified milestone: 0.25
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,9 +16,9 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**818 integration checks pass.** The app ZIP passes strict signature verification
+**848 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.24.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.25.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
 [music/message recovery](docs/music-messages-recovery.md) and
@@ -26,12 +26,13 @@ and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [adventure Telly presentation](docs/drill-presentation-recovery.md) and
 [timed charts/sliders/cassettes](docs/activity-timing-recovery.md) and
 [prize/spinner/music/equipment effects](docs/activity-effects-recovery.md) and
-[television static](docs/television-effect-recovery.md).
+[television static](docs/television-effect-recovery.md) and
+[original opening](docs/opening-presentation-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
-Original opening/menu animations,
-detailed encounter/transition effects, palette and full-playthrough validation
-remain unfinished. See [the full plan](docs/PLAN.md),
+Original File/sign-in presentation, queued keyboard input, remaining
+encounter/ending refinements, palette/audio calibration and a fresh complete
+playthrough remain unfinished. See [the full plan](docs/PLAN.md),
 [project context](PROJECT_CONTEXT.md) and [milestones](MILESTONES.md).
 Headless and native-window checks are separate evidence; this is not the complete game.
 
@@ -51,7 +52,7 @@ to build or play this version. The app has an ad-hoc development signature;
 it is not Apple-notarized.
 
 F1 opens the original eight-topic help book with22 pages and four illustrations.
-Title Return opens the player menu; F2 returns to it and F3 opens options.
+Enter advances the title and two original instruction pages, then the station entrance opens the player menu. F2 returns to it during play; F3 opens options.
 Practice Enter starts another set; Esc/F2 preserves the suspended adventure.
 
 In the app, Command-R opens the recorded rainfall question (answer 644).
@@ -167,3 +168,6 @@ Milestone0.23 restores prize price/outline flashes and their original retry-base
 Milestone0.24 restores the television-table noise introduction:60 paired XOR phases with original sound/waits and2580 random draws. Focused caller-stack recovery establishes the no-argument range bounds0..8512; the native effect preserves the EGA byte masks, including its same-byte crossing quirk.818 checks pass, covering320 static endpoints, independent coordinates/stream states, save/resume, input lockout and every byte alignment. Native windows verified the isolated168→300 checkpoint and a normal Equipment TV activity222→600 total/room clues. All nine activity families with timed drawing now have native schedules; the map needs no such intro. This does not establish complete campaign/pixel/audio identity. Opening/File/sign-in, queued input, remaining mask/palette/ending/audio refinements and a fresh full ordinary win remain required. See television-effect-recovery.md.
 
 Command-T opens the isolated television-table checkpoint (answer168).
+
+
+Milestone0.25 restores the three-page opening with24 original instruction lines, Enter-keycap prompts,12000IRQ page deadlines and24IRQ grey wipes, followed by40 original sprite/sound commands in three scripts (320/160/1080IRQ). The native compositor retains source restore references and callback copy bounds, locks input during the entrance and hands off to the existing player menu.848 checks pass, including timeout cycling, sound boundaries, ignored-key clock stability, pure repainting and suspended-game preservation. Native windows show title/objective/Telly pages, Escape/No, flight and station frames, completion and replay. Copied profile/session files remain byte-for-byte unchanged. Native F1/click/exit-dialog adaptations and broader palette/mask/audio limits are explicit. Original File/sign-in, general input buffering, remaining ending refinements and a fresh complete ordinary win remain required. See opening-presentation-recovery.md.

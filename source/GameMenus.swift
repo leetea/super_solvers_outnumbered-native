@@ -228,7 +228,7 @@ extension NativeGameView {
         case 6: toggleSound()
         default:
             if session != nil && menuReturn != .title && menuReturn != .practice { screen = menuReturn }
-            else { screen = .title }
+            else { screen = .title;resetOpening() }
         }
         needsDisplay = true
     }

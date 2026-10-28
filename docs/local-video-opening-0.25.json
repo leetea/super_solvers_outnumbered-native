@@ -1,0 +1,15 @@
+{
+  "input": "local-inputs/OutNumbered Gameplay.mkv",
+  "sha256": "6960fb011e044a141e75e734e35140ff5c6c62e8e3440bf78f96d27baf957205",
+  "referenceFrames": [
+    "reference-media/frame-002.png at nominal5s: objective",
+    "reference-media/frame-004.png at nominal15s: Telly/decoder instructions"
+  ],
+  "additionalInspection": "Local contact sheet22..30s at4fps shows looking, turning, shrinking and entering station",
+  "sourceDerived": "24 lines,40 script commands, page/wipe/frame waits and copy bounds recovered independently from EXE",
+  "limits": [
+    "Nominal extraction bins, no exact original/native frame synchronization.",
+    "Different bitmap palette/mask details remain visible.",
+    "No perceptual audio claim."
+  ]
+}
