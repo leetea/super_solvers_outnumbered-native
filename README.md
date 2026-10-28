@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.25
+## Current verified milestone: 0.26
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,9 +16,9 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**848 integration checks pass.** The app ZIP passes strict signature verification
+**877 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.25.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.26.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
 [music/message recovery](docs/music-messages-recovery.md) and
@@ -27,10 +27,11 @@ and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [timed charts/sliders/cassettes](docs/activity-timing-recovery.md) and
 [prize/spinner/music/equipment effects](docs/activity-effects-recovery.md) and
 [television static](docs/television-effect-recovery.md) and
-[original opening](docs/opening-presentation-recovery.md).
+[original opening](docs/opening-presentation-recovery.md) and
+[member sign-in and File menus](docs/signin-file-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
-Original File/sign-in presentation, queued keyboard input, remaining
+Remaining original confirmation/settings presentation, queued keyboard input,
 encounter/ending refinements, palette/audio calibration and a fresh complete
 playthrough remain unfinished. See [the full plan](docs/PLAN.md),
 [project context](PROJECT_CONTEXT.md) and [milestones](MILESTONES.md).
@@ -52,7 +53,7 @@ to build or play this version. The app has an ad-hoc development signature;
 it is not Apple-notarized.
 
 F1 opens the original eight-topic help book with22 pages and four illustrations.
-Enter advances the title and two original instruction pages, then the station entrance opens the player menu. F2 returns to it during play; F3 opens options.
+Enter advances the title and two original instruction pages, then the station entrance opens Club Member Sign-In. Select a member or New Member with arrows and Enter. The play panel has Regular Game, Customized Game and Customized Drill for Skill; Escape returns to sign-in. F2 opens File during play; F3 opens options.
 Practice Enter starts another set; Esc/F2 preserves the suspended adventure.
 
 In the app, Command-R opens the recorded rainfall question (answer 644).
@@ -75,7 +76,11 @@ The score screenshot uses isolated display fixtures.
 
 ![Original help rendered natively](docs/screenshots/original-help.png)
 
-![Native player menu](docs/screenshots/player-menu.png)
+![Original member sign-in rendered natively](docs/screenshots/member-signin.png)
+
+![Original play choices rendered natively](docs/screenshots/play-choices.png)
+
+These two images are headless render fixtures; native-window observations are recorded separately in docs/gui-observations-0.26.json.
 
 ![Native practice result](docs/screenshots/practice-result.png)
 
@@ -171,3 +176,8 @@ Command-T opens the isolated television-table checkpoint (answer168).
 
 
 Milestone0.25 restores the three-page opening with24 original instruction lines, Enter-keycap prompts,12000IRQ page deadlines and24IRQ grey wipes, followed by40 original sprite/sound commands in three scripts (320/160/1080IRQ). The native compositor retains source restore references and callback copy bounds, locks input during the entrance and hands off to the existing player menu.848 checks pass, including timeout cycling, sound boundaries, ignored-key clock stability, pure repainting and suspended-game preservation. Native windows show title/objective/Telly pages, Escape/No, flight and station frames, completion and replay. Copied profile/session files remain byte-for-byte unchanged. Native F1/click/exit-dialog adaptations and broader palette/mask/audio limits are explicit. Original File/sign-in, general input buffering, remaining ending refinements and a fresh complete ordinary win remain required. See opening-presentation-recovery.md.
+
+
+Milestone0.26 restores the original member clipboard and eight-slot name editor, the three-choice play panel and separate adventure/practice File menus. The source-derived rows, rank/lifetime columns, wrap navigation, XOR selection and caret timing replace the earlier eight-item native menu. Existing native player names/saves remain compatible. Removal is a named native adaptation: profiles move into a recoverable archive, and their unfinished sessions and high-game history remain intact. 877 native checks pass, including independent file preservation, archive/reload/restore, duplicate rejection, menu/pause navigation and pure rendering. Native confirmations/settings/restore controls, general BIOS buffering, remaining ending/rank/midnight/palette/mask/audio refinements and a fresh full ordinary playthrough still prevent complete-game status. See signin-file-recovery.md.
+
+Ctrl-R on the sign-in list opens Remove Member. Native removal preserves the member and unfinished game in an archive; Game → Restore Removed Member restores it. Original ten-member creation limits apply to new original-style names; existing longer names and larger native member lists remain compatible.

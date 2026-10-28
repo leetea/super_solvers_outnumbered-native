@@ -121,6 +121,7 @@ struct NativeSaveFile: Codable {
     var formatVersion = 1
     var selectedProfileID: UUID?
     var profiles: [NativeProfile] = []
+    var archivedProfiles: [NativeProfile]?
     var highGameScores: [NativeHighGameScore]?
 }
 
@@ -151,8 +152,9 @@ final class NativeProfileStore {
             let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
             document = try decoder.decode(NativeSaveFile.self, from: Data(contentsOf: file))
             guard document.formatVersion == 1 else { throw NativeSaveError.unsupportedVersion(document.formatVersion) }
-            guard Set(document.profiles.map(\.id)).count == document.profiles.count,
-                  document.profiles.allSatisfy({ Self.validName($0.name) && ($0.lifetimePoints == nil || (0...9_999_999).contains($0.lifetimePoints!)) && ($0.customGameSettings == nil || $0.customGameSettings!.valid) && ($0.practiceSettings == nil || $0.practiceSettings!.valid) }),
+            let allProfiles = document.profiles+(document.archivedProfiles ?? [])
+            guard Set(allProfiles.map(\.id)).count == allProfiles.count,
+                  allProfiles.allSatisfy({ Self.validName($0.name) && ($0.lifetimePoints == nil || (0...9_999_999).contains($0.lifetimePoints!)) && ($0.customGameSettings == nil || $0.customGameSettings!.valid) && ($0.practiceSettings == nil || $0.practiceSettings!.valid) }),
                   Self.validHighGameScores(document.highGameScores),
                   document.selectedProfileID == nil || document.profiles.contains(where: { $0.id == document.selectedProfileID }) else { throw NativeSaveError.invalidDocument }
         } else { document = NativeSaveFile() }
@@ -183,6 +185,23 @@ final class NativeProfileStore {
     func select(_ id: UUID) throws {
         guard document.profiles.contains(where: { $0.id == id }) else { throw NativeSaveError.unknownProfile }
         var updated = document; updated.selectedProfileID = id
+        try commit(updated)
+    }
+    // Native removal is recoverable: retain the profile and its separate session.
+    func archive(_ id: UUID) throws {
+        guard let profile = document.profiles.first(where: { $0.id == id }) else { throw NativeSaveError.unknownProfile }
+        var updated = document
+        updated.profiles.removeAll { $0.id == id }
+        updated.archivedProfiles = (updated.archivedProfiles ?? [])+[profile]
+        if updated.selectedProfileID == id { updated.selectedProfileID = nil }
+        try commit(updated)
+    }
+    func restore(_ id: UUID) throws {
+        guard let profile = document.archivedProfiles?.first(where: { $0.id == id }) else { throw NativeSaveError.unknownProfile }
+        guard !document.profiles.contains(where: { $0.name.caseInsensitiveCompare(profile.name) == .orderedSame }) else { throw NativeSaveError.duplicateName }
+        var updated = document
+        updated.archivedProfiles?.removeAll { $0.id == id }
+        updated.profiles.append(profile)
         try commit(updated)
     }
     func recordFinishedSession(profileID: UUID,runID: UUID,score: UInt16,won: Bool,lifetimeBefore: Int) throws -> Int {

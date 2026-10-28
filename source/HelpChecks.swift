@@ -64,7 +64,7 @@ func nativeHelpChecks(root: URL,output: URL) throws -> [String:Bool] {
     view.closeHelp()
     checks["help_close_retains_parent_question_pause"] = view.screen == .question && view.session.clock.pauseDepth == 1 && view.session.activeChallenge?.answer == 644
     key(122); key(120)
-    checks["f2_from_help_cleans_only_help_pause"] = view.screen == .menu && view.session.clock.pauseDepth == 1 && view.helpBrowser == nil
+    checks["f2_from_help_cleans_only_help_pause"] = view.screen == .file && view.session.clock.pauseDepth == 1 && view.helpBrowser == nil
     view.screen = .world; view.session.activeChallenge = nil; view.session.clock.resume()
     try view.launchPractice(settings: .defaults(tier: 0),seed: 1)
     let encoder = JSONEncoder(); encoder.outputFormatting = .sortedKeys

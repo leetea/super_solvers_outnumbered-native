@@ -66,10 +66,10 @@ func nativeOpeningChecks(root: URL,output: URL) throws -> [String:Bool] {
     }
     view.opening.elapsed = 0;view.opening.appliedSounds = 0
     view.advanceOpening(1560)
-    checks["opening_finishes_in_player_menu_without_adventure_changes"] = view.screen == .menu && view.session.generator.randomState == randomBefore && view.session.score == 0 && view.session.clock.elapsedMinutes == 0
+    checks["opening_finishes_in_signin_without_adventure_changes"] = view.screen == .signin && view.session.generator.randomState == randomBefore && view.session.score == 0 && view.session.clock.elapsedMinutes == 0
     let restoredBefore = try JSONDecoder().decode(NativeSession.self,from: sessionBefore)
     checks["opening_preserves_prior_question_and_decoder"] = view.session.activeChallenge?.id == restoredBefore.activeChallenge?.id && view.session.decoder == restoredBefore.decoder
-    view.menuReturn = .title;view.activatePlayerMenu(7)
-    checks["opening_menu_return_restarts_title"] = view.screen == .title && view.opening.stage == .title && view.opening.elapsed == 0
+    view.screen = .menu;view.activatePlayerMenu(-1)
+    checks["opening_play_menu_escape_returns_to_signin"] = view.screen == .signin
     return checks
 }

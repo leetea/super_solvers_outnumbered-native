@@ -82,31 +82,12 @@ extension NativeGameView {
         if selectedProfile == nil { choosePlayer() }
     }
     @objc func choosePlayer() {
-        save(); modalDepth += 1; defer { modalDepth -= 1; needsDisplay = true }
-        let alert = NSAlert(); alert.messageText = "Start New Player"
-        let field = NSTextField(frame: NSRect(x: 0,y: 0,width: 300,height: 26)); field.placeholderString = "New player name"
-        field.setAccessibilityLabel("New player name")
-        let picker = NSPopUpButton(frame: NSRect(x: 0,y: 44,width: 300,height: 28))
-        let profiles = profileStore.document.profiles
-        picker.addItems(withTitles: profiles.map(\.name)); picker.isEnabled = !profiles.isEmpty
-        if let index = profiles.firstIndex(where: { $0.id == profileStore.document.selectedProfileID }) { picker.selectItem(at: index) }
-        picker.setAccessibilityLabel("Saved players")
-        let container = NSView(frame: NSRect(x: 0,y: 0,width: 300,height: 78)); container.addSubview(field); container.addSubview(picker)
-        alert.accessoryView = container
-        alert.addButton(withTitle: profiles.isEmpty ? "Create Player" : "Select Player")
-        alert.addButton(withTitle: "Create New Player"); alert.addButton(withTitle: "Cancel")
-        let response = alert.runModal()
-        do {
-            if response == .alertSecondButtonReturn || (response == .alertFirstButtonReturn && profiles.isEmpty) {
-                _ = try profileStore.create(name: field.stringValue)
-            } else if response == .alertFirstButtonReturn && profiles.indices.contains(picker.indexOfSelectedItem) {
-                try profileStore.select(profiles[picker.indexOfSelectedItem].id)
-            } else { return }
-            session = nil; practice = nil; referenceMode = false; screen = .menu
-            menuMessages = NativeNewUserMessages(enabled: (selectedProfile?.lifetimePoints ?? 0) < 5000)
-            if menuMessages.enabled { showNewUserMessage(17,welcome: true) }
-            status = ""; held.removeAll()
-        } catch { present(error) }
+        if isTransitioning || screen == .ending { return }
+        if screen == .help { closeHelp() }
+        if screen == .scores { closeScores() }
+        save();held.removeAll();sound?.stop();lastSoundIndex = nil
+        signIn = NativeMemberSignIn(memberCount: profileStore.document.profiles.count)
+        screen = .signin;needsDisplay = true
     }
     func configure(practice: Bool) -> OriginalGameSettings? {
         guard let profile = selectedProfile else { choosePlayer(); return nil }
@@ -216,38 +197,31 @@ extension NativeGameView {
             }
         }
     }
-    static let playerMenuItems = ["Play Game","Customized Game","Customized Drill for Skill","Start New Player","Lifetime Scores","High Game Scores","Sound","Return"]
+    static let playerMenuItems = ["Regular Game","Customized Game","Customized Drill for Skill"]
     func activatePlayerMenu(_ index: Int) {
         switch index {
         case 0: playGame()
         case 1: playCustomGame()
         case 2: startPractice()
-        case 3: choosePlayer()
-        case 4: showLifetimeScores()
-        case 5: showHighGameScores()
-        case 6: toggleSound()
-        default:
-            if session != nil && menuReturn != .title && menuReturn != .practice { screen = menuReturn }
-            else { screen = .title;resetOpening() }
+        default: choosePlayer()
         }
         needsDisplay = true
     }
     func drawPlayerMenu() throws {
-        canvas.fill(0,0,320,200,1); canvas.fill(22,12,276,176,15); canvas.border(24,14,272,172,0)
-        let font = try content.font("MOCKET.DAT.1393"), small = try content.font("MOCKET.DAT.1396")
-        canvas.text("OUTNUMBERED!",font: font,x: 92,y: 23,color: 1)
-        let profile = selectedProfile
-        let name = profile?.name ?? "Choose a player"
-        canvas.clip = (38,40,178,14)
-        canvas.text(name,font: small,x: 38,y: 40,color: 0)
-        canvas.clip = nil
-        if let profile { canvas.text(VerifiedRank.forLifetimePoints(profile.lifetimePoints ?? 0).rawValue,font: small,x: 220,y: 40,color: 0) }
-        for (i,label) in Self.playerMenuItems.enumerated() {
-            let y = 60+i*14, selected = i == menuSelection
-            if selected { canvas.fill(34,y-2,252,13,1) }
-            canvas.text(label == "Sound" ? "Sound: \(soundEnabled ? "On" : "Off")" : label,font: font,x: 42,y: y,color: selected ? 15 : 0)
-        }
-        canvas.text("Choose an item and press Enter.",font: small,x: 38,y: 172,color: 0)
+        let font = try content.font("MOCKET.DAT.1393")
+        canvas.fill(0,0,320,200,9)
+        try sprite(57,x: 0,y: 0,transparent: false)
+        canvas.fill(0,12,320,188,9)
+        canvas.fill(0,189,320,11,1)
+        canvas.text("\u{80}\u{81} to Cycle",font: font,x: 0,y: 190,color: 15)
+        let enter = "\u{85} to Select"
+        canvas.text(enter,font: font,x: 319-font.width(of: enter),y: 190,color: 15)
+        let title = "What do you want to play?",left = 46,top = 57
+        let width = max(123,max(Self.playerMenuItems.map { font.width(of: $0)+14 }.max()!,font.width(of: title)+36))
+        let right = left+width,bottom = top+3*12+39
+        canvas.originalHelpPanel(left: left,top: top,right: right,bottom: bottom,title: title,footer: "\u{84} to Go Back",font: font,bottomSeparator: 18)
+        for (i,label) in Self.playerMenuItems.enumerated() { canvas.text(label,font: font,x: left+6,y: top+19+i*12,color: 1) }
+        canvas.xorMemberSelection(left+4,top+18+menuSelection*12,width-9,13)
     }
     func drawPractice() throws {
         guard let practice else { return }

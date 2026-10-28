@@ -2,9 +2,9 @@
 
 Build a complete, self-contained ARM64 macOS reimplementation of Super Solvers Outnumbered. The original DOS executable, graphics drivers and DOS/PC CPU environment are not part of the finished app. Keep original assets and the supplied reference video unchanged.
 
-## Current verified state — 0.25, October27,2026
+## Current verified state — 0.26, October27,2026
 
-848 native checks pass. The ordinary full adventure win and normal
+877 native checks pass. The ordinary full adventure win and normal
 quit/relaunch/replay were established at0.14; later fidelity milestones still
 require a fresh complete playthrough before final completion.0.15–0.18 add
 original staged doors/elevators, transition actor/RNG updates and camera rules.
@@ -20,9 +20,9 @@ scroll and auxiliary-actor lifecycle. The0.21 milestone restores adventure Telly
 rejection and persisted result waits. The0.22 milestone restores timed bars, needles, line plots and cassettes.
 The0.23 milestone restores prize RNG/price/outline effects, spinner highlights, music flashes and equipment headers.
 The0.24 milestone resolves TV caller-stack range arguments and restores its static effect.
-The0.25 milestone restores original opening pages and station-entry scripts.
-Next recover File/sign-in presentation,
-queued input, ending refinements and palette/audio calibration. Keep the
+The0.26 milestone restores original opening, member sign-in and File/play menus.
+Next recover general queued keyboard input, remaining original dialog presentation,
+ending refinements and palette/audio calibration. Keep the
 original completion criteria below; cosmetic fidelity and complete-loop
 validation remain part of the requested end state. Detailed source-mask and
 panel-occlusion parity need broader evidence than the current opaque overlap
@@ -51,7 +51,7 @@ check. See player-impact-recovery.md and DEVELOPMENT-STATUS.md.
 - `work/reimplementation/`: expanded native source, original resource catalog, decoded images/fonts/audio, question VM recovery, references and static evidence.
 - `work/reimplementation/reference-media/source.json`: local video identity and measured tracks. Derived PNG frames and mono PCM are analysis copies only.
 - `work/reimplementation/REFERENCE-OVERRIDE.md`: local-video replacement instruction and workspace migration.
-- `outputs/Outnumbered Native Development.app`: current0.25 ARM64 development app with848 checks. All ten activity families, source-derived question setup, ordinary winning loop, core menus/custom/practice/help/scores, music/message options, staged traversal, camera rules, enemies, drills, zaps, recharge and player reactions are integrated. Checkpoint commands are isolated reference sessions, not ordinary-play evidence. Read the current status and milestone verification for remaining gaps; this is separate from the preserved first prototype.
+- `outputs/Outnumbered Native Development.app`: current0.26 ARM64 development app with877 checks. All ten activity families, source-derived question setup, ordinary winning loop, core menus/custom/practice/help/scores, music/message options, staged traversal, camera rules, enemies, drills, zaps, recharge and player reactions are integrated. Checkpoint commands are isolated reference sessions, not ordinary-play evidence. Read the current status and milestone verification for remaining gaps; this is separate from the preserved first prototype.
 - `work/reimplementation/DEVELOPMENT-STATUS.md`: implemented behavior, verification, known approximations and next work. Treat this alongside this checklist when continuing.
 
 Current workspace is `.`. Earlier work was copied from the previous Codex directory without modifying that directory; compiler caches were omitted.
@@ -156,3 +156,8 @@ Milestone0.24 restores the television-table noise introduction:60 paired XOR pha
 
 
 Milestone0.25 restores the three-page opening with24 original instruction lines, Enter-keycap prompts,12000IRQ page deadlines and24IRQ grey wipes, followed by40 original sprite/sound commands in three scripts (320/160/1080IRQ). The native compositor retains source restore references and callback copy bounds, locks input during the entrance and hands off to the existing player menu.848 checks pass, including timeout cycling, sound boundaries, ignored-key clock stability, pure repainting and suspended-game preservation. Native windows show title/objective/Telly pages, Escape/No, flight and station frames, completion and replay. Copied profile/session files remain byte-for-byte unchanged. Native F1/click/exit-dialog adaptations and broader palette/mask/audio limits are explicit. Original File/sign-in, general input buffering, remaining ending refinements and a fresh complete ordinary win remain required. See opening-presentation-recovery.md.
+
+
+Milestone0.26 restores the original member clipboard and eight-slot name editor, the three-choice play panel and separate adventure/practice File menus. The source-derived rows, rank/lifetime columns, wrap navigation, XOR selection and caret timing replace the earlier eight-item native menu. Existing native player names/saves remain compatible. Removal is a named native adaptation: profiles move into a recoverable archive, and their unfinished sessions and high-game history remain intact. 877 native checks pass, including independent file preservation, archive/reload/restore, duplicate rejection, menu/pause navigation and pure rendering. Native confirmations/settings/restore controls, general BIOS buffering, remaining ending/rank/midnight/palette/mask/audio refinements and a fresh full ordinary playthrough still prevent complete-game status. See signin-file-recovery.md.
+
+Next: original general BIOS input queue/repeat semantics, remaining confirmation/settings and ending/rank/midnight behavior, full driver palette/masks/occlusion and audio calibration, then a fresh full natural adventure and final packaging review.

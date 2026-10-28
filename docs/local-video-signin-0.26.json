@@ -1,0 +1,11 @@
+{
+  "input": "local-inputs/OutNumbered Gameplay.mkv",
+  "sha256": "6960fb011e044a141e75e734e35140ff5c6c62e8e3440bf78f96d27baf957205",
+  "inspection": "Contact sheet29..43s at1fps: clipboard after station arrival, member Jeremy/Senior/52,595 and New Member; followed by Regular Game/Customized Game/Customized Drill for Skill panel and Escape footer.",
+  "sourceDerived": "DS33b4 labels/DS3424 menu records and21b1 member/name routines establish positions and input rules independently.",
+  "limits": [
+    "Nominal sample bins, not synchronized exact original/native frames",
+    "New-member entry and removal not shown in this selected video segment; source and native tests establish those paths",
+    "Palette/mask differences remain; no perceptual audio claim"
+  ]
+}

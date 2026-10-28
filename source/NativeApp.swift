@@ -1,7 +1,7 @@
 import Cocoa
 
 final class NativeGameView: NSView, NSMenuItemValidation {
-    enum Screen { case title, menu, practice, world, question, drill, decoder, help, scores, ending, results }
+    enum Screen { case title, signin, file, menu, practice, world, question, drill, decoder, help, scores, ending, results }
     let content: OriginalContent
     let world: OriginalWorld
     let renderer: ChallengeRenderer
@@ -12,6 +12,9 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     let saves: NativeSessionStore
     let canvas = NativeCanvas()
     var screen = Screen.title
+    var signIn = NativeMemberSignIn()
+    var fileReturn = Screen.menu
+    var fileSelection = 0
     var opening = NativeOpeningPresentation()
     var openingLastPulse = ProcessInfo.processInfo.systemUptime
     var openingFraction = 0.0
@@ -148,7 +151,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         tick += 1
         guard modalDepth == 0 else { return }
         if screen == .title { if opening.showingPage { effect(0) };return }
-        guard screen != .menu, screen != .scores else { return }
+        if screen == .signin { signIn.blinkIRQ += OriginalWorld.frameIRQTicks;needsDisplay = true;return }
+        guard ![.signin,.file,.menu,.scores].contains(screen) else { return }
         if screen == .help && !helpPausesAdventure { return }
         if screen == .practice {
             practiceIRQ += UInt64(OriginalWorld.frameIRQTicks)
@@ -266,7 +270,9 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if isTransitioning { return }
         if [.practice,.drill].contains(screen) { cancelTutorialTimer() }
         if screen == .ending { return }
-        if key == 120 { showPlayerMenu(); return }
+        if screen == .signin { signInKey(event);return }
+        if screen == .file { fileKey(event);return }
+        if key == 120 { showFileMenu(); return }
         if key == 99 { showOptions(); return }
         if key == 122 { toggleHelp(); return }
         if screen == .help { helpKey(event); return }
@@ -276,7 +282,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             if key == 125 { menuSelection = (menuSelection+1)%Self.playerMenuItems.count }
             else if key == 126 { menuSelection = (menuSelection+Self.playerMenuItems.count-1)%Self.playerMenuItems.count }
             else if key == 36 { activatePlayerMenu(menuSelection) }
-            else if key == 53 { activatePlayerMenu(Self.playerMenuItems.count-1) }
+            else if key == 53 { activatePlayerMenu(-1) }
             needsDisplay = true; return
         }
         if screen == .results {
@@ -289,7 +295,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         guard session != nil else { return }
         if session.activeZap != nil || session.activeFountain != nil { return }
         switch screen {
-        case .title, .menu, .practice, .ending, .results: break
+        case .title, .signin, .file, .menu, .practice, .ending, .results: break
         case .world:
             if key == 126 && !event.isARepeat && session.outcome == "active" { interact() }
             else if key == 49 && !event.isARepeat && playerMotion.settled && session.outcome == "active" {
@@ -374,9 +380,10 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             return
         }
         if screen == .scores { closeScores(); return }
+        if screen == .signin || screen == .file { return }
         if screen == .title { opening.enter();needsDisplay = true;return }
         if screen == .menu {
-            if x >= 34 && x < 286 && y >= 58 && y < 170 { menuSelection = min(Self.playerMenuItems.count-1,(y-58)/14); activatePlayerMenu(menuSelection) }
+            if x >= 50 && x < 286 && y >= 75 && y < 111 { menuSelection = min(Self.playerMenuItems.count-1,(y-75)/12); activatePlayerMenu(menuSelection) }
             return
         }
         if y < 12 && x >= 50 && x < 100 { showPlayerMenu(); return }
@@ -562,11 +569,13 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if visibleScreen == .help { try render(helpReturn); try drawOriginalHelp(); return }
         if visibleScreen == .scores { try render(scoreReturn); try drawScores(); return }
         if visibleScreen == .title { try drawOpening(); return }
+        if visibleScreen == .signin { try drawSignIn();return }
+        if visibleScreen == .file { try render(fileReturn);try drawFileMenu();return }
         if visibleScreen == .menu { try drawPlayerMenu(); return }
         if visibleScreen == .practice { try drawPractice(); return }
         try drawHUD(for: visibleScreen)
         switch visibleScreen {
-        case .title, .menu, .practice: break
+        case .title, .signin, .file, .menu, .practice: break
         case .world: try drawWorld()
         case .question: try drawQuestion()
         case .drill: try drawDrill()
@@ -602,6 +611,7 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
             root.addItem(gameItem); gameItem.submenu = gameMenu
             let players = NSMenuItem(title: "Play Another Game",action: #selector(NativeGameView.showPlayerMenu),keyEquivalent: "p"); players.target = game; gameMenu.addItem(players)
             let newPlayer = NSMenuItem(title: "Start New Player",action: #selector(NativeGameView.choosePlayer),keyEquivalent: "n"); newPlayer.target = game; gameMenu.addItem(newPlayer)
+            let restore = NSMenuItem(title: "Restore Removed Member…",action: #selector(NativeGameView.restoreMember),keyEquivalent: "");restore.target = game;gameMenu.addItem(restore)
             let practice = NSMenuItem(title: "Drill for Skill",action: #selector(NativeGameView.startPractice),keyEquivalent: "k"); practice.target = game; gameMenu.addItem(practice)
             let lifetime = NSMenuItem(title: "Lifetime Scores",action: #selector(NativeGameView.showLifetimeScores),keyEquivalent: "7"); lifetime.target = game; gameMenu.addItem(lifetime)
             let highScores = NSMenuItem(title: "High Game Scores",action: #selector(NativeGameView.showHighGameScores),keyEquivalent: "8"); highScores.target = game; gameMenu.addItem(highScores)

@@ -1,0 +1,35 @@
+{
+  "milestone": "0.26.0",
+  "finalCheckCount": 877,
+  "nativeWindowVerified": true,
+  "observations": [
+    "Original opening hands off to member clipboard",
+    "Full Game Check selected; original three play choices displayed",
+    "File opens over menu and regular game",
+    "New Member name box accepted nina as Nina; original new-user guidance appeared",
+    "New regular game started",
+    "Ctrl-R removal list excluded New Member; Nina archived through native confirmation",
+    "Game Restore Removed Member restored Nina; original-style sign-in showed it again",
+    "Restored Nina offered Continue Game and resumed its unfinished game",
+    "File opened original lifetime score screen"
+  ],
+  "archiveVerification": {
+    "existingMembersUnchanged": true,
+    "originalUnfinishedSessionSHA256Unchanged": "3de2b76290bb82507899512d25c80023fb695baac4fb397d7a023be0eb8fcaaf",
+    "restoredNinaIdentityUnchanged": true,
+    "repeatedArchiveAndRestoreSessionByteForByteUnchanged": true,
+    "retainedSessionSHA256": "8f0dd10fe84e0eb42ec505d762efe607396787a6b6773725c04ea590d84f6965",
+    "scope": "First removal performs the ordinary save and re-encodes JSON, so its bytes changed; the repeated archive/restore with no loaded session retained the captured unfinished file byte-for-byte. Native source never removes a session file."
+  },
+  "finalCompiledIdentity": "gui-0.26-code-identity.json:32 compiled sections and484 assets match candidate",
+  "nativeAdaptations": [
+    "Removal/restore and exit confirmations use macOS controls",
+    "Removal archives profile, preserving its session; source DOS permanent erasure is not performed",
+    "Existing native long names and larger lists remain compatible"
+  ],
+  "originalUserDataUsed": false,
+  "perceptualAudioVerified": false,
+  "pixelExactDOSParityClaimed": false,
+  "completeGame": false,
+  "normalQuitVerified": true
+}

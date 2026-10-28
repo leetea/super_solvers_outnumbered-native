@@ -143,7 +143,7 @@ extension NativeGameView {
             switch cue {
             case let .sound(index): effect(index)
             case .stop: sound?.stop();lastSoundIndex = nil
-            case .finished: showPlayerMenu()
+            case .finished: choosePlayer()
             }
         }
         needsDisplay = true
