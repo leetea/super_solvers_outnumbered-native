@@ -76,7 +76,7 @@ extension NativeGameView {
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
         guard session?.activeZap == nil, session?.activeFountain == nil, screen != .ending else { return }
-        save(); held.removeAll(); sound?.stop(); lastSoundIndex = nil
+        keyboard.flush();save(); held.removeAll(); sound?.stop(); lastSoundIndex = nil
         if screen != .menu && screen != .practice { menuReturn = screen }
         practice = nil; screen = .menu; menuSelection = 0; needsDisplay = true
         if selectedProfile == nil { choosePlayer() }
@@ -85,7 +85,7 @@ extension NativeGameView {
         if isTransitioning || screen == .ending { return }
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
-        save();held.removeAll();sound?.stop();lastSoundIndex = nil
+        keyboard.flush();save();held.removeAll();sound?.stop();lastSoundIndex = nil
         signIn = NativeMemberSignIn(memberCount: profileStore.document.profiles.count)
         screen = .signin;needsDisplay = true
     }

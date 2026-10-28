@@ -223,7 +223,7 @@ extension NativeGameView {
                 let award = try drill.advance(irqTicks: remaining,remainingIRQTicks: &unused,nextRandom: { generator.nextRandomValue() })
                 remaining = unused;session.score = VerifiedScore.adding(award,to: session.score)
                 session.generator = generator;session.activeDrill = drill
-                if previous != drill.phase && drill.phase == .asking { scheduleTutorial(8,ticks: 720) }
+                if previous != drill.phase && drill.phase == .asking { keyboard.flush();scheduleTutorial(8,ticks: 720) }
                 if drill.phase != .finished { return }
             }
             if var presentation = drill.presentation, presentation.stage == .questions {

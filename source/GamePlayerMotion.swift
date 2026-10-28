@@ -11,8 +11,11 @@ extension NativeGameView {
         if motion.request(8,horizontal: direction == 0 ? 0 : 2,vertical: -12) { playerMotion = motion;session.playerHasMoved = true }
     }
     func preparePlayerFrame() -> OriginalMovement {
-        let direction = (held.contains(124) ? 1 : 0)-(held.contains(123) ? 1 : 0)
-        if direction != 0 { session.position.facing = direction;session.playerHasMoved = true }
+        let direction = held.contains(124) ? 1 : (held.contains(123) ? -1 : 0)
+        if direction != 0 {
+            if !physicalKeyboard.leftFlip && !physicalKeyboard.rightFlip { session.position.facing = direction }
+            session.playerHasMoved = true
+        }
         var motion = playerMotion;motion.walk(direction != 0);playerMotion = motion
         let movement = OriginalMovement.frame(from: session.position,horizontal: motion.horizontal,facing: session.position.facing)
         session.position = movement.scrolled;session.telly?.shiftForCamera(by: movement.cameraShift)

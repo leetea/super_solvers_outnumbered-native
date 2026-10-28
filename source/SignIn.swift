@@ -188,7 +188,7 @@ extension NativeGameView {
         if screen == .file { closeFileMenu();return }
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
-        save();fileReturn = screen;fileSelection = 0;screen = .file;held.removeAll();needsDisplay = true
+        keyboard.flush();save();fileReturn = screen;fileSelection = 0;screen = .file;held.removeAll();needsDisplay = true
     }
     func closeFileMenu() { screen = fileReturn;held.removeAll();needsDisplay = true }
     func fileKey(_ event: NSEvent) {

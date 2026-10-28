@@ -5,7 +5,7 @@ in Swift with Cocoa. This is an active reconstruction project, not the finished
 game. It uses translated original data and native game logic; no DOS emulator,
 original DOS executable, or compiled DOS drawing routine runs inside the app.
 
-## Current verified milestone: 0.26
+## Current verified milestone: 0.27
 
 All ten activity families and 3,200 question cases render natively. Recovered
 movement, encounters, calculator, decoder, ending/bonuses, lifetime progression
@@ -16,9 +16,9 @@ guidance now responds to room, challenge, decoder, clock and input events.
 Practice sets contain5/10/15/20 problems, retain attempts/correct counters and
 leave an unfinished adventure unchanged. Replay retains mutated decoder pools.
 
-**877 integration checks pass.** The app ZIP passes strict signature verification
+**911 integration checks pass.** The app ZIP passes strict signature verification
 and the same checks after extraction; the packaged source is independently
-rebuilt with Apple tools. See [the verification record](docs/verification-0.26.json)
+rebuilt with Apple tools. See [the verification record](docs/verification-0.27.json)
 and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [score-table recovery](docs/score-history-recovery.md) and
 [music/message recovery](docs/music-messages-recovery.md) and
@@ -28,10 +28,11 @@ and [settings/practice recovery](docs/menu-practice-recovery.md) and
 [prize/spinner/music/equipment effects](docs/activity-effects-recovery.md) and
 [television static](docs/television-effect-recovery.md) and
 [original opening](docs/opening-presentation-recovery.md) and
-[member sign-in and File menus](docs/signin-file-recovery.md).
+[member sign-in and File menus](docs/signin-file-recovery.md) and
+[keyboard polling](docs/keyboard-recovery.md).
 
 Settings use accessible native macOS controls with recovered original rules.
-Remaining original confirmation/settings presentation, queued keyboard input,
+Remaining original confirmation/settings presentation, modifier/alternate input,
 encounter/ending refinements, palette/audio calibration and a fresh complete
 playthrough remain unfinished. See [the full plan](docs/PLAN.md),
 [project context](PROJECT_CONTEXT.md) and [milestones](MILESTONES.md).
@@ -181,3 +182,8 @@ Milestone0.25 restores the three-page opening with24 original instruction lines,
 Milestone0.26 restores the original member clipboard and eight-slot name editor, the three-choice play panel and separate adventure/practice File menus. The source-derived rows, rank/lifetime columns, wrap navigation, XOR selection and caret timing replace the earlier eight-item native menu. Existing native player names/saves remain compatible. Removal is a named native adaptation: profiles move into a recoverable archive, and their unfinished sessions and high-game history remain intact. 877 native checks pass, including independent file preservation, archive/reload/restore, duplicate rejection, menu/pause navigation and pure rendering. Native confirmations/settings/restore controls, general BIOS buffering, remaining ending/rank/midnight/palette/mask/audio refinements and a fresh full ordinary playthrough still prevent complete-game status. See signin-file-recovery.md.
 
 Ctrl-R on the sign-in list opens Remove Member. Native removal preserves the member and unfinished game in an archive; Game → Restore Removed Member restores it. Original ten-member creation limits apply to new original-style names; existing longer names and larger native member lists remain compatible.
+
+
+Milestone0.27 adds recovered last-key world polling, deferred ordinary keys through synchronous gameplay actions, separately tracked held controls and original right-walking priority. Held Up/diagonal requests repeat after landing; Space follows first-make/repeat/release flags at game frames. Practice keeps early Enter through its result animation/sound wait, while new answer fields discard keys from preceding drawing/feedback. 911 checks pass, including input queue ordering/flush, deferred door delivery, physical movement across menus, release/priority/landing, editor lockout and queued practice continuation. Native focus loss clears input as a platform adaptation. BIOS buffer capacity/overflow, alternate modifier/keyboard-type handling, remaining dialog/ending input, palette/mask/audio refinements and a fresh complete ordinary adventure remain unverified; this is not the complete game. See keyboard-recovery.md.
+
+Gameplay keys are polled on game frames. Hold movement keys and hold Space briefly to zap. F1/F2/Tab pressed during synchronous gameplay sequences wait until those sequences finish; later queued keys can supersede earlier ones. Keys during question drawing or drill feedback do not answer the next problem.

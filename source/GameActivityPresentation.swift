@@ -29,7 +29,7 @@ extension NativeGameView {
         }
         session.activityPresentation = presentation
         if presentation.elapsedIRQTicks == plan.duration {
-            session.activityPresentation = nil;save()
+            session.activityPresentation = nil;keyboard.flush();save()
             showNewUserMessage(usesCalculator ? 10 : 9)
         }
         needsDisplay = true

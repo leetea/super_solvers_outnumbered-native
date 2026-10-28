@@ -1,0 +1,44 @@
+{
+  "milestone": "0.27.0",
+  "finalCheckCount": 911,
+  "nativeWindowVerified": true,
+  "observations": [
+    "Energy reference: held Up began synchronous recharge; Tab did not interrupt rear/raised recharge pose",
+    "Without another Tab, decoder appeared after recharge completed",
+    "Held Space200ms entered the zap pose/line",
+    "Normal Quit completed"
+  ],
+  "captures": [
+    "gui-keyboard-recharge-queued-0.27.png",
+    "gui-keyboard-decoder-delivered-0.27.png",
+    "gui-keyboard-held-space-0.27.png"
+  ],
+  "headlessOnly": [
+    "Physical Right surviving File until release",
+    "Exact simultaneous Right/Left priority",
+    "Deferred door-key delivery and superseded earlier keys",
+    "Repeated held Up after landing",
+    "Early practice-result Enter continuation",
+    "Queued released movement codes cannot synthesize a new world action",
+    "Simultaneous flip flags end facing left after the right request"
+  ],
+  "limitations": [
+    "The UI tool rejects chords with two nonmodifier keys; a Right+Escape trial performed no action, so cross-menu held-key continuity is headless evidence",
+    "Reference checkpoints, not a new ordinary full-game run",
+    "No timing-synchronized DOS or perceptual audio claim"
+  ],
+  "compiledIdentity": "gui-0.27-code-identity.json:32 sections/484 assets",
+  "copiedPlayerFilesUnchanged": true,
+  "copiedPlayerHashes": {
+    "profiles-v1.json": "262a094b3850c3caba430684ab06f42e5e328a79fcb1235de37f5fe448fc4444",
+    "session-3784E281-68B6-481A-A9E4-BA8DE6B05B39-v1.json": "3de2b76290bb82507899512d25c80023fb695baac4fb397d7a023be0eb8fcaaf",
+    "session-59000691-FAA1-4CA2-9BC8-8F6CBB975ADC-v1.json": "289c00722076da6cb862959acac96608d261bcc49a3145bce30df360d9a8e4d1"
+  },
+  "originalUserDataUsed": false,
+  "completeGame": false,
+  "preceding909BuildObservations": [
+    "Isolated rainfall reference left to exploration; F2 opened File through the game-frame poll",
+    "Held Left walked through LiveWire collision/recovery and reached the room boundary"
+  ],
+  "normalQuitVerified": true
+}

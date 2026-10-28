@@ -20,6 +20,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var openingFraction = 0.0
     var session: NativeSession!
     var held: Set<UInt16> = []
+    var physicalKeyboard = OriginalHeldKeyboard()
+    var keyboard = OriginalKeyboardQueue<NSEvent>()
     var timer: Timer?
     var zapTimer: Timer?
     var lastZapPulse = ProcessInfo.processInfo.systemUptime
@@ -150,6 +152,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     func step() {
         tick += 1
         guard modalDepth == 0 else { return }
+        if screen == .world { pollWorldKeyboard() }
         if screen == .title { if opening.showingPage { effect(0) };return }
         if screen == .signin { signIn.blinkIRQ += OriginalWorld.frameIRQTicks;needsDisplay = true;return }
         guard ![.signin,.file,.menu,.scores].contains(screen) else { return }
@@ -166,7 +169,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 }
             }
             catch { present(error) }
-            if phase != practice?.drill.phase && practice?.drill.phase == .asking { scheduleTutorial(8,ticks: 720) }
+            if phase != practice?.drill.phase && practice?.drill.phase == .asking { keyboard.flush();scheduleTutorial(8,ticks: 720) }
+            pollPracticeContinue()
             processTutorials()
             if seconds != practice?.elapsedSeconds || presentation != practice?.presentation || practice?.presentation != .questions || phase != practice?.drill.phase || attempts != practice?.attempts || correct != practice?.correctAnswers { needsDisplay = true }
             return
@@ -214,7 +218,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     func interact() {
         guard playerMotion.settled else { return }
         session.playerHasMoved = true
-        let direction = (held.contains(124) ? 1 : 0)-(held.contains(123) ? 1 : 0)
+        let direction = held.contains(124) ? 1 : (held.contains(123) ? -1 : 0)
         if direction != 0 { beginJump(direction: direction);return }
         let scene = session.position.scene
         let unit = scene < 10 ? session.position.playerUnit-(scene*38) : session.position.playerUnit
@@ -245,7 +249,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         // Upgrade an assigned pre-0.7 question with the same original data and
         // recovered post-generation stream; never change its identity.
         let challenge = bank.cases.first { $0.id == challenge.id && $0.seed == challenge.seed && $0.variant == challenge.variant } ?? challenge
-        sound?.stop();lastSoundIndex = nil
+        keyboard.flush();sound?.stop();lastSoundIndex = nil
         if challenge.hotspot == 7 { effect(34) }
         do { try prepareActivityState(challenge,regenerating: true) } catch { present(error); return }
         session.liveWire?.clear()
@@ -264,7 +268,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if result == .correct { showNewUserMessage(7) }
         else if result == .failed { showNewUserMessage(14) }
     }
-    override func keyDown(with event: NSEvent) {
+    func handleKeyDown(_ event: NSEvent) {
         let key = event.keyCode
         if screen == .title && key != 122 { openingKey(event);return }
         if isTransitioning { return }
@@ -290,7 +294,6 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             else if key == 53 { screen = .title; needsDisplay = true }
             return
         }
-        if key == 123 || key == 124 { held.insert(key) }
         if screen == .title { if key == 36 { showPlayerMenu() }; return }
         guard session != nil else { return }
         if session.activeZap != nil || session.activeFountain != nil { return }
@@ -301,7 +304,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             else if key == 49 && !event.isARepeat && playerMotion.settled && session.outcome == "active" {
                 beginZap()
             } else if key == 48 { sound?.stop(); lastSoundIndex = nil; screen = .decoder; session.clock.pause(); held.removeAll(); showNewUserMessage(13) }
-            else if key == 53 { showPlayerMenu() }
+            else if key == 53 { confirmNativeExit() }
         case .question:
             guard let challenge = session.activeChallenge else { return }
             if key == 53 { leaveQuestion(); return }
@@ -336,8 +339,6 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         }
         needsDisplay = true
     }
-    override func keyUp(with event: NSEvent) { held.remove(event.keyCode) }
-    override func resignFirstResponder() -> Bool { held.removeAll(); return true }
     @objc func toggleHelp() {
         if screen == .ending || screen == .results { return }
         if session?.activeZap != nil || session?.activeFountain != nil { return }

@@ -67,6 +67,7 @@ func nativeHelpChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["f2_from_help_cleans_only_help_pause"] = view.screen == .file && view.session.clock.pauseDepth == 1 && view.helpBrowser == nil
     view.screen = .world; view.session.activeChallenge = nil; view.session.clock.resume()
     try view.launchPractice(settings: .defaults(tier: 0),seed: 1)
+    _ = try view.practice!.advance(irqTicks: 400)
     let encoder = JSONEncoder(); encoder.outputFormatting = .sortedKeys
     let adventure = try encoder.encode(view.session!), practice = view.practice!.drill.ticksRemaining
     key(122); key(36)
