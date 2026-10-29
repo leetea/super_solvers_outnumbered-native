@@ -49,6 +49,7 @@ extension NativeGameView {
     }
     func pulseZap() {
         if screen == .title { pulseOpening();return }
+        if screen == .ending { pulseEnding();return }
         if isActivityPresenting { pulseActivityPresentation();return }
         if session != nil && session.activeCollision != nil { pulseCollision();return }
         if session != nil && session.activeElevator != nil { pulseElevator(); return }

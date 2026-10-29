@@ -28,7 +28,7 @@ struct NativeHelpBrowser {
     var availableTopics: [Int] { practice ? [7] : Array(0..<8) }
     mutating func cycleTopic(_ direction: Int) { selectedTopic = (selectedTopic+availableTopics.count+direction)%availableTopics.count }
     mutating func cycleButton() { selectedButton = page == 0 ? 1 : 1-selectedButton }
-    // True means Done: the original helper returns1 and closes its menus.
+    //True means Done: the original helper returns1 and REOPENS Help topics.
     mutating func activate(book: OriginalHelpBook) -> Bool {
         guard let topic else { self.topic = availableTopics[selectedTopic]; page = 0; selectedButton = 1; return false }
         if selectedButton == 0 && page > 0 { page -= 1; if page == 0 { selectedButton = 1 }; return false }
@@ -40,23 +40,24 @@ struct NativeHelpBrowser {
 
 extension NativeCanvas {
     //1862:05f9, the two source panel forms used by the Help menu/viewer.
-    func originalHelpPanel(left: Int,top: Int,right: Int,bottom: Int,title: String?,footer: String?,font: OriginalFont,bottomSeparator: Int = 21) {
+    func originalHelpPanel(left: Int,top: Int,right: Int,bottom: Int,title: String?,footer: String?,font: OriginalFont,bottomSeparator: Int = 21,raisedTop: Bool? = nil) {
+        let raised = raisedTop ?? (title != nil)
         fill(left,top,right-left+1,bottom-top+1,15)
         fill(left+2,top,2,bottom-top-3,1)
         fill(right-5,top+2,4,bottom-top-3,1)
         fill(left+4,bottom-5,right-left-5,4,1)
-        fill(left+2,top,right-left-(title == nil ? 3 : 5),2,1)
+        fill(left+2,top,right-left-(raised ? 5 : 3),2,1)
+        if raised { fill(left,top-2,right-left+1,2,15) }
         if let title {
-            fill(left,top-2,right-left+1,2,15)
             fill(left+3,top+15,right-left-5,1,1)
             text(title,font: font,x: right-(right-left)/2-font.width(of: title)/2,y: top+4,color: 1)
-            fill(left+3,bottom-bottomSeparator,right-left-5,1,1)
         }
+        if title != nil || footer != nil { fill(left+3,bottom-bottomSeparator,right-left-5,1,1) }
         if let footer { text(footer,font: font,x: right-(right-left)/2-font.width(of: footer)/2,y: bottom-16,color: 1) }
     }
     func invert(_ x: Int,_ y: Int,_ width: Int,_ height: Int) {
         for row in max(0,y)..<min(200,y+height) {
-            for column in max(0,x)..<min(320,x+width) { pixel(column,row,pixels[row*320+column]^15) }
+            for column in max(0,x)..<min(320,x+width) { pixel(column,row,pixels[row*320+column]^14) }
         }
     }
     // Original1862:000e and0174. Coordinates are the button's text-area origin.

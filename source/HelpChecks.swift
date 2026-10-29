@@ -14,7 +14,7 @@ func nativeHelpChecks(root: URL,output: URL) throws -> [String:Bool] {
     browser.cycleTopic(-1)
     checks["help_topic_selection_wraps_back_to_practice_chapter"] = browser.selectedTopic == 7
     _ = browser.activate(book: book)
-    checks["help_single_page_chapter_done_closes"] = browser.topic == 7 && browser.activate(book: book)
+    checks["help_single_page_chapter_returns_Done_result"] = browser.topic == 7 && browser.activate(book: book)
     browser = NativeHelpBrowser(practice: false)
     _ = browser.activate(book: book); _ = browser.activate(book: book)
     browser.cycleButton(); _ = browser.activate(book: book)
@@ -37,8 +37,8 @@ func nativeHelpChecks(root: URL,output: URL) throws -> [String:Bool] {
     try view.canvas.writePNG(to: output.appendingPathComponent("native-help-keyboard.png"))
     checks["native_help_title_frame_and_footer_separator"] = view.canvas.pixels[34*320+19] == 1 && view.canvas.pixels[168*320+19] == 1 && view.canvas.pixels[100*320+18] == 1
     key(53)
-    checks["native_help_escape_page_returns_to_topic_menu"] = view.screen == .help && view.helpBrowser?.topic == nil
-    key(53)
+    checks["native_help_escape_page_closes_complete_Help_loop"] = view.screen == .title && view.helpBrowser == nil
+    key(122);key(53)
     checks["native_help_escape_menu_restores_title"] = view.screen == .title && view.session == nil
     _ = try view.profileStore.create(name: "Help test")
     view.referenceQuestion(); let before = view.session.generator.randomState
@@ -74,7 +74,9 @@ func nativeHelpChecks(root: URL,output: URL) throws -> [String:Bool] {
     for _ in 0..<100 { view.step() }
     checks["practice_help_freezes_practice_and_keeps_suspended_adventure_exact"] = try view.screen == .help && view.helpBrowser?.topic == 7 && view.practice!.drill.ticksRemaining == practice && encoder.encode(view.session!) == adventure
     key(36)
-    checks["practice_help_done_returns_to_same_set"] = view.screen == .practice && view.practice!.drill.ticksRemaining == practice
+    checks["practice_help_Done_reopens_topic_menu_without_advancing_set"] = view.screen == .help && view.helpBrowser?.topic == nil && view.practice!.drill.ticksRemaining == practice
+    key(53)
+    checks["practice_help_Escape_then_restores_same_set"] = view.screen == .practice && view.practice!.drill.ticksRemaining == practice
     view.screen = .menu; key(122); try view.render()
     checks["help_can_open_over_player_menu"] = view.screen == .help && view.helpReturn == .menu && !view.helpPausesAdventure
     view.closeHelp()

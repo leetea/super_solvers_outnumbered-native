@@ -1,0 +1,93 @@
+{
+  "runID": "98406997-C2AD-4188-9487-5699611C7555",
+  "profile": "Final10",
+  "release": "1.0.0",
+  "ordinaryUIOnly": true,
+  "saveEdits": false,
+  "developmentCheckpoints": false,
+  "code1": {
+    "capture": "ordinary hallway zap",
+    "drillAnswers": [
+      6,
+      9,
+      9,
+      12
+    ],
+    "correct": 4,
+    "awardedSymbol": "ON AIR",
+    "slot": 1
+  },
+  "rooms": [
+    {
+      "room": "News",
+      "answer": 6,
+      "reason": "15 minus 9",
+      "scoreAfter": 600
+    },
+    {
+      "room": "Game Show",
+      "answer": 17,
+      "reason": "58 minus 41",
+      "scoreAfter": 900
+    },
+    {
+      "room": "Sound",
+      "answer": 18,
+      "reason": "73 minus 55",
+      "scoreAfter": 1200
+    },
+    {
+      "room": "Equipment",
+      "answer": 2,
+      "reason": "55 minus 53",
+      "scoreAfter": 1500
+    },
+    {
+      "room": "Cartoon",
+      "answer": 12,
+      "reason": "Wednesday 6 plus Monday 6",
+      "scoreAfter": 1800
+    }
+  ],
+  "quitRestart": {
+    "observed": true,
+    "continuedSavedGame": true,
+    "restoredScore": 1800,
+    "restoredAllFiveRoomClues": true,
+    "restoredCode1": true
+  },
+  "decoder": {
+    "observedRule": "same pictures and same pattern",
+    "firstPieceMatches": [
+      "Game Show",
+      "Equipment",
+      "Sound"
+    ],
+    "uniqueSolutionNotYetKnown": false,
+    "uniqueSolution": "Game Show",
+    "reason": "ON AIR and camera in slots one and two; only Game Show matches both. All five rooms visible."
+  },
+  "code2Capture": {
+    "observed": true,
+    "drillInProgress": false,
+    "drillAnswers": [
+      14,
+      17,
+      6,
+      4
+    ],
+    "correct": 4,
+    "awardedSymbol": "camera",
+    "slot": 2
+  },
+  "winVerified": true,
+  "finalScore": 6900,
+  "finalLifetime": 6900,
+  "finalRank": "Junior",
+  "replayVerified": true,
+  "memberListAfterReplay": {
+    "name": "Final10",
+    "rank": "Junior",
+    "lifetimePoints": 6900
+  }
+}

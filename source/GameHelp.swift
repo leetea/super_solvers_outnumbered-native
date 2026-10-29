@@ -10,11 +10,16 @@ extension NativeGameView {
     }
     func helpKey(_ event: NSEvent) {
         guard var browser = helpBrowser else { return }
+        if browser.topic == nil {
+            if event.keyCode == 123 { closeHelp();showOptions();return }
+            if event.keyCode == 124 { closeHelp();showFileMenu();return }
+        }
         if event.keyCode == 53 {
-            if browser.topic == nil { closeHelp(); return }
-            browser.returnToTopics()
-        } else if event.keyCode == 36 {
-            if browser.activate(book: helpBook) { closeHelp(); return }
+            closeHelp();return
+        } else if event.keyCode == 122 && browser.topic != nil {
+            browser.returnToTopics();browser.selectedTopic = 0
+        } else if event.keyCode == 36 || event.keyCode == 76 {
+            if browser.activate(book: helpBook) { browser.returnToTopics();browser.selectedTopic = 0 }
         } else if browser.topic == nil {
             if event.keyCode == 125 { browser.cycleTopic(1) }
             else if event.keyCode == 126 { browser.cycleTopic(-1) }
@@ -34,18 +39,18 @@ extension NativeGameView {
             else if (180...288).contains(x) { browser.selectedButton = 1 }
             else { return }
         }
-        if browser.activate(book: helpBook) { closeHelp(); return }
+        if browser.activate(book: helpBook) { browser.returnToTopics();browser.selectedTopic = 0 }
         helpBrowser = browser; needsDisplay = true
     }
     func drawOriginalHelp() throws {
         guard let browser = helpBrowser else { return }
         let font = try content.font("MOCKET.DAT.1393")
         try sprite(57,x: 0,y: 0,transparent: false)
-        try sprite(61,x: 0,y: 0,transparent: false)
         guard let topic = browser.topic else {
+            try sprite(61,x: 0,y: 0,transparent: false)
             let titles = browser.availableTopics.map { browser.practice ? "About Drill for Skill" : helpBook.topics[$0].title }
             let width = max(123,titles.map { font.width(of: $0) }.max()!+14), bottom = 12+titles.count*12+25
-            canvas.originalHelpPanel(left: 0,top: 12,right: width,bottom: bottom,title: nil,footer: "\u{84} to Go Back",font: font)
+            canvas.originalHelpPanel(left: 0,top: 12,right: width,bottom: bottom,title: nil,footer: "\u{84} to Go Back",font: font,bottomSeparator: 18)
             for (i,title) in titles.enumerated() { canvas.text(title,font: font,x: 6,y: 17+i*12,color: 1) }
             canvas.invert(4,16+browser.selectedTopic*12,width-9,13)
             return

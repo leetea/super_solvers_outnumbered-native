@@ -30,12 +30,14 @@ Topic/menu titles come from DS33b4 and the original menu records at DS3424.
 Practice exposes only About Drill for Skill, routed to topic7.
 
 The first page has Next only; later pages add Back, and the final page uses Done.
-Esc returns0 from the page loop; Done returns1. Original menu Enter dispatch at
-170d:0548 tests the callback result and closes the menu through F1 only when
-nonzero. Thus Esc returns to the topic list and Done returns to the underlying
-screen. Retained raw assembly is authoritative when Ghidra loses CS-relative
-jump-table context. The menu-enter analysis derivative changes only MZ header
-bytes20..23 to select its entry; executable code and relocations are unchanged.
+Local0.32 corrected an earlier interpretation of the outer menu-loop condition.
+Esc returns0 from the page loop, ending the menu and restoring the parent. Done
+and F1 return1; the Enter dispatcher then calls174fc(F1), rebuilding Help topics
+with selection0. The loop17570 continues while DS72aa is NONZERO. Reading the
+page result alone had reversed these actions in earlier native versions. Source
+raw instructions retained in lifecycle-instructions-0.32.json prove both the
+helper return and its caller's behavior. F2/F3 are ignored inside a Help page;
+menu-tab navigation remains available on the topic list.
 
 Help is transient native UI. It pauses an active adventure and restores its
 previous screen/input; practice help leaves both its counters and suspended

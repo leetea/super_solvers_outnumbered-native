@@ -49,6 +49,11 @@ struct OriginalHeldKeyboard {
 extension NativeGameView {
     override func keyDown(with event: NSEvent) {
         physicalKeyboard.press(event.keyCode,repeatKey: event.isARepeat)
+        if originalNotice != nil { originalNoticeKey(event);return }
+        if confirmation != nil { confirmationKey(event);return }
+        if decoderPanel != nil { decoderPanelKey(event);return }
+        if optionsMenu != nil { optionsKey(event);return }
+        if settingsEditor != nil { keyboard.append(event);return }
         if screen == .world {
             //The source IRQ consumes movement in gameplay mode11a9=1;
             //other make codes chain to BIOS and are polled by the world loop.
@@ -77,7 +82,7 @@ extension NativeGameView {
     func pollWorldKeyboard() {
         guard screen == .world,!isTransitioning,session?.activeZap == nil,session?.activeFountain == nil else { return }
         if let event = keyboard.drainLatest(),[48,53,122,120,99].contains(event.keyCode) { handleKeyDown(event) }
-        guard screen == .world else { return }
+        guard screen == .world,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil else { return }
         if physicalKeyboard.left { held.insert(123) }
         if physicalKeyboard.right { held.insert(124) }
         //170d:0007 selects walking left THEN right, so right wins both-held.

@@ -129,12 +129,7 @@ extension NativeGameView {
     func openingKey(_ event: NSEvent) {
         if event.keyCode == 36 && !event.isARepeat && opening.showingPage { opening.enter() }
         else if event.keyCode == 53 && opening.showingPage {
-            modalDepth += 1
-            let alert = NSAlert();alert.messageText = "Exit Program?"
-            alert.addButton(withTitle: "No");alert.addButton(withTitle: "Yes")
-            let choice = alert.runModal();modalDepth -= 1
-            opening.restartWait()
-            if choice == .alertSecondButtonReturn { NSApplication.shared.terminate(nil) }
+            confirmNativeExit()
         } else { return }
         openingLastPulse = ProcessInfo.processInfo.systemUptime;openingFraction = 0;needsDisplay = true
     }

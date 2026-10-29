@@ -140,6 +140,8 @@ func nativeIntegrationChecks(root: URL) throws {
     checks.merge(try nativeFountainMotionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeElevatorTransitionChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeDoorTransitionChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeSettingsEditorChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeDialogChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativePaletteChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeKeyboardChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeSignInChecks(root: root,output: output)) { _,new in new }
@@ -156,6 +158,12 @@ func nativeIntegrationChecks(root: URL) throws {
     checks.merge(try nativeMenuChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeHelpChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeScoreChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeEndingPulseChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeRasterChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeEndingPresentationChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeAdviceChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeLifecycleChecks(root: root,output: output)) { _,new in new }
+    checks.merge(try nativeOptionsChecks(root: root,output: output)) { _,new in new }
     checks.merge(try nativeTutorialChecks(root: root,output: output)) { _,new in new }
     let report: [String:Any] = ["passed": checks.values.allSatisfy { $0 },"checks": checks,"checkCount": checks.count,"guiVerified": false,"completeGame": false,"reference": "Local OutNumbered Gameplay.mkv weather and drill checkpoints; original static data/code"]
     let data = try JSONSerialization.data(withJSONObject: report,options: [.prettyPrinted,.sortedKeys])

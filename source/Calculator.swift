@@ -74,15 +74,16 @@ struct NativeCalculator: Codable {
         if phase == .first, let value = Int(entry) { return (value,nil) }
         return (nil,phase == .operation ? 5 : (phase == .second ? 6 : 0))
     }
+    //Original DS16a5 text, including bitmap keycaps and spacing.
     static let notices = [
-        "You must type in a number\nbefore you press Enter\nto solve the math challenge.",
+        "You must type in a number\nbefore you press \nto solve the math challenge.",
         "The answer to the problem\nyou have typed in is too\nlarge for this calculator.",
         "This calculator cannot\nsubtract a larger number\nfrom a smaller one.",
-        "In this game, all the\ncorrect answers are\nwhole numbers (cannot have\nremainders). Try again.",
+        "In this game, all the\ncorrect answers are\nwhole numbers (cannot have\nremainders).  Try again.",
         "The calculator cannot divide\na number by zero.",
-        "Type in the next number. Then\ntype = to have the calculator\nwork out the problem you have\ntyped in.\n\nWhen the calculator shows your\nanswer, press Enter.",
-        "Type = to have the calculator\nwork out the problem you have\ntyped in.\n\nWhen the calculator shows your\nanswer, press Enter.",
-        "You must type = before the\ncalculator can do the next step\nof your problem."
+        "Type in the next number.  Then\ntype  to have the calculator\nwork out the problem you have\ntyped in.\n\nWhen the calculator shows your\nanswer, press .",
+        "Type  to have the calculator\nwork out the problem you have\ntyped in.\n\nWhen the calculator shows your\nanswer, press .",
+        "You must type  before the\ncalculator can do the next step\nof your problem.",
     ]
     // Original DS3714/3738/375c/3780 button-glyph bounds, with the
     // surrounding three-pixel native button face included for mouse input.

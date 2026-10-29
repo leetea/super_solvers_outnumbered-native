@@ -1,96 +1,32 @@
-# Milestones
+# Milestones and completion plan
 
-The repository starts with the verified0.7 snapshot. Earlier milestones are
-documented history, not backdated Git commits.
+1. Inspect the supplied DOS archive and executable formats; preserve original hashes.
+2. Prove native Apple Silicon rendering, input and packaging with a prototype.
+3. Recover original resources, question generation, answers, scoring and sound streams.
+4. Implement rooms, traversal, doors/elevators, enemies, collisions and recharge.
+5. Implement ten activities, drill, calculator, clues, decoder and eligibility rules.
+6. Implement progression, endings, menus, Help, settings, practice and isolated saves.
+7. Recover presentation details, input buffering, palette/masks, audio and ending timing.
+8. Verify a normal campaign, quit/resume/replay and independent app/source/repository builds.
+9. Package 1.0 and publish the final verified repository snapshot.
 
-| Milestone | Result | Verification and limits |
-|---|---|---|
-| Prototype | Native rendering and controls proved practical | New prototype rules; separate from original-game recovery |
-| 0.3 | Telly/zap/drill/code capture and original rainfall interaction | Native-window reference fixtures; full ending still absent |
-| 0.4 | Energy machine, LiveWire and additional activity contexts |139 integration checks; recharge and LiveWire window observations |
-| 0.5 | Original calculator arithmetic and bar charts |189 integration checks; native input and300-point results |
-| 0.6 | Native contexts for all ten activity families |213 checks;3,170 cases rendered;30 generation cases then unresolved |
-| 0.7 | Original startup selection, eligibility, bands and RNG boundary; all3,200 cases recovered |245 checks; extracted app verified and packaged source rebuilt; Junior165 and music106 accepted in native windows |
-| 0.8 | Scripted hideout reveal, progressive bonuses, win/loss results, persistent lifetime/rank updates and replay; corrected room backgrounds |269 checks; native window reached Game 11,680 / Total 64,275 and replay; normal save/restart/result-commit recovery checked in temporary player directories; extracted app and source rebuild verified |
-| 0.9 | Player menus, custom settings, independent Drill for Skill and unfinished-game continuation; replay preserves decoder pools |309 checks; native-window settings/practice flow; extracted app and source rebuild verified; original UI/practice animations remain pending |
-| 0.10 | Original eight-topic help,22 pages and four illustrations, source navigation and practice-only help |332 checks; native window navigation and state preservation; extracted app/source rebuild verified |
-| 0.11 | Original lifetime and high-game score tables, persistent top ten and pre-win ranks |353 checks; native score display/return-to-input; extracted app and source rebuild verified |
-| 0.12 | Independent music/sound controls and original new-user guidance/state |382 checks; native window message/options flow; extracted app and source rebuild verified |
-| 0.13 | Original practice introduction/result scripts, sound wait, counters and timer |469 checks; native practice window flow; portable app/source and repository rebuild checks |
-| 0.14 | Ordinary adventure win, persisted score/rank and fresh replay verified | Unchanged 0.13 app; all five rooms, four natural Telly captures, News Room decision, 6,350 total; normal quit/relaunch and score tables verified |
-| 0.15 | Staged room-door entrances/exits, persistent transition progress and aligned returns; elevator final facing | 504 native checks; ordinary News doorway window captures; unpaced-frame timing uses documented native adaptation; elevator animation remains pending |
-| 0.16 | Staged elevator panels, vertical travel, persistent progress and input lockout | 563 checks; both left-side directions in final native window; all four origins and save/resume headless; detailed camera/actor fidelity still pending |
-| 0.17 | Telly/projectile/LiveWire updates and RNG during transitions; persisted frame cursors | 582 checks; natural Telly/projectile motion during native-window News entry; legacy migration and timer-batch equivalence checked headlessly |
-| 0.18 | Camera-before-actor ordering, signed movement and scrolling doorway/elevator alignment | 610 checks; original edge overshoot and legacy transition compatibility; native Cartoon Room scrolled approach/entry/return |
-| 0.19 | Persisted original player reactions,200IRQ collision words/costs and actor foreground order | 675 checks; ordinary boundary impact, natural type25 hit/recovery and vertical jump/landing; all reaction/facing combinations and resume headless |
-| 0.20 | Original room-camera pan lifecycle and recharge pose/scroll/auxiliary updates | 713 checks; local-video pan evidence; ordinary room camera and empty recharge with continued Telly/projectile motion |
-| 0.21 | Original adventure Telly introduction, seven-frame code card, capture/rejection waits and persisted presentation | 740 checks; native-window reference drill shows card at900, return at1000 and lightning secret; rejection animation/message observed; original card sequence corroborated from local video; fresh ordinary full adventure remains pending |
-| 0.22 | Timed bars, measurement needles, line plots and cassette arrivals; deferred question input and persisted sound cursors | 771 checks including1280 endpoint comparisons; native plot/bar fixtures and ordinary Cartoon cassette159→300/clues; measurement source/video/headless evidence; remaining activity effects and final full adventure pending |
-| 0.23 | Original prize RNG/price/outline effects, spinner highlight cycle, music flashes and equipment headers; persisted per-phase RNG | 800 checks including1280 endpoints and exact54-draw prize fixture; native spinner/music/equipment answers and normal prize17→300/Game Show clues; portable/source/repository builds verified; TV effect still pending |
-| 0.24 | Television static with caller-stack range bounds, original EGA noise masks and per-phase RNG persistence | 818 checks including all320 endpoints, independent coordinates/2580 draws, save/resume and all byte alignments; isolated168→300 and ordinary222→600/clues native-window observations; portable/source/repository rebuild verification; broader driver/palette parity remains open |
-| 0.25 | Original three-page opening,40 sprite/sound commands, source copy bounds and automatic player-menu handoff | 848 checks; native title/story/flight/station/replay observations; copied player files unchanged; portable/source/repository builds verified; File/sign-in and broader fidelity work remain |
-| 0.26 | Original member sign-in, eight-slot name editor, three-choice play panel and adventure/practice File menus; recoverable native removal | 877 checks; ordinary native-window create/select/play/File/score/archive/restore/continue flow; existing copied members and unfinished session unchanged; source/repository rebuilds verified; general input and broader fidelity remain |
-| 0.27 | Original last-key world polling, deferred gameplay input, held movement and queued practice continuation | 911 checks; native reference recharge retains Tab until completion; source/portable/repository verification; remaining modifier/dialog/ending input and broader fidelity open |
-| 0.28 | Original EGA palette swap, raw bitmap indices, black text and correct XOR colors | 924 checks; source instructions, local video and native-window observations; complete driver masks and full-game fidelity remain open |
+Milestones 1–8 are locally verified for the named EGA/PC-speaker native target.
+The final publication records milestone 9. The earlier 0.28 snapshot was the last
+remote checkpoint before the user's hold; versions 0.29–0.36 were local milestones.
 
-The full-game goal is **not complete**. The ordinary winning loop is now verified. Next are
-opening/File presentation and transitions,
-collision presentation, effects, palette and complete-playthrough validation. Exact bonus sliding,
-rank-tower animation and midnight meter flashing remain presentation gaps.
+The final presentation work recovered original confirmation/settings/options
+panels, calculator advice/remainder behavior, decoder decision panels, rank/bonus
+scripts and midnight meter flashes. Independent raster checks cover all 389
+bitmaps across 2,334 compositing cases. All 52 PCM streams regenerate identically;
+selected events correlate with the local MKV, without claiming every event was
+individually audible or analog-identical. A 60 Hz presentation clock executes the
+winning ending in 44.965 seconds versus the recovered 44.952-second sequence.
 
+Final gates: extracted ARM64 release signature and 1,118 checks; independent source
+archive rebuild and 1,118 checks; independent repository build/extract and 1,118
+checks; assets preserved across rebuilds; original ZIP/MKV hashes unchanged;
+ordinary five-room win, two earned code pieces, visible-clue deduction, saved-game
+resume, 6,900-point Junior award and replay. See docs/FINAL-ACCEPTANCE.md.
 
-Milestone0.11 adds original lifetime/high-game score screens and the source
-top-ten insertion rules. Individual winning games retain their pre-award rank;
-ties stay behind existing equals, and ties with tenth do not qualify. History
-and lifetime commit atomically with result recovery. Existing files without
-history remain readable; historical games are not invented from lifetime totals.
-353 native checks pass. Command7/8 open the score screens; Enter/Esc returns.
-Arrow keys page lifetime rows when native profiles exceed the DOS ten slots.
-Music/new-user options, original practice animations, full File/sign-in UI,
-transitions/collision, timed effects and complete playthrough remain unfinished.
-See score-history-recovery.md for original evidence and native adaptations.
-
-
-Milestone0.12 connects independent Music and master Sound controls, opening
-theme requests and all18 original new-user message texts. Native session flags
-preserve original unseen/queued/acknowledged states; Yes resets them, No preserves
-them. Source-derived room, challenge, collision, decoder, energy, clock and idle
-input hooks display guidance through accessible macOS dialogs with readable key
-names. Practice message state remains separate from the suspended adventure.
-382 native checks pass. Native dialog pixels, exact settled-actor timing and
-opening credits remain presentation gaps; see music-messages-recovery.md.
-The complete-game goal remains active, with original practice animations,
-transitions/collisions, timed effects, palette/sound calibration, ending refinements
-and full natural-playthrough verification still required.
-
-
-Milestone0.13 restores the original Drill for Skill introduction and all three
-result animations (108 recovered sprite commands), their sounds and the
-sound-completion wait before the original Enter-to-continue prompt. The source
-counter panel/digits,120-tick problem-count boundary and independent practice
-timer replace the previous native footer. Running counters survive another set;
-practice still awards no adventure rewards and never writes its suspended save.
-469 native checks pass, including both imperfect animation/sound selections,
-exact two-draw result RNG consumption, timer/counter boundaries, sound waiting,
-repeated sets, visible questions and deterministic animation repainting.
-Keyboard-buffer/driver parity, opening/File presentation, transitions/collisions,
-timed activities, palette/audio calibration, ending refinements and a full
-natural adventure playthrough remain. See practice-presentation-recovery.md.
-
-
-Milestone0.23 restores prize price/outline flashes and their original retry-based random consumption, spinner highlights, Great Eight music-header flashes and Equipment List header cycles. Native saves retain the initial random stream and applied checkpoint cursor; repainting cannot advance it, and future phases do not consume it early. Question/input appear only after the recovered waits.800 native checks pass, including1280 endpoint comparisons, exact54-draw prize fixture/next-draw validation, partial restore and prior0.22 compatibility. Native windows separately verify spinner/music/equipment answers and a normal new-game prize activity17→300points with Game Show clues. The TV static effect remains pending because its command23 aliases a bounded-range helper with unresolved caller arguments. Opening/File/sign-in, queued input, driver masks/palette/audio, ending refinements and a fresh complete playthrough still prevent complete-game status. See activity-effects-recovery.md.
-
-
-Milestone0.24 restores the television-table noise introduction:60 paired XOR phases with original sound/waits and2580 random draws. Focused caller-stack recovery establishes the no-argument range bounds0..8512; the native effect preserves the EGA byte masks, including its same-byte crossing quirk.818 checks pass, covering320 static endpoints, independent coordinates/stream states, save/resume, input lockout and every byte alignment. Native windows verified the isolated168→300 checkpoint and a normal Equipment TV activity222→600 total/room clues. All nine activity families with timed drawing now have native schedules; the map needs no such intro. This does not establish complete campaign/pixel/audio identity. Opening/File/sign-in, queued input, remaining mask/palette/ending/audio refinements and a fresh full ordinary win remain required. See television-effect-recovery.md.
-
-
-Milestone0.25 restores the three-page opening with24 original instruction lines, Enter-keycap prompts,12000IRQ page deadlines and24IRQ grey wipes, followed by40 original sprite/sound commands in three scripts (320/160/1080IRQ). The native compositor retains source restore references and callback copy bounds, locks input during the entrance and hands off to the existing player menu.848 checks pass, including timeout cycling, sound boundaries, ignored-key clock stability, pure repainting and suspended-game preservation. Native windows show title/objective/Telly pages, Escape/No, flight and station frames, completion and replay. Copied profile/session files remain byte-for-byte unchanged. Native F1/click/exit-dialog adaptations and broader palette/mask/audio limits are explicit. Original File/sign-in, general input buffering, remaining ending refinements and a fresh complete ordinary win remain required. See opening-presentation-recovery.md.
-
-
-Milestone0.26 restores the original member clipboard and eight-slot name editor, the three-choice play panel and separate adventure/practice File menus. The source-derived rows, rank/lifetime columns, wrap navigation, XOR selection and caret timing replace the earlier eight-item native menu. Existing native player names/saves remain compatible. Removal is a named native adaptation: profiles move into a recoverable archive, and their unfinished sessions and high-game history remain intact. 877 native checks pass, including independent file preservation, archive/reload/restore, duplicate rejection, menu/pause navigation and pure rendering. Native confirmations/settings/restore controls, general BIOS buffering, remaining ending/rank/midnight/palette/mask/audio refinements and a fresh full ordinary playthrough still prevent complete-game status. See signin-file-recovery.md.
-
-
-Milestone0.27 adds recovered last-key world polling, deferred ordinary keys through synchronous gameplay actions, separately tracked held controls and original right-walking priority. Held Up/diagonal requests repeat after landing; Space follows first-make/repeat/release flags at game frames. Practice keeps early Enter through its result animation/sound wait, while new answer fields discard keys from preceding drawing/feedback. 911 checks pass, including input queue ordering/flush, deferred door delivery, physical movement across menus, release/priority/landing, editor lockout and queued practice continuation. Native focus loss clears input as a platform adaptation. BIOS buffer capacity/overflow, alternate modifier/keyboard-type handling, remaining dialog/ending input, palette/mask/audio refinements and a fresh complete ordinary adventure remain unverified; this is not the complete game. See keyboard-recovery.md.
-
-
-Milestone0.28 restores the original EGA palette swap (index0 blue, index1 black), retains all original bitmap indices through drawing, and applies the same palette to text and primitives. Source pen11h remains black for final prize prices; random pen0 remains blue. Black/white selection and TV XOR now preserve the low plane. Local MKV31/33/110s corroborates black member text, selected rows, menu footers and plot/background colors. 924 checks pass, including thirteen palette/index/RGBA/compositing checks. Full masks/occlusion, display/audio calibration, original dialogs/alternate input/endings and a fresh complete ordinary playthrough remain open. See palette-recovery.md.
+Future changes should preserve these gates and the native target boundaries.
+No unresolved required gameplay feature is being deferred into a future milestone.

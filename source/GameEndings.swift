@@ -13,8 +13,20 @@ extension NativeGameView {
         if reason != .midnight { disableRoomCamera() }
         while session.clock.pauseDepth > 0 { session.clock.resume() }
         session.clock.pause(); held.removeAll(); screen = .ending; status = ""
+        lastEndingPulse = ProcessInfo.processInfo.systemUptime;endingFraction = 0
+        endingStartedAt = lastEndingPulse;endingFinishedWallSeconds = nil
+        endingLastDraw = nil;endingMaxDrawGap = 0;endingDrawCount = 0;endingReportWritten = false
         if reason == .midnight { effect(49) } else { effect(3) }
         save(); needsDisplay = true
+    }
+    func pulseEnding(now: Double = ProcessInfo.processInfo.systemUptime) {
+        let delta = max(0,now-lastEndingPulse);lastEndingPulse = now
+        guard screen == .ending,modalDepth == 0 else { endingFraction = 0;return }
+        let ticks = delta*VerifiedClock.pitInputHz/VerifiedClock.pitDivisor+endingFraction
+        let whole = Int(min(10_000,ticks.rounded(.down)))
+        endingFraction = ticks-ticks.rounded(.down)
+        guard whole > 0 else { return }
+        do { try advanceEnding(whole) } catch { present(error) }
     }
     func advanceEnding(_ ticks: Int = OriginalWorld.frameIRQTicks) throws {
         guard var ending = session.activeEnding else { return }
@@ -23,14 +35,16 @@ extension NativeGameView {
         session.activeEnding = ending
         for cue in timeline.sounds(after: old,through: ending.elapsedTicks) {
             if cue.interrupt { sound?.stop(); lastSoundIndex = nil }
-            effect(cue.index)
+            if cue.index >= 0 { effect(cue.index) }
         }
         let totals = timeline.totals(at: ending.elapsedTicks)
         session.energy = totals.energy; session.score = totals.score
         session.clock.applyMinutePenalty(max(0,totals.minutes-session.clock.elapsedMinutes))
         if ending.elapsedTicks == timeline.duration {
+            if endingFinishedWallSeconds == nil { endingFinishedWallSeconds = ProcessInfo.processInfo.systemUptime-endingStartedAt }
             session.outcome = ending.won ? "won" : "lost"; screen = .results
             try commitEndingResult()
+            if ending.reason == .midnight { continueAfterResults() }
         }
         if tick-lastSaveTick >= 20 { save(); lastSaveTick = tick }
         needsDisplay = true
@@ -57,13 +71,21 @@ extension NativeGameView {
         screen = .world; held.removeAll(); status = ""; save(); needsDisplay = true
     }
     func continueAfterResults() {
+        guard confirmation == nil,session.activeEnding != nil else { return }
         do {
             try commitEndingResult()
-            let alert = NSAlert(); alert.messageText = referenceMode ? "Checkpoint complete" : "Your score and rank have been saved."
-            alert.informativeText = referenceMode ? "Play a new isolated game?" : "Do you or someone else want to play again?"
-            alert.addButton(withTitle: "Yes"); alert.addButton(withTitle: "No")
-            if alert.runModal() == .alertFirstButtonReturn { try beginNextGame() }
-            else { screen = .title; needsDisplay = true }
+            //17beb returns every nonzero result, including Escape, to Sign-In.
+            //No first offers ordinary Exit; declining that also reaches Sign-In.
+            showConfirmation(.replay(won: session.activeEnding!.won)) { [weak self] choice in
+                guard let self else { return }
+                if choice == 0 {
+                    self.showConfirmation(.exit(saving: false)) { [weak self] exitChoice in
+                        guard let self else { return }
+                        if exitChoice == 1 { self.save();self.requestApplicationExit() }
+                        else { self.choosePlayer() }
+                    }
+                } else { self.choosePlayer() }
+            }
         } catch { present(error) }
     }
     @objc func referenceEnding() {

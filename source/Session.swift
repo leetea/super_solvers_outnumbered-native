@@ -80,7 +80,7 @@ struct NativeSession: Codable {
         (0...127).contains(energy) && (0...20).contains(pendingRecharge) &&
         completed.allSatisfy { (0..<10).contains($0) } &&
         position.valid && (returnPosition == nil || (returnPosition!.valid && returnPosition!.scene < 10)) &&
-        ["active","won","lost"].contains(outcome) &&
+        ["active","won","lost","abandoned"].contains(outcome) &&
         attempts.allSatisfy { (0..<10).contains($0.key) && (0...2).contains($0.value.wrongAnswers) && $0.value.input.count <= 4 && $0.value.input.utf8.allSatisfy { (48...57).contains($0) } } &&
         assignedChallenges.allSatisfy { (0..<10).contains($0.key) && $0.key == $0.value.hotspot } &&
         (questionSetup == nil || questionSetup!.valid) &&

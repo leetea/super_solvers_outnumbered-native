@@ -34,7 +34,7 @@ struct EndingTimeline {
         case sprite(Int,Int,Int), caption(String,Int,Int), clearCaption
         case bonus(String,Int), hideBonus
         case tally(energy: Int,minutes: Int,score: Int)
-        case sound(Int), clip(Int)
+        case sound(Int), clip(Int), meterStart, rankStart, stopSound, bonusClosing
     }
     struct Event { let ticks: Int; let action: Action }
     struct Totals {
@@ -67,6 +67,7 @@ struct EndingTimeline {
             // Original11b0:109e clears score/energy, flashes the empty meter
             // five times (100 ticks per half), then opens the replay prompt.
             add(.tally(energy: -ending.initialEnergy,minutes: 0,score: -Int(ending.initialScore)))
+            add(.meterStart)
             for _ in 0..<10 { add(.sound(49)); wait(100) }
             self.events = events; duration = time; return
         }
@@ -83,7 +84,9 @@ struct EndingTimeline {
             wait(700); add(.clearCaption); add(.restoreAll)
             script("bonus_draw")
             let tuning = VerifiedScore.tuning[ending.tier]
-            add(.bonus("Energy Left",ending.initialEnergy*tuning.perEnergy)); add(.sound(46)); wait(295+240)
+            add(.bonus("Energy Left",ending.initialEnergy*tuning.perEnergy))
+            for _ in 0..<59 { add(.sound(46));wait(5) }
+            wait(240)
             for _ in 0..<ending.initialEnergy { update(energy: -1); update(score: tuning.perEnergy) }
             script("bonus_switch")
             add(.bonus("Time Left",(180-ending.initialMinutes)*tuning.perMinute)); wait(240)
@@ -95,12 +98,25 @@ struct EndingTimeline {
             // Original rank function runs before lifetime points are committed.
             let increment = data.victory_steps[ending.tier]
             for _ in stride(from: 0,to: tuning.victoryBonus,by: increment) { update(score: increment) }
-            add(.sound(47)); wait(295); add(.hideBonus); script("bonus_close")
+            add(.bonusClosing)
+            for _ in 0..<59 { add(.sound(47));add(.sound(47));wait(5) }
+            add(.hideBonus);script("bonus_close")
             let finalScore = VerifiedScore.winningScore(sessionScore: ending.initialScore,rank: VerifiedRank.allCases[ending.tier*2],energy: ending.initialEnergy,minutesRemaining: 180-ending.initialMinutes)!
             let lifetime = VerifiedScore.lifetimeAfterSession(current: ending.initialLifetime,sessionScore: finalScore,won: true)
             if lifetime >= 500_000 { script("champion"); script("champion_transform"); script("champion_return") }
             else { script("congratulate") }
             script("departure")
+            add(.rankStart)
+            let rank = OriginalRankTimeline(lifetime: lifetime,data: data),start = time
+            for event in rank.events {
+                switch event.action {
+                case .sound(let index): events.append(Event(ticks: start+event.ticks,action: .sound(index)))
+                case .stop: events.append(Event(ticks: start+event.ticks,action: .stopSound))
+                case .command(let c,_): if c.resource == -2 { events.append(Event(ticks: start+event.ticks,action: .command(c,[]))) }
+                default: break
+                }
+            }
+            wait(rank.duration)
         } else {
             script("loss")
             add(.caption(data.dialogues[4+ending.masterDialogue],ending.masterDialogue == 0 ? 31 : 33,ending.masterDialogue == 0 ? 50 : 51))
@@ -111,7 +127,8 @@ struct EndingTimeline {
                 add(.tally(energy: 0,minutes: index == clockAdvance/10 ? clockAdvance%10 : 10,score: 0)); wait(20)
             }
             add(.tally(energy: 0,minutes: 0,score: -Int(ending.initialScore)))
-            wait(1000)
+            add(.meterStart)
+            for _ in 0..<10 { add(.sound(49));wait(100) }
         }
         self.events = events; duration = time
     }
@@ -126,6 +143,7 @@ struct EndingTimeline {
         events.compactMap { event in
             guard event.ticks > old && event.ticks <= new else { return nil }
             if case let .sound(index) = event.action { return (index,false) }
+            if case .stopSound = event.action { return (-1,true) }
             if case let .command(command,_) = event.action, command.resource == -2 { return (command.x,true) }
             return nil
         }

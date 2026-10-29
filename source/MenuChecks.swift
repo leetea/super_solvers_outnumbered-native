@@ -151,7 +151,7 @@ func nativeMenuChecks(root: URL,output: URL) throws -> [String:Bool] {
     view.practice = suspendedPractice
     view.showPlayerMenu(); try view.render()
     try view.canvas.writePNG(to: output.appendingPathComponent("native-player-menu.png"))
-    checks["practice_escape_returns_menu_and_keeps_game_saved"] = view.screen == .menu && view.practice == nil && view.session.score == 500 && view.session.clock.elapsedMinutes == 21
+    checks["practice_escape_returns_menu_and_keeps_game_saved"] = try view.screen == .menu && view.practice == nil && view.session == nil && view.saves.load(first.id)?.score == 500 && view.saves.load(first.id)?.clock.elapsedMinutes == 21 && Data(contentsOf: view.saves.file(first.id)) == saved
     view.begin()
     checks["suspended_adventure_resumes_after_practice"] = view.screen == .world && view.session.score == 500 && view.session.energy == 7 && view.session.clock.elapsedMinutes == 21 && view.session.activeDrill == nil
     try view.profileStore.select(second.id); view.begin()

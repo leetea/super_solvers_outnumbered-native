@@ -8,26 +8,48 @@ extension NativeGameView {
         for digit in (session.attempts[challenge.hotspot]?.input ?? "").compactMap(\.wholeNumberValue) { _ = calculator.press(.digit(digit)) }
         session.calculator = calculator
     }
-    func calculatorNotice(_ id: Int,title: String = "Calculator") {
-        let alert = NSAlert(); alert.messageText = title; alert.informativeText = NativeCalculator.notices[id]; alert.runModal()
+    func calculatorNotice(_ id: Int,completion: @escaping () -> Void = {}) {
+        guard NativeCalculator.notices.indices.contains(id) else { return }
+        showOriginalNotice(OriginalNotice(text: NativeCalculator.notices[id],title: nil)) { _ in completion() }
     }
     func calculatorKey(_ key: NativeCalculator.Key) {
-        guard !isActivityPresenting, let challenge = session.activeChallenge, session.attempts[challenge.hotspot]?.result == .editing,
+        guard originalNotice == nil,confirmation == nil,!isActivityPresenting, let challenge = session.activeChallenge, session.attempts[challenge.hotspot]?.result == .editing,
               session.attempts[challenge.hotspot]?.awaitingHintAcknowledgement != true else { return }
-        var calculator = session.calculator ?? NativeCalculator()
+        let previous = session.calculator ?? NativeCalculator()
+        var calculator = previous
         let event = calculator.press(key)
+        let resetAfterAdvice: Bool
+        switch event {
+        case .notice(let id): resetAfterAdvice = [1,2,4].contains(id)
+        case .remainder: resetAfterAdvice = true
+        default: resetAfterAdvice = false
+        }
+        //1efa4 resets arithmetic errors AFTER the notice. The pure arithmetic
+        //model returns its final reset state; keep the visible editor until then.
+        if resetAfterAdvice {
+            session.calculator = previous
+            if case .remainder(let quotient,let remainder)? = event { calculatorRemainder = (quotient,remainder) }
+            let id: Int
+            if case .notice(let value)? = event { id = value } else { id = 3 }
+            calculatorNotice(id) { [weak self] in
+                guard let self,self.session?.activeChallenge?.hotspot == challenge.hotspot else { return }
+                self.calculatorRemainder = nil;self.session.calculator = calculator
+                self.session.attempts[challenge.hotspot]?.input = calculator.entry;self.save()
+            }
+            return
+        }
         session.calculator = calculator
         session.attempts[challenge.hotspot]?.input = calculator.entry
         save(); needsDisplay = true
         switch event {
         case .beep: effect(26)
         case .notice(let id): calculatorNotice(id)
-        case .remainder(let quotient,let remainder): calculatorNotice(3,title: "\(quotient) r\(remainder)")
+        case .remainder: break //Handled above with the original footer feedback.
         case nil: break
         }
     }
     func questionCharacter(_ text: String) {
-        guard !isActivityPresenting, let challenge = session.activeChallenge else { return }
+        guard originalNotice == nil,confirmation == nil,!isActivityPresenting, let challenge = session.activeChallenge else { return }
         if let digit = Int(text), text.count == 1, (0...9).contains(digit) {
             if usesCalculator { calculatorKey(.digit(digit)) }
             else { session.attempts[challenge.hotspot]?.digit(digit) }
@@ -44,7 +66,7 @@ extension NativeGameView {
         }
     }
     func submitQuestion() {
-        guard !isActivityPresenting, let challenge = session.activeChallenge else { return }
+        guard originalNotice == nil,confirmation == nil,!isActivityPresenting, let challenge = session.activeChallenge else { return }
         if session.attempts[challenge.hotspot]?.awaitingHintAcknowledgement == true {
             session.attempts[challenge.hotspot]?.awaitingHintAcknowledgement = false; save(); return
         }
@@ -62,10 +84,7 @@ extension NativeGameView {
         }
     }
     @objc func toggleCalculator(_ sender: NSMenuItem) {
-        guard session != nil else { return }
-        session.calculatorEnabled = !usesCalculator; sender.state = usesCalculator ? .on : .off
-        session.calculator = NativeCalculator()
-        if let challenge = session.activeChallenge, session.attempts[challenge.hotspot]?.result == .editing { session.attempts[challenge.hotspot]?.input = "" }
-        save(); needsDisplay = true
+        guard session != nil,originalNotice == nil,confirmation == nil,settingsEditor == nil,optionsMenu == nil,screen != .practice else { return }
+        chooseCalculator(!usesCalculator)
     }
 }

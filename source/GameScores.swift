@@ -21,7 +21,7 @@ extension NativeGameView {
         scoresPauseAdventure = false; needsDisplay = true
     }
     func scoresKey(_ event: NSEvent) {
-        if event.keyCode == 53 || event.keyCode == 36 { closeScores(); return }
+        if event.keyCode == 53 || event.keyCode == 36 || event.keyCode == 76 { closeScores(); return }
         guard !scoresShowHighGames else { return }
         let last = max(0,(profileStore.document.profiles.count-1)/10)
         if [124,125].contains(event.keyCode) { scorePage = min(last,scorePage+1) }

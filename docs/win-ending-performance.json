@@ -1,0 +1,11 @@
+{
+  "completionEventWallSeconds" : 44.958029083325528,
+  "endingFrameDrawCount" : 2659,
+  "finalElapsedIRQ" : 10640,
+  "finalLifetime" : 6900,
+  "finalScore" : 6900,
+  "maximumDrawGapSeconds" : 0.064590458408929408,
+  "resultsDrawWallSeconds" : 44.965417708270252,
+  "sourceDurationIRQ" : 10640,
+  "sourceDurationSeconds" : 44.952270483463543
+}

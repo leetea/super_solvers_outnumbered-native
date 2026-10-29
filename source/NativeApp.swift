@@ -34,6 +34,15 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var scoresShowHighGames = false
     var scorePage = 0
     var tick = 0
+    var startupReported = false
+    var lastEndingPulse = ProcessInfo.processInfo.systemUptime
+    var endingFraction = 0.0
+    var endingStartedAt = 0.0
+    var endingFinishedWallSeconds: Double?
+    var endingLastDraw: Double?
+    var endingMaxDrawGap = 0.0
+    var endingDrawCount = 0
+    var endingReportWritten = false
     var selectedRoom = 0
     var status = ""
     var sound: NSSound?
@@ -55,12 +64,24 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var lastSaveTick = 0
     var menuReturn = Screen.title
     var menuSelection = 0
+    var calculatorRemainder: (quotient: Int,remainder: Int)?
+    var decoderPanel: NativeDecoderPanel?
+    var decoderButton = 0
+    var decoderBlinkIRQ = 0
+    var decoderConfirmationPending = false
+    var decoderFooterBlank = false
+    var originalNotice: NativeOriginalNotice?
+    var optionsMenu: NativeOptionsMenu?
+    var menuCalculatorEnabled = true
+    var settingsEditor: NativeSettingsEditor?
+    var confirmation: NativeConfirmation?
+    var requestApplicationExit: () -> Void = { NSApplication.shared.terminate(nil) }
     var modalDepth = 0
     var practice: NativePractice?
     override var acceptsFirstResponder: Bool { true }
     override var isFlipped: Bool { true }
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-        if isTransitioning { return false }
+        if decoderPanel != nil || confirmation != nil || settingsEditor != nil || originalNotice != nil || optionsMenu != nil || isTransitioning || screen == .scores || (screen == .help && helpBrowser?.topic != nil) { return false }
         if menuItem.action == #selector(toggleCalculator(_:)) {
             menuItem.state = session?.calculatorEnabled == false ? .off : .on
             return session != nil
@@ -92,12 +113,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             if let selected = profileStore.document.selectedProfileID, let saved = profileStore.document.profiles.first(where: { $0.id == selected }) { profile = saved }
             else { profile = try profileStore.create(name: "Player") }
             session = try saves.load(profile.id) ?? NativeSession(profileID: profile.id, seed: UInt32.random(in: 0...65535),lifetimePoints: profile.lifetimePoints ?? 0)
+            menuCalculatorEnabled = session.calculatorEnabled ?? true
             session.ensureQuestionSetup()
             ensureEnergyMachine()
             ensureCalculator()
             ensureRoomCamera()
             if let active = session.activeChallenge { try prepareActivityState(active) }
             lastZapPulse = ProcessInfo.processInfo.systemUptime; zapFraction = 0
+            lastEndingPulse = ProcessInfo.processInfo.systemUptime;endingFraction = 0
             screen = session.activeDrill != nil ? .drill : (session.activeChallenge == nil ? .world : .question)
             if let ending = session.activeEnding { screen = ending.elapsedTicks >= EndingTimeline(ending,data: endingData).duration ? .results : .ending }
             tutorialLastMinute = nil; tutorialLastEnergy = nil
@@ -130,6 +153,12 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     func save() {
         guard session != nil, !referenceMode else { return }
+        //Practice owns separate state; menu/guide/quit paths must never rewrite
+        //the suspended adventure, even if its in-memory snapshot is retained.
+        guard !tutorialPracticeContext,screen != .practice,
+              !(screen == .file && fileReturn == .practice),
+              !(screen == .help && helpReturn == .practice),
+              !(screen == .scores && scoreReturn == .practice) else { return }
         var snapshot = session!
         // Decoder/help are transient native screens. On relaunch the app opens
         // exploration (or the saved active question), so retain only its pause.
@@ -151,8 +180,11 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     }
     func step() {
         tick += 1
+        if originalNotice != nil { return }
+        if settingsEditor != nil { stepSettingsEditor();return }
         guard modalDepth == 0 else { return }
         if screen == .world { pollWorldKeyboard() }
+        guard modalDepth == 0 else { return }
         if screen == .title { if opening.showingPage { effect(0) };return }
         if screen == .signin { signIn.blinkIRQ += OriginalWorld.frameIRQTicks;needsDisplay = true;return }
         guard ![.signin,.file,.menu,.scores].contains(screen) else { return }
@@ -177,7 +209,6 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         }
         guard session != nil else { return }
         if screen == .ending {
-            do { try advanceEnding() } catch { present(error) }
             return
         }
         if session.activeZap != nil || session.activeFountain != nil || isTransitioning { needsDisplay = true; return }
@@ -200,6 +231,11 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 try advanceDrill(irqTicks: OriginalWorld.frameIRQTicks)
                 if session.clock.expired { startEnding(room: session.decoder.hideoutRoom,reason: .midnight); return }
             } catch { present(error) }
+        }
+        if screen == .decoder {
+            let next = decoderBlinkIRQ+OriginalWorld.frameIRQTicks
+            if decoderBlinkIRQ < 100 && next >= 100 { decoderFooterBlank = false }
+            decoderBlinkIRQ = next%200;needsDisplay = true
         }
         if screen == .world || screen == .drill { needsDisplay = true }
     }
@@ -276,6 +312,8 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if screen == .ending { return }
         if screen == .signin { signInKey(event);return }
         if screen == .file { fileKey(event);return }
+        if screen == .scores { scoresKey(event);return }
+        if screen == .help && helpBrowser?.topic != nil { helpKey(event);return }
         if key == 120 { showFileMenu(); return }
         if key == 99 { showOptions(); return }
         if key == 122 { toggleHelp(); return }
@@ -290,8 +328,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             needsDisplay = true; return
         }
         if screen == .results {
-            if key == 36 { continueAfterResults() }
-            else if key == 53 { screen = .title; needsDisplay = true }
+            if key == 36 || key == 76 { continueAfterResults() }
+            else if key == 53 {
+                showConfirmation(.exit(saving: false)) { [weak self] choice in
+                    guard let self else { return }
+                    if choice == 1 { self.save();self.requestApplicationExit() }
+                    else { self.choosePlayer() }
+                }
+            }
             return
         }
         if screen == .title { if key == 36 { showPlayerMenu() }; return }
@@ -303,7 +347,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             if key == 126 && !event.isARepeat && session.outcome == "active" { interact() }
             else if key == 49 && !event.isARepeat && playerMotion.settled && session.outcome == "active" {
                 beginZap()
-            } else if key == 48 { sound?.stop(); lastSoundIndex = nil; screen = .decoder; session.clock.pause(); held.removeAll(); showNewUserMessage(13) }
+            } else if key == 48 { openDecoder() }
             else if key == 53 { confirmNativeExit() }
         case .question:
             guard let challenge = session.activeChallenge else { return }
@@ -327,22 +371,18 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 save()
             } else if key == 51 || key == 117 { session.activeDrill?.erase() }
             else if let chars = event.charactersIgnoringModifiers, chars.count == 1, let digit = Int(chars) { session.activeDrill?.digit(digit) }
-        case .decoder:
-            if key == 48 || key == 53 { screen = .world; session.clock.resume(); save() }
-            else if key == 125 { selectedRoom = (selectedRoom+1)%5 }
-            else if key == 126 { selectedRoom = (selectedRoom+4)%5 }
-            else if key == 36 && session.decoder.canDecide(energy: session.energy,pendingRecharge: session.pendingRecharge) {
-                confirmDecision()
-            }
-            else if event.charactersIgnoringModifiers?.lowercased() == "m" { showMatchRule() }
+        case .decoder: decoderKey(event)
         case .help, .scores: break
         }
         needsDisplay = true
     }
     @objc func toggleHelp() {
+        if decoderPanel != nil || originalNotice != nil || confirmation != nil || settingsEditor != nil { return }
+        if optionsMenu != nil { closeOptions() }
         if screen == .ending || screen == .results { return }
+        if screen == .file { closeFileMenu() }
         if session?.activeZap != nil || session?.activeFountain != nil { return }
-        if screen == .help { closeHelp(); return }
+        if screen == .help { if helpBrowser?.topic != nil { helpBrowser?.returnToTopics();helpBrowser?.selectedTopic = 0;needsDisplay = true }; return }
         helpReturn = screen
         helpBrowser = NativeHelpBrowser(practice: screen == .practice)
         helpPausesAdventure = session != nil && [.world,.question,.drill,.decoder].contains(screen)
@@ -350,23 +390,24 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         screen = .help; held.removeAll()
         needsDisplay = true
     }
-    func confirmDecision() {
-        let alert = NSAlert(); alert.messageText = "Decide?"
-        alert.informativeText = "Is the Master of Mischief hiding in the \(DecoderPuzzle.roomNames[selectedRoom])?"
-        alert.addButton(withTitle: "Yes"); alert.addButton(withTitle: "No")
-        guard alert.runModal() == .alertFirstButtonReturn else { return }
-        startEnding(room: selectedRoom)
-    }
-    func showMatchRule() {
-        let text: String
-        switch session.decoder.rule {
-        case .samePicturesSameOrder: text = "MATCH RULE: The hideout room has the same pictures and the same pattern as the secret code."
-        case .samePicturesDifferentOrder: text = "MATCH RULE: The hideout room has the same pictures but a different pattern from the secret code."
-        case .differentPicturesSamePattern: text = "MATCH RULE: The hideout room has different pictures but the same pattern as the secret code."
-        }
-        let alert = NSAlert(); alert.messageText = "Match Rule"; alert.informativeText = text; alert.runModal()
-    }
     override func mouseDown(with event: NSEvent) {
+        if originalNotice != nil { return }
+        if decoderPanel != nil {
+            let point = convert(event.locationInWindow,from: nil)
+            decoderPanelClick(x: Int(point.x/bounds.width*320),y: Int(point.y/bounds.height*200));return
+        }
+        if optionsMenu != nil && confirmation == nil {
+            let point = convert(event.locationInWindow,from: nil)
+            optionsClick(x: Int(point.x/bounds.width*320),y: Int(point.y/bounds.height*200));return
+        }
+        if settingsEditor != nil {
+            let point = convert(event.locationInWindow,from: nil)
+            settingsClick(x: Int(point.x/bounds.width*320),y: Int(point.y/bounds.height*200));return
+        }
+        if confirmation != nil {
+            let point = convert(event.locationInWindow,from: nil)
+            confirmationClick(x: Int(point.x/bounds.width*320),y: Int(point.y/bounds.height*200));return
+        }
         if isTransitioning { return }
         if screen == .ending { return }
         if screen == .results { continueAfterResults(); return }
@@ -375,7 +416,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         let x = Int(p.x/bounds.width*320), y = Int(p.y/bounds.height*200)
         if screen == .help {
             if y < 12 && x < 50 { closeHelp() }
-            else if y < 12 && x < 100 { showPlayerMenu() }
+            else if y < 12 && x < 104 { showFileMenu() }
             else if y < 12 && x < 170 { showOptions() }
             else { helpClick(x: x,y: y) }
             return
@@ -387,18 +428,17 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             if x >= 50 && x < 286 && y >= 75 && y < 111 { menuSelection = min(Self.playerMenuItems.count-1,(y-75)/12); activatePlayerMenu(menuSelection) }
             return
         }
-        if y < 12 && x >= 50 && x < 100 { showPlayerMenu(); return }
-        if y < 12 && x >= 100 && x < 170 { showOptions(); return }
+        if y < 12 && x >= 52 && x < 104 { showFileMenu(); return }
+        if y < 12 && x >= 104 && x < 170 { showOptions(); return }
         if screen == .practice { return }
         if y < 12 && x < 50 { toggleHelp(); return }
         if screen == .decoder {
             if x >= 172 && y >= 17 && y < 157 { selectedRoom = min(4,(y-17)/28) }
             if y >= 162 {
-                if x < 56 { screen = .world; session.clock.resume(); save() }
-                else if x < 108 { showMatchRule() }
+                if x < 56 { closeDecoder() }
+                else if x < 108 { decoderButton = 1;showMatchRule() }
                 else if x < 160 {
-                    if session.decoder.canDecide(energy: session.energy,pendingRecharge: session.pendingRecharge) { confirmDecision() }
-                    else { present(ContentError.invalid("Collect more room clues and secret-code pieces before deciding.")) }
+                    decoderButton = 2;confirmDecision()
                 }
             }
         }
@@ -524,10 +564,14 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             if usesCalculator {
                 canvas.draw(try content.bitmap("ROOMS.GRA.016"),x: 188,y: 138)
                 let calculator = session.calculator ?? NativeCalculator()
-                canvas.text(calculator.display,font: ui,x: 229-ui.width(of: calculator.display),y: 148,color: 1)
-                if let operation = calculator.operation { canvas.text(operation.glyph,font: ui,x: 237,y: 148,color: 1) }
+                let display = calculatorRemainder.map { String($0.quotient) } ?? calculator.display
+                canvas.text(display,font: ui,x: 229-ui.width(of: display),y: 148,color: 1)
+                if calculatorRemainder == nil,let operation = calculator.operation { canvas.text(operation.glyph,font: ui,x: 237,y: 148,color: 1) }
             } else { canvas.text(attempt.input,font: ui,x: 208,y: 141,color: 1) }
-            if attempt.wrongAnswers == 1 {
+            if let remainder = calculatorRemainder {
+                canvas.text("This answer has a",font: ui,x: 12,y: 163,color: 15)
+                canvas.text("remainder of \(remainder.remainder).",font: ui,x: 12,y: 173,color: 15)
+            } else if attempt.wrongAnswers == 1 {
                 canvas.text("That's not correct.",font: ui,x: 12,y: 163,color: 15)
                 canvas.text("Read the question.",font: ui,x: 12,y: 173,color: 15)
             } else if attempt.awaitingHintAcknowledgement {
@@ -558,13 +602,20 @@ final class NativeGameView: NSView, NSMenuItemValidation {
                 if value & 0x80 == 0 { try sprite(Int(value & 0x3f)+78,x: 184+i*28,y: 24+room*28) }
             }
         }
-        canvas.border(172,17+selectedRoom*28,137,27,14)
-        canvas.fill(5,163,211,34,1)
+        canvas.replaceActivityColor(left: 172,top: 17+selectedRoom*28,right: 308,bottom: 43+selectedRoom*28,from: 3,to: 12)
+        canvas.fill(5,163,211,34,0);canvas.border(4,162,213,36,1)
+        if decoderConfirmationPending { return }
         canvas.clip = (4,162,212,36)
-        canvas.draw(try content.bitmap("DMOCKET.GRA.1771"),x: 4,y: 162,transparent: true)
+        if !decoderFooterBlank { canvas.draw(try content.bitmap("DMOCKET.GRA.1771"),x: 4,y: 162,transparent: true) }
+        if decoderBlinkIRQ < 100 { try sprite(98,x: (decoderButton*13+2)*4,y: 165,transparent: true) }
         canvas.clip = nil
     }
     func render(_ visibleScreen: Screen? = nil) throws {
+        if visibleScreen == nil,let originalNotice { try drawOriginalNotice(originalNotice);return }
+        if visibleScreen == nil,let confirmation { try drawConfirmation(confirmation);return }
+        if visibleScreen == nil,let decoderPanel { try drawDecoderPanel(decoderPanel);return }
+        if visibleScreen == nil,let optionsMenu { try drawOptions(optionsMenu);return }
+        if visibleScreen == nil,let settingsEditor { try drawSettingsEditor(settingsEditor);return }
         let visibleScreen = visibleScreen ?? screen
         canvas.clip = nil; canvas.clear(1)
         if visibleScreen == .help { try render(helpReturn); try drawOriginalHelp(); return }
@@ -592,6 +643,22 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             let image = NSImage(size: NSSize(width: 320,height: 200)); image.addRepresentation(try canvas.representation())
             NSGraphicsContext.current?.imageInterpolation = .none
             image.draw(in: bounds,from: .zero,operation: .copy,fraction: 1,respectFlipped: true,hints: [.interpolation: NSImageInterpolation.none.rawValue])
+            if let path = ProcessInfo.processInfo.environment["OUTNUMBERED_NATIVE_ENDING_REPORT"],let ending = session?.activeEnding,screen == .ending || screen == .results {
+                let now = ProcessInfo.processInfo.systemUptime
+                if let previous = endingLastDraw { endingMaxDrawGap = max(endingMaxDrawGap,now-previous) }
+                endingLastDraw = now;endingDrawCount += 1
+                if screen == .results,!endingReportWritten,let finished = endingFinishedWallSeconds {
+                    endingReportWritten = true
+                    let duration = EndingTimeline(ending,data: endingData).duration
+                    let report: [String:Any] = ["sourceDurationIRQ":duration,"sourceDurationSeconds":Double(duration)*VerifiedClock.pitDivisor/VerifiedClock.pitInputHz,"completionEventWallSeconds":finished,"resultsDrawWallSeconds":now-endingStartedAt,"endingFrameDrawCount":endingDrawCount,"maximumDrawGapSeconds":endingMaxDrawGap,"finalElapsedIRQ":ending.elapsedTicks,"finalScore":Int(session.score),"finalLifetime":session.lifetimePoints]
+                    try JSONSerialization.data(withJSONObject: report,options: [.prettyPrinted,.sortedKeys]).write(to: URL(fileURLWithPath: path),options: .atomic)
+                }
+            }
+            if !startupReported,let path = ProcessInfo.processInfo.environment["OUTNUMBERED_NATIVE_STARTUP_REPORT"] {
+                startupReported = true
+                let report: [String:Any] = ["firstDrawUTC":ISO8601DateFormatter().string(from: Date()),"secondsSinceNativeMain":ProcessInfo.processInfo.systemUptime-NativeApplication.startedAt,"architecture":"arm64","firstFrameDrawn":true]
+                try JSONSerialization.data(withJSONObject: report,options: [.prettyPrinted,.sortedKeys]).write(to: URL(fileURLWithPath: path),options: .atomic)
+            }
         } catch { NSLog("Native render: %@",error.localizedDescription) }
     }
 }
@@ -603,7 +670,7 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
         do {
             game = try NativeGameView(root: NativeApplication.assets)
             window = NSWindow(contentRect: NSRect(x: 0,y: 0,width: 960,height: 600),styleMask: [.titled,.closable,.miniaturizable],backing: .buffered,defer: false)
-            window.title = "Outnumbered — Native Development Build"
+            window.title = NativeApplication.developmentBuild ? "Outnumbered — Native Development Build" : "Outnumbered!"
             window.contentView = game; window.center(); window.makeKeyAndOrderFront(nil); window.makeFirstResponder(game)
             let root = NSMenu(), application = NSMenuItem(), menu = NSMenu()
             root.addItem(application); application.submenu = menu
@@ -617,6 +684,7 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
             let lifetime = NSMenuItem(title: "Lifetime Scores",action: #selector(NativeGameView.showLifetimeScores),keyEquivalent: "7"); lifetime.target = game; gameMenu.addItem(lifetime)
             let highScores = NSMenuItem(title: "High Game Scores",action: #selector(NativeGameView.showHighGameScores),keyEquivalent: "8"); highScores.target = game; gameMenu.addItem(highScores)
             let options = NSMenuItem(title: "Options",action: #selector(NativeGameView.showOptions),keyEquivalent: ","); options.target = game; gameMenu.addItem(options)
+            if NativeApplication.developmentBuild {
             gameMenu.addItem(.separator())
             let reference = NSMenuItem(title: "Reference Rainfall Question",action: #selector(NativeGameView.referenceQuestion),keyEquivalent: "r"); reference.target = game
             gameMenu.addItem(reference)
@@ -632,6 +700,7 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
             gameMenu.addItem(drill)
             let energy = NSMenuItem(title: "Energy Machine Checkpoint",action: #selector(NativeGameView.referenceEnergy),keyEquivalent: "e"); energy.target = game; gameMenu.addItem(energy)
             let wire = NSMenuItem(title: "LiveWire Checkpoint",action: #selector(NativeGameView.referenceLiveWire),keyEquivalent: "l"); wire.target = game; gameMenu.addItem(wire)
+            }
             let help = NSMenuItem(title: "Help",action: #selector(NativeGameView.toggleHelp),keyEquivalent: "h"); help.target = game; gameMenu.addItem(help)
             let calculator = NSMenuItem(title: "Use Calculator",action: #selector(NativeGameView.toggleCalculator(_:)),keyEquivalent: ""); calculator.target = game; calculator.state = .on; gameMenu.addItem(calculator)
             NSApp.mainMenu = root; NSApp.activate(ignoringOtherApps: true)
@@ -642,11 +711,18 @@ final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
 }
 
 @main enum NativeApplication {
+    #if OUTNUMBERED_DEVELOPMENT
+    static let developmentBuild = true
+    #else
+    static let developmentBuild = false
+    #endif
+    static let startedAt = ProcessInfo.processInfo.systemUptime
     static var assets: URL {
         if let value = ProcessInfo.processInfo.environment["OUTNUMBERED_ASSETS"] { return URL(fileURLWithPath: value) }
         return Bundle.main.resourceURL!.appendingPathComponent("assets")
     }
     static func main() {
+        _ = startedAt
         if CommandLine.arguments.contains("--self-test") {
             do { try nativeIntegrationChecks(root: assets) } catch { fputs("Native checks failed: \(error)\n",stderr); exit(1) }; return
         }

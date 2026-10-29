@@ -101,13 +101,11 @@ extension NativeGameView {
         if signIn.mode == .remove {
             guard members.indices.contains(signIn.selection) else { return }
             let member = members[signIn.selection]
-            modalDepth += 1;defer { modalDepth -= 1 }
-            let alert = NSAlert();alert.messageText = "Remove \(member.name)?"
-            alert.informativeText = "The member will leave the sign-in list. Their score and unfinished game are kept. Use Game → Restore Removed Member to bring them back."
-            alert.addButton(withTitle: "No");alert.addButton(withTitle: "Remove Member")
-            if alert.runModal() == .alertSecondButtonReturn {
-                do { try removeMember(member.id) } catch { present(error) }
-            } else { signIn = NativeMemberSignIn(memberCount: members.count) }
+            showConfirmation(.remove(member.name)) { [weak self] choice in
+                guard let self else { return }
+                if choice == 1 { do { try self.removeMember(member.id) } catch { self.present(error) } }
+                else if choice == 0 { self.signIn = NativeMemberSignIn(memberCount: self.orderedMembers.count) }
+            }
         } else if members.indices.contains(signIn.selection) {
             do { try finishMemberSelection(members[signIn.selection].id) } catch { present(error) }
         } else if members.count >= 10 {
@@ -121,7 +119,7 @@ extension NativeGameView {
         needsDisplay = true
     }
     @objc func restoreMember() {
-        guard !isTransitioning,screen != .ending else { return }
+        guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil,!isTransitioning,screen != .ending else { return }
         let members = profileStore.document.archivedProfiles ?? []
         let alert = NSAlert();alert.messageText = "Restore Removed Member"
         guard !members.isEmpty else { alert.informativeText = "There are no removed members.";alert.runModal();return }
@@ -133,10 +131,10 @@ extension NativeGameView {
         }
     }
     func confirmNativeExit() {
-        modalDepth += 1;defer { modalDepth -= 1 }
-        let alert = NSAlert();alert.messageText = "Exit Program?"
-        alert.addButton(withTitle: "No");alert.addButton(withTitle: "Yes")
-        if alert.runModal() == .alertSecondButtonReturn { save();NSApplication.shared.terminate(nil) }
+        let saving = session != nil && !referenceMode && ![.title,.signin,.practice].contains(screen) && !(screen == .file && fileReturn == .practice)
+        showConfirmation(.exit(saving: saving)) { [weak self] choice in
+            guard choice == 1,let self else { return };self.save();self.requestApplicationExit()
+        }
     }
     func drawSignIn() throws {
         let font = try content.font("MOCKET.DAT.1393")
@@ -184,27 +182,47 @@ extension NativeGameView {
         fileReturn == .practice ? ["Play Another Game","Start New Player","Exit the Program"] : ["Lifetime Scores","High Game Scores","Play Another Game","Start New Player","Exit and Save"]
     }
     @objc func showFileMenu() {
-        guard !isTransitioning,session?.activeZap == nil,session?.activeFountain == nil,screen != .ending,screen != .signin else { return }
-        if screen == .file { closeFileMenu();return }
+        guard decoderPanel == nil,originalNotice == nil,confirmation == nil,settingsEditor == nil,!isTransitioning,session?.activeZap == nil,session?.activeFountain == nil,screen != .ending,screen != .results,screen != .signin else { return }
+        if optionsMenu != nil { closeOptions() }
+        if screen == .file { return }
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
         keyboard.flush();save();fileReturn = screen;fileSelection = 0;screen = .file;held.removeAll();needsDisplay = true
     }
     func closeFileMenu() { screen = fileReturn;held.removeAll();needsDisplay = true }
     func fileKey(_ event: NSEvent) {
-        if [53,120].contains(event.keyCode) { closeFileMenu();return }
+        if event.keyCode == 53 { closeFileMenu();return }
+        if event.keyCode == 120 { return }
+        if event.keyCode == 123 { closeFileMenu();toggleHelp();return }
+        if event.keyCode == 124 { closeFileMenu();showOptions();return }
         if [125,126].contains(event.keyCode) { fileSelection = (fileSelection+fileItems.count+(event.keyCode == 125 ? 1 : -1))%fileItems.count;needsDisplay = true;return }
         if event.keyCode == 122 { closeFileMenu();toggleHelp();return }
         if event.keyCode == 99 { closeFileMenu();showOptions();return }
-        if event.keyCode == 36 { activateFileItem() }
+        if event.keyCode == 36 || event.keyCode == 76 { activateFileItem() }
     }
     func activateFileItem() {
+        let fromPractice = fileReturn == .practice
         let item = fileItems[fileSelection];closeFileMenu()
         switch item {
         case "Lifetime Scores": showLifetimeScores()
         case "High Game Scores": showHighGameScores()
-        case "Play Another Game": showPlayerMenu()
-        case "Start New Player": choosePlayer()
+        case "Play Another Game":
+            showConfirmation(.playAnother(practice: fromPractice)) { [weak self] choice in
+                guard choice == 1,let self else { return }
+                if fromPractice { self.session = nil }
+                else if self.session != nil {
+                    //Native autosaves need an explicit marker for the original
+                    //longjmp out of the unsaved game. No score/rank is awarded.
+                    self.session.outcome = "abandoned";self.save()
+                }
+                self.showPlayerMenu()
+            }
+        case "Start New Player":
+            showConfirmation(.newPlayer(practice: fromPractice)) { [weak self] choice in
+                guard choice == 1,let self else { return }
+                if fromPractice { self.session = nil }
+                self.choosePlayer()
+            }
         default: confirmNativeExit()
         }
     }
@@ -212,7 +230,7 @@ extension NativeGameView {
         let font = try content.font("MOCKET.DAT.1393")
         try sprite(57,x: 0,y: 0,transparent: false);try sprite(62,x: 48,y: 0,transparent: false)
         let width = max(123,fileItems.map { font.width(of: $0)+14 }.max() ?? 123),left = 52
-        canvas.originalHelpPanel(left: left,top: 12,right: left+width,bottom: 12+fileItems.count*12+25,title: nil,footer: "\u{84} to Go Back",font: font)
+        canvas.originalHelpPanel(left: left,top: 12,right: left+width,bottom: 12+fileItems.count*12+25,title: nil,footer: "\u{84} to Go Back",font: font,bottomSeparator: 18)
         for (i,item) in fileItems.enumerated() { canvas.text(item,font: font,x: left+6,y: 17+i*12,color: 1) }
         canvas.xorMemberSelection(left+4,16+fileSelection*12,width-9,13)
     }

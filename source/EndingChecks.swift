@@ -3,7 +3,7 @@ import Cocoa
 func nativeEndingChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
     let data = try JSONDecoder().decode(OriginalEndingData.self,from: Data(contentsOf: root.appendingPathComponent("ending-sequences.json")))
-    checks["original_ending_14_scripts_403_commands"] = data.scripts.count == 14 && data.scripts.map { $0.commands.count }.reduce(0,+) == 403
+    checks["original_ending_16_scripts_425_commands"] = data.scripts.count == 16 && data.scripts.map { $0.commands.count }.reduce(0,+) == 425
     checks["original_ending_hallway_table_and_victory_steps"] = data.hallways == [1,3,6,7,8] && data.victory_steps == [50,100,150,250]
     checks["original_room_backgrounds_cartoon_equipment_sound"] = [13,14,15].map { OriginalWorld.backgroundSelector(forRoom: $0)! } == [196,197,198]
     let content = OriginalContent(root: root)
@@ -11,7 +11,7 @@ func nativeEndingChecks(root: URL,output: URL) throws -> [String:Bool] {
     for script in data.scripts {
         for command in script.commands {
             if command.resource >= 0 {
-                let file = command.resource < 10000 ? "FASTLOAD.GRA" : (script.name == "loss" || script.name == "room_wrong" ? "CLOSE2.GRA" : "CLOSE1.GRA")
+                let file = script.name.hasPrefix("trophy_") ? "TROPHY.GRA" : command.resource < 10000 ? "FASTLOAD.GRA" : (script.name == "loss" || script.name == "room_wrong" ? "CLOSE2.GRA" : "CLOSE1.GRA")
                 let bitmap = try content.bitmap(String(format: "%@.%03d",file,command.resource < 10000 ? command.resource : command.resource-10000))
                 resources = resources && bitmap.width > 0 && bitmap.height > 0 && command.restoreCommand <= script.commands.count
             }

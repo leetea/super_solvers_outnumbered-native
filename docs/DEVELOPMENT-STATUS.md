@@ -1,4 +1,4 @@
-# Native reimplementation 0.28 — October 27, 2026
+# Native reimplementation 0.30 local — October 28, 2026
 
 The complete-game goal remains active. This turn made concrete implementation progress; it was not a wait or a blocked turn.
 
@@ -169,3 +169,27 @@ Milestone0.27 adds recovered last-key world polling, deferred ordinary keys thro
 
 
 Milestone0.28 restores the original EGA palette swap (index0 blue, index1 black), retains all original bitmap indices through drawing, and applies the same palette to text and primitives. Source pen11h remains black for final prize prices; random pen0 remains blue. Black/white selection and TV XOR now preserve the low plane. Local MKV31/33/110s corroborates black member text, selected rows, menu footers and plot/background colors. 924 checks pass, including thirteen palette/index/RGBA/compositing checks. Full masks/occlusion, display/audio calibration, original dialogs/alternate input/endings and a fresh complete ordinary playthrough remain open. See palette-recovery.md.
+
+
+Local0.29 restores original game-screen exit/saved-game/removal Yes/No confirmations, default selections, direct keyboard responses and modal world freeze; retains recoverable native member archives. Corrects source XOR14 for Help/buttons and untitled menu footer separators. 954 checks and separate native-window checks pass. Source/repository packaging gates remain0.28 until final. User requests no further GitHub push until the final app is ready. See dialog-recovery.md for evidence, adaptations and outstanding complete-game work.
+
+
+Local0.30 replaces the Cocoa custom/practice settings alert with the original30-control editor, font glyphs, recovered navigation,63-IRQ cursor/input loop, validation notices, Undo and idle guidance. Game level changes reset standard settings and retain that shared record on Cancel; practice count changes only the count. 988 checks pass, plus final native-window observations and strict-signature extracted local-app verification. Both copied unfinished sessions remained byte-identical. Original Options/new-user presentation and the remaining full-game/final distribution requirements stay active. GitHub remains held until final app ready. See settings-recovery.md.
+
+
+Local0.31: original Options menu and new-user panels now use game-rendered native UI. File/Help/Options arrow navigation and current-function-key behavior follow source tables; original music/sound/message choices and nonempty calculator switch warnings are implemented. Candidate/extracted ZIP both pass1015 checks and strict signatures. Native window verified ordinary/practice Options, source confirmations, all-three-tab navigation, trainee welcome and nested idle settings/practice guidance. Local checkpoint: outputs/local-checkpoints/Outnumbered-0.31.zip. Original ZIP/video hashes reverified unchanged. GitHub remains0.28 and is held until final app ready. Complete game=false; final source/repository rebuild and full ordinary playthrough still pending.
+
+
+Local0.32: original ordinary/practice Play Another Game and Start New Player confirmations implemented. Full menu-loop inspection corrected0.31 Options and earlier Help behavior: callback0 returns parent; Help Done/F1 rebuild topics, Escape closes Help. Source-neutral toolbar restored before children. Explicit ordinary abandonment persists natively without a Continue prompt or score/rank award. Practice File/native shortcut/quit paths preserve suspended adventure files. Candidate and extracted local ZIP both pass1046 checks and strict signatures; final GUI observed allfour confirmations, correctedHelp/Options returns and acceptedabandonment. Both copied adventure files were byte-identical across the practice phase. GitHub remains0.28 pending final app; completeGame=false and final source/repository/fullcampaign gates remain.
+
+
+Local0.33 verified: original calculator advice/remainder feedback, decoder keyboard/button blink, selected-room red color, Enter-only Match Rule and two-stage decision panels. Candidate/extracted runtime1081 checks and isolated native-window observations pass. Latest local artifact outputs/local-checkpoints/Outnumbered-0.33.zip. Original ZIP/video hashes unchanged. Full ending/graphics/audio refinements, fresh ordinary campaign and final source/repository/distribution gates remain; complete-game goal active and GitHub held until final app ready.
+
+
+Local0.34 verified: original trophy/rank reveal/flashes andChampion script, bonus crop slides/sound loops, departure mirror flag, wrong-hideout/midnight meter flashes and original replay/Sign-In/Exit flow. Common confirmations corrected toYes-left/No-right after array-index recovery andlocalMKV comparison. Candidate/extracted local runtime1103 checks, strict signatures and isolated native-window win/replay observations pass; copiedplayerfilesbyte-identical. LatestlocalZIP outputs/local-checkpoints/Outnumbered-0.34.zip. Looseworkspaceappfolderhas FileProviderFinderInfo; ZIP comesfromcleanTMPapp andextractedstrictgatepasses. Remaininggraphics/audioverification, freshordinarycampaign andfinalsource/repository/distribution gates keepcompleteGamefalse. GitHubhelduntilfinalappready.
+
+
+Local0.35 verified: all389 catalog bitmaps pass2334 independent plane-mask/mirror/clip comparisons; original26trailingextentsretained. All52PCM files regenerateidentically; unchangedpitch/tempo spectralmatches corroborate answer7 andending46/47/16againstlocalMKV. Candidate/extracted runtime1111checks/strictsignaturespass; isolatedGUI firstframe0.256s, copiedfilesbyte-identical. Latest outputs/local-checkpoints/Outnumbered-0.35.zip. Final ordinarycampaign andindependentfinalsource/repository/distribution gatesremain; GitHubhelduntilfinalappready. See graphics-audio-verification.md forscopeandhardwarelimits.
+
+
+Local0.36 verified: ending playback uses60Hz presentationpulse with fractional originalIRQ time, independentof24IRQ gameplaysteps. Source5IRQbonusslidesand40IRQrankflashes no longeradvanceonlyonworldframes; modalwaittimeisdiscardedandresumekeepssavedcursor. Candidate/extracted1118checks/strictsignaturespass; nativewindowcompleted11680/64275/Pro andreplaydefaultYes→Sign-In, copiedplayerfilesunchanged. SparseCUAcapturesdo notproveexactliveframecadence. Latest outputs/local-checkpoints/Outnumbered-0.36.zip. Nextfinalreleasepresentation/packaging andfreshordinarycampaign; completeGamefalse,GitHubhelduntilfinalappready.

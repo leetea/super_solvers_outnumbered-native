@@ -1,148 +1,90 @@
 import Cocoa
 
-// Native macOS controls expose the original settings record and validation.
-// These controls deliberately do not claim pixel parity with the DOS dialogs.
-final class NativeSettingsPanel: NSObject {
-    let original: OriginalGameSettings
-    let tier: Int
-    let practice: Bool
-    let view = NSView(frame: NSRect(x: 0,y: 0,width: 440,height: 350))
-    var operations: [NSButton] = [], numbers: [NSButton] = [], formats: [NSButton] = []
-    let selection = NSPopUpButton()
-    init(settings: OriginalGameSettings,tier: Int,practice: Bool) {
-        original = settings; self.tier = tier; self.practice = practice
-        super.init()
-        func label(_ text: String,_ x: CGFloat,_ y: CGFloat) {
-            let field = NSTextField(labelWithString: text); field.frame = NSRect(x: x,y: y,width: 420-x,height: 22); view.addSubview(field)
-        }
-        func check(_ title: String,_ x: CGFloat,_ y: CGFloat,_ width: CGFloat) -> NSButton {
-            let button = NSButton(checkboxWithTitle: title,target: nil,action: nil)
-            button.frame = NSRect(x: x,y: y,width: width,height: 24); view.addSubview(button); return button
-        }
-        label("Type of Problems",0,325)
-        for (i,title) in ["Addition","Multiplication","Subtraction","Division"].enumerated() {
-            operations.append(check(title,CGFloat(i%2)*220,CGFloat(298-i/2*26),210))
-        }
-        label("Numbers Used in Drill Problems",0,236)
-        for i in 0...12 { numbers.append(check(String(i),CGFloat(i%7)*62,CGFloat(208-i/7*26),60)) }
-        label("Format of Drill Problems",0,146)
-        for (i,title) in ["3 + 5 = ?","? + 5 = 8","3 + ? = 8"].enumerated() {
-            formats.append(check(title,CGFloat(i)*145,118,140))
-        }
-        label(practice ? "Number of Problems in Each Set" : "Select Settings for Level",0,80)
-        selection.frame = NSRect(x: 0,y: 46,width: 200,height: 28)
-        selection.addItems(withTitles: practice ? ["5","10","15","20"] : ["1","2","3","4 (selects all)"])
-        view.addSubview(selection)
-        let undo = NSButton(title: "Undo",target: self,action: #selector(undoChanges))
-        undo.frame = NSRect(x: 220,y: 0,width: 80,height: 28); view.addSubview(undo)
-        let defaults = NSButton(title: "Standard Settings",target: self,action: #selector(standardSettings))
-        defaults.frame = NSRect(x: 302,y: 0,width: 138,height: 28); view.addSubview(defaults)
-        display(settings)
-    }
-    func display(_ settings: OriginalGameSettings) {
-        for i in operations.indices { operations[i].state = settings.enabled(i,mask: 16) ? .on : .off }
-        for i in numbers.indices { numbers[i].state = settings.enabled(i,mask: 4) ? .on : .off }
-        for i in formats.indices { formats[i].state = settings.enabled(i,mask: 8) ? .on : .off }
-        selection.selectItem(at: settings.selection)
-    }
-    var settings: OriginalGameSettings {
-        var value = original
-        for i in operations.indices { value.set(i,mask: 16,enabled: operations[i].state == .on) }
-        for i in numbers.indices { value.set(i,mask: 4,enabled: numbers[i].state == .on) }
-        for i in formats.indices { value.set(i,mask: 8,enabled: formats[i].state == .on) }
-        value.selection = selection.indexOfSelectedItem
-        return value
-    }
-    @objc func undoChanges() { display(original) }
-    @objc func standardSettings() { display(.defaults(tier: tier)) }
-    func run() -> OriginalGameSettings? {
-        let alert = NSAlert(); alert.messageText = practice ? "Customize Drill for Skill Settings" : "Customize Game Settings"
-        alert.accessoryView = view; alert.addButton(withTitle: "OK"); alert.addButton(withTitle: "Cancel")
-        while alert.runModal() == .alertFirstButtonReturn {
-            let result = settings
-            if let error = result.validationMessage {
-                let warning = NSAlert(); warning.messageText = error; warning.runModal()
-            } else { return result }
-        }
-        return nil
-    }
-}
-
 extension NativeGameView {
     var selectedProfile: NativeProfile? {
         profileStore.document.profiles.first { $0.id == profileStore.document.selectedProfileID }
     }
     @objc func showPlayerMenu() {
+        guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil else { return }
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
         guard session?.activeZap == nil, session?.activeFountain == nil, screen != .ending else { return }
-        keyboard.flush();save(); held.removeAll(); sound?.stop(); lastSoundIndex = nil
+        keyboard.flush();save();
+        if screen == .practice || (screen == .file && fileReturn == .practice) { session = nil }
+        held.removeAll(); sound?.stop(); lastSoundIndex = nil
         if screen != .menu && screen != .practice { menuReturn = screen }
         practice = nil; screen = .menu; menuSelection = 0; needsDisplay = true
         if selectedProfile == nil { choosePlayer() }
     }
     @objc func choosePlayer() {
+        guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil else { return }
         if isTransitioning || screen == .ending { return }
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
-        keyboard.flush();save();held.removeAll();sound?.stop();lastSoundIndex = nil
+        keyboard.flush();save();
+        if screen == .practice || (screen == .file && fileReturn == .practice) { session = nil }
+        held.removeAll();sound?.stop();lastSoundIndex = nil
         signIn = NativeMemberSignIn(memberCount: profileStore.document.profiles.count)
         screen = .signin;needsDisplay = true
     }
-    func configure(practice: Bool) -> OriginalGameSettings? {
-        guard let profile = selectedProfile else { choosePlayer(); return nil }
+    func configure(practice: Bool,completion: @escaping (OriginalGameSettings?) -> Void) {
+        guard decoderPanel == nil,settingsEditor == nil,confirmation == nil else { return }
+        guard let profile = selectedProfile else { choosePlayer();return }
         let tier = VerifiedRank.allCases.firstIndex(of: VerifiedRank.forLifetimePoints(profile.lifetimePoints ?? 0))! >> 1
         let current = (practice ? profile.practiceSettings : profile.customGameSettings) ?? .defaults(tier: tier)
-        let previousContext = tutorialPracticeContext; tutorialPracticeContext = practice
-        let (tutorialTimer,monitor) = settingsTutorialTimer(practice: practice)
-        modalDepth += 1; defer {
-            tutorialTimer.invalidate(); if let monitor { NSEvent.removeMonitor(monitor) }
-            tutorialPracticeContext = previousContext; modalDepth -= 1
-        }
-        return NativeSettingsPanel(settings: current,tier: tier,practice: practice).run()
+        beginSettingsEditor(current,practice: practice,profileID: profile.id,completion: completion)
     }
     @objc func playGame() { playGame(custom: false) }
     @objc func playCustomGame() { playGame(custom: true) }
-    func playGame(custom: Bool) {
+    func playGame(custom: Bool,discardSaved: Bool = false) {
+        guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil else { return }
         save()
         guard let profile = selectedProfile else { choosePlayer(); return }
         do {
             let saved = try saves.load(profile.id)
-            if let saved, saved.outcome == "active" {
-                modalDepth += 1
-                let alert = NSAlert(); alert.messageText = "You have an unfinished game."
-                alert.addButton(withTitle: "Continue Game"); alert.addButton(withTitle: "New Game"); alert.addButton(withTitle: "Cancel")
-                let choice = alert.runModal(); modalDepth -= 1
-                if choice == .alertFirstButtonReturn { practice = nil; begin(); return }
-                if choice != .alertSecondButtonReturn { return }
+            if !discardSaved,let saved,saved.outcome == "active" {
+                showConfirmation(.continueSaved) { [weak self] choice in
+                    guard let self else { return }
+                    if choice == 1 { self.practice = nil;self.begin() }
+                    else if choice == 0 { self.playGame(custom: custom,discardSaved: true) }
+                }
+                return
             }
-            var settings: OriginalGameSettings?
             if custom {
-                guard let result = configure(practice: false) else { return }; settings = result
-                try profileStore.saveSettings(profileID: profile.id,settings: result,practice: false)
-            }
-            var previous = session?.profileID == profile.id && !referenceMode ? session?.generator : saved?.generator
-            let seed: Int
-            if previous != nil { seed = previous!.nextRandomValue() }
-            else { seed = Int.random(in: 0...65535) }
-            let messages = session?.profileID == profile.id && !referenceMode ? session?.newUserMessages : menuMessages
-            let roomCamera = session?.profileID == profile.id && !referenceMode ? session?.roomCamera : saved?.roomCamera
-            session = NativeSession(profileID: profile.id,seed: UInt32(seed),lifetimePoints: profile.lifetimePoints ?? 0,settings: settings,previousGenerator: previous,previousRoomCamera: roomCamera)
-            session.newUserMessages = messages ?? menuMessages
-            referenceMode = false; practice = nil; screen = .world; held.removeAll(); status = ""
-            save(); needsDisplay = true
+                configure(practice: false) { [weak self] result in
+                    guard let self,let result else { return }
+                    do {
+                        try self.profileStore.saveSettings(profileID: profile.id,settings: result,practice: false)
+                        self.startNewGame(profile: profile,saved: saved,settings: result)
+                    } catch { self.present(error) }
+                }
+            } else { startNewGame(profile: profile,saved: saved,settings: nil) }
         } catch { present(error) }
     }
+    func startNewGame(profile: NativeProfile,saved: NativeSession?,settings: OriginalGameSettings?) {
+        var previous = session?.profileID == profile.id && !referenceMode ? session?.generator : saved?.generator
+        let seed = previous != nil ? previous!.nextRandomValue() : Int.random(in: 0...65535)
+        let messages = session?.profileID == profile.id && !referenceMode ? session?.newUserMessages : menuMessages
+        let roomCamera = session?.profileID == profile.id && !referenceMode ? session?.roomCamera : saved?.roomCamera
+        session = NativeSession(profileID: profile.id,seed: UInt32(seed),lifetimePoints: profile.lifetimePoints ?? 0,settings: settings,previousGenerator: previous,previousRoomCamera: roomCamera)
+        session.newUserMessages = messages ?? menuMessages
+        session.calculatorEnabled = menuCalculatorEnabled
+        referenceMode = false;practice = nil;screen = .world;held.removeAll();status = ""
+        save();needsDisplay = true
+    }
     @objc func startPractice() {
+        guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil else { return }
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
-        save()
-        preparePracticeMessages()
-        guard let profile = selectedProfile, let settings = configure(practice: true) else { return }
-        do {
-            try profileStore.saveSettings(profileID: profile.id,settings: settings,practice: true)
-            try launchPractice(settings: settings,seed: UInt32.random(in: 0...65535))
-        } catch { present(error) }
+        save();preparePracticeMessages()
+        guard let profile = selectedProfile else { choosePlayer();return }
+        configure(practice: true) { [weak self] result in
+            guard let self,let result else { return }
+            do {
+                try self.profileStore.saveSettings(profileID: profile.id,settings: result,practice: true)
+                try self.launchPractice(settings: result,seed: UInt32.random(in: 0...65535))
+            } catch { self.present(error) }
+        }
     }
     func launchPractice(settings: OriginalGameSettings,seed: UInt32) throws {
         // Practice has its own stream and counters. The suspended adventure
@@ -172,31 +114,6 @@ extension NativeGameView {
         soundEnabled = enabled; needsDisplay = true
     }
     @objc func toggleSound() { setSoundEnabled(!soundEnabled) }
-    @objc func showOptions() {
-        guard session?.activeZap == nil, session?.activeFountain == nil, screen != .ending else { return }
-        modalDepth += 1; defer { modalDepth -= 1 }
-        let alert = NSAlert(); alert.messageText = "Options"
-        let container = NSView(frame: NSRect(x: 0,y: 0,width: 260,height: 128))
-        let messages = NSButton(title: "New User Messages…",target: self,action: #selector(showNewUserOptions))
-        messages.frame = NSRect(x: 0,y: 100,width: 260,height: 26); messages.isHidden = screen == .practice; container.addSubview(messages)
-        let music = NSButton(checkboxWithTitle: "Music",target: nil,action: nil)
-        music.frame = NSRect(x: 0,y: 68,width: 260,height: 26); music.state = musicEnabled ? .on : .off
-        container.addSubview(music)
-        let sound = NSButton(checkboxWithTitle: "Sound",target: nil,action: nil)
-        sound.frame = NSRect(x: 0,y: 34,width: 260,height: 26); sound.state = soundEnabled ? .on : .off
-        let calculator = NSButton(checkboxWithTitle: "Use Calculator",target: nil,action: nil)
-        calculator.frame = NSRect(x: 0,y: 0,width: 260,height: 26)
-        calculator.state = session?.calculatorEnabled == false ? .off : .on; calculator.isEnabled = session != nil; calculator.isHidden = screen == .practice
-        container.addSubview(sound); container.addSubview(calculator); alert.accessoryView = container
-        alert.addButton(withTitle: "OK"); alert.addButton(withTitle: "Cancel")
-        if alert.runModal() == .alertFirstButtonReturn {
-            setMusicEnabled(music.state == .on)
-            setSoundEnabled(sound.state == .on)
-            if session != nil && usesCalculator != (calculator.state == .on) {
-                let sender = NSMenuItem(); toggleCalculator(sender)
-            }
-        }
-    }
     static let playerMenuItems = ["Regular Game","Customized Game","Customized Drill for Skill"]
     func activatePlayerMenu(_ index: Int) {
         switch index {
