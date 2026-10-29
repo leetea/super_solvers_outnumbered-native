@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 // Native infrastructure only. Original game rules are added after their evidence is recovered.
 enum VerifiedRank: String, CaseIterable, Codable {
@@ -143,8 +143,12 @@ final class NativeProfileStore {
     private(set) var document: NativeSaveFile
     static var defaultDirectory: URL {
         if let override = ProcessInfo.processInfo.environment["OUTNUMBERED_NATIVE_DATA_DIR"], !override.isEmpty { return URL(fileURLWithPath: override, isDirectory: true) }
-        return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("OutnumberedNativeReimplementation", isDirectory: true)
+        #if os(Windows)
+        let base = URL(fileURLWithPath: ProcessInfo.processInfo.environment["LOCALAPPDATA"] ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("AppData/Local").path)
+        #else
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        #endif
+        return base.appendingPathComponent("OutnumberedNativeReimplementation", isDirectory: true)
     }
     init(directory: URL) throws {
         file = directory.appendingPathComponent("profiles-v1.json")
@@ -227,6 +231,8 @@ final class NativeProfileStore {
     }
 }
 
+#if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+import AppKit
 final class ProfileController: NSViewController {
     let store: NativeProfileStore
     let picker = NSPopUpButton()
@@ -282,13 +288,19 @@ final class ProfileController: NSViewController {
         selectButton.isEnabled = !store.document.profiles.isEmpty
         if store.document.profiles.isEmpty { message.stringValue = "Create a native profile to prepare a save slot." }
     }
-    @objc private func createProfile() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    private func createProfile() {
         do {
             let profile = try store.create(name: nameField.stringValue)
             nameField.stringValue = ""; refresh(); message.stringValue = "Profile “\(profile.name)” saved. Game content is still being verified."
         } catch { message.stringValue = error.localizedDescription }
     }
-    @objc private func selectProfile() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    private func selectProfile() {
         let index = picker.indexOfSelectedItem
         guard store.document.profiles.indices.contains(index) else { return }
         do {
@@ -319,6 +331,8 @@ final class ReimplementationDelegate: NSObject, NSApplicationDelegate {
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
 }
+
+#endif
 
 func nativeInfrastructureSelfTest() throws {
     let root = FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-save-test-" + UUID().uuidString, isDirectory: true)

@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeIntegrationChecks(root: URL) throws {
     var checks = try OriginalWorld.selfChecks(resource: Data(contentsOf: root.appendingPathComponent("catalog/decoded/MOCKET.DAT.1388.bin")))

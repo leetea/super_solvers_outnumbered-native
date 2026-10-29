@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 struct NativeOptionsMenu {
     let backdrop: [UInt8]
@@ -20,7 +20,10 @@ extension OriginalConfirmation {
 }
 
 extension NativeGameView {
-    @objc func showOptions() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func showOptions() {
         guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil,!isTransitioning,
               session?.activeZap == nil,session?.activeFountain == nil,![.title,.signin,.ending,.results].contains(screen) else { return }
         if screen == .file { closeFileMenu() }
@@ -36,7 +39,7 @@ extension NativeGameView {
         guard optionsMenu != nil else { return }
         optionsMenu = nil;modalDepth -= 1;keyboard.flush();held.removeAll();needsDisplay = true
     }
-    func optionsKey(_ event: NSEvent) {
+    func optionsKey(_ event: GameInputEvent) {
         guard confirmation == nil,originalNotice == nil,optionsMenu != nil,
               event.modifierFlags.intersection([.control,.command,.option]).isEmpty else { return }
         switch event.keyCode {

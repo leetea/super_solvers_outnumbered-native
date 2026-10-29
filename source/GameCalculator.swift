@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     var usesCalculator: Bool { session.calculatorEnabled ?? true }
@@ -83,7 +83,10 @@ extension NativeGameView {
             save()
         }
     }
-    @objc func toggleCalculator(_ sender: NSMenuItem) {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func toggleCalculator(_ sender: Any?) {
         guard session != nil,originalNotice == nil,confirmation == nil,settingsEditor == nil,optionsMenu == nil,screen != .practice else { return }
         chooseCalculator(!usesCalculator)
     }

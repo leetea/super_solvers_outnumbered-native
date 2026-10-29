@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     //11b0:1559(0): Telly, player step sound, projectile, LiveWire. Context

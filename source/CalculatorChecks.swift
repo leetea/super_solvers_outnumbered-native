@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeCalculatorChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
@@ -68,7 +68,7 @@ func nativeCalculatorChecks(root: URL,output: URL) throws -> [String:Bool] {
     // Exercise real NSView key routing, including the shifted-character path
     // used by '=' and the original alternate E key.
     for (text,keyCode) in [("8",UInt16(28)),("+",UInt16(24)),("2",UInt16(19)),("=",UInt16(24))] {
-        let event = NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: keyCode)!
+        let event = GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: keyCode)!
         view.keyDown(with: event)
     }
     checks["native_equals_keyboard_event_routes_to_calculator"] = view.session.calculator?.display == "10" && view.session.calculator?.phase == .result

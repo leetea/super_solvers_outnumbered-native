@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     func prepareActivityState(_ challenge: OriginalChallenge,regenerating: Bool = false) throws {
@@ -15,11 +15,26 @@ extension NativeGameView {
         if session.activityStates == nil { session.activityStates = [:] }
         session.activityStates?[challenge.hotspot] = state
     }
-    @objc func referenceSpinner() { activityCheckpoint(id: 9120,hotspot: 3,scene: 12) }
-    @objc func referenceTelevision() { activityCheckpoint(id: 9020,hotspot: 6,scene: 14) }
-    @objc func referenceMusic() { activityCheckpoint(id: 9050,hotspot: 4,scene: 15) }
-    @objc func referenceSupplies() { activityCheckpoint(id: 9040,hotspot: 7,scene: 14) }
-    @objc func referenceJuniorQuestions() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceSpinner() { activityCheckpoint(id: 9120,hotspot: 3,scene: 12) }
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceTelevision() { activityCheckpoint(id: 9020,hotspot: 6,scene: 14) }
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceMusic() { activityCheckpoint(id: 9050,hotspot: 4,scene: 15) }
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceSupplies() { activityCheckpoint(id: 9040,hotspot: 7,scene: 14) }
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceJuniorQuestions() {
         session = NativeSession(profileID: UUID(),seed: 1,lifetimePoints: 5_000)
         session.position = NativePosition(scene: 10,playerUnit: 15,cameraUnit: 0,facing: 1)
         session.returnPosition = NativePosition(scene: 1,playerUnit: 52,cameraUnit: 38,facing: 1)

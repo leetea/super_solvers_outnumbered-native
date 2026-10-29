@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     func beginDoor(_ object: OriginalWorldObject) {

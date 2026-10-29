@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeOpeningChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:],opening = NativeOpeningPresentation()
@@ -57,7 +57,7 @@ func nativeOpeningChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["opening_two_story_pages_distinct_and_fixed_white_panel"] = firstPage != view.canvas.pixels && view.canvas.pixels[158*320+235] == 15
     view.opening.enter();view.advanceOpening(24)
     let priorPulse = view.openingLastPulse
-    view.keyDown(with: NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "x",charactersIgnoringModifiers: "x",isARepeat: false,keyCode: 7)!)
+    view.keyDown(with: GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "x",charactersIgnoringModifiers: "x",isARepeat: false,keyCode: 7)!)
     checks["opening_ignored_animation_keys_do_not_reset_real_time_clock"] = view.openingLastPulse == priorPulse
     for ticks in [0,120,320,480,1080,1559] {
         view.opening.elapsed = ticks;try view.render();let before = view.canvas.pixels;try view.render()

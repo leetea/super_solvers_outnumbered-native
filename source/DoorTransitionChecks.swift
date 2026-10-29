@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeDoorTransitionChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
@@ -21,7 +21,7 @@ func nativeDoorTransitionChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["door_original_small_front_coordinates"] = phases.filter { $0.destination && (23...26).contains($0.ordinal) }.map(\.y) == [54,58,62,66]
     checks["door_original_front_coordinates"] = phases.filter { $0.destination && (14...18).contains($0.ordinal) }.map(\.y) == [69,72,75,78,81]
     let counter = view.session.clock.counterTicks
-    let tab = NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "\t",charactersIgnoringModifiers: "\t",isARepeat: false,keyCode: 48)!
+    let tab = GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "\t",charactersIgnoringModifiers: "\t",isARepeat: false,keyCode: 48)!
     view.keyDown(with: tab)
     checks["door_blocks_decoder_input_during_sequence"] = view.screen == .world && view.session.activeDoor?.elapsedIRQTicks == 0
     view.step()

@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     func startEnding(room: Int,reason: NativeEnding.Reason? = nil) {
@@ -88,7 +88,10 @@ extension NativeGameView {
             }
         } catch { present(error) }
     }
-    @objc func referenceEnding() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceEnding() {
         session = NativeSession(profileID: UUID(),seed: 6908,lifetimePoints: 52_595)
         var checkpoint = DecoderGenerator(seed: 6908)
         session.decoder = checkpoint.makePuzzle(difficulty: 1)

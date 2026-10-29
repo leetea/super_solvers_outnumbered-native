@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 //147d:01cf,0000,006a,00b5. Original data is composed natively.
 struct OriginalRankTimeline {

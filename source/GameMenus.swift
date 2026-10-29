@@ -1,10 +1,13 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     var selectedProfile: NativeProfile? {
         profileStore.document.profiles.first { $0.id == profileStore.document.selectedProfileID }
     }
-    @objc func showPlayerMenu() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func showPlayerMenu() {
         guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil else { return }
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
@@ -16,7 +19,10 @@ extension NativeGameView {
         practice = nil; screen = .menu; menuSelection = 0; needsDisplay = true
         if selectedProfile == nil { choosePlayer() }
     }
-    @objc func choosePlayer() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func choosePlayer() {
         guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil else { return }
         if isTransitioning || screen == .ending { return }
         if screen == .help { closeHelp() }
@@ -34,8 +40,14 @@ extension NativeGameView {
         let current = (practice ? profile.practiceSettings : profile.customGameSettings) ?? .defaults(tier: tier)
         beginSettingsEditor(current,practice: practice,profileID: profile.id,completion: completion)
     }
-    @objc func playGame() { playGame(custom: false) }
-    @objc func playCustomGame() { playGame(custom: true) }
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func playGame() { playGame(custom: false) }
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func playCustomGame() { playGame(custom: true) }
     func playGame(custom: Bool,discardSaved: Bool = false) {
         guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil else { return }
         save()
@@ -72,7 +84,10 @@ extension NativeGameView {
         referenceMode = false;practice = nil;screen = .world;held.removeAll();status = ""
         save();needsDisplay = true
     }
-    @objc func startPractice() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func startPractice() {
         guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil else { return }
         if screen == .help { closeHelp() }
         if screen == .scores { closeScores() }
@@ -93,7 +108,7 @@ extension NativeGameView {
         practiceIRQ = 0; preparePracticeMessages()
         held.removeAll(); screen = .practice; needsDisplay = true
     }
-    func practiceKey(_ event: NSEvent) {
+    func practiceKey(_ event: GameInputEvent) {
         guard practice != nil else { return }
         do {
             if event.keyCode == 53 { showPlayerMenu(); return }
@@ -113,7 +128,10 @@ extension NativeGameView {
         if !enabled { sound?.stop(); lastSoundIndex = nil }
         soundEnabled = enabled; needsDisplay = true
     }
-    @objc func toggleSound() { setSoundEnabled(!soundEnabled) }
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func toggleSound() { setSoundEnabled(!soundEnabled) }
     static let playerMenuItems = ["Regular Game","Customized Game","Customized Drill for Skill"]
     func activatePlayerMenu(_ index: Int) {
         switch index {

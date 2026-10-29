@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 //Decoded original DS4ecc/50ca records. Data only; no original CPU code.
 struct OriginalSettingsControl {
@@ -165,7 +165,7 @@ extension NativeGameView {
             var state = tutorialState;state.acknowledge(settingsEditor!.model.practice ? 16 : 15);tutorialState = state
         }
     }
-    func settingsKey(_ event: NSEvent) {
+    func settingsKey(_ event: GameInputEvent) {
         guard settingsEditor != nil else { return }
         cancelSettingsGuidance()
         guard event.modifierFlags.intersection([.control,.command,.option]).isEmpty else { return }

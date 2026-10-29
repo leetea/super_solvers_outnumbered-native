@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeActivityPresentationChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
@@ -55,7 +55,7 @@ func nativeActivityPresentationChecks(root: URL,output: URL) throws -> [String:B
     let telly = try stable.encode(view.session.telly),wire = try stable.encode(view.session.liveWire),camera = try stable.encode(view.session.roomCamera)
     checks["activity_open_runs_native_timeline_and_defers_answer_panel"] = view.isActivityPresenting && view.isTransitioning && view.session.valid && view.session.activityPresentation?.elapsedIRQTicks == 0
     view.questionCharacter("9");view.submitQuestion();view.calculatorKey(.digit(2))
-    if let escape = NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "\u{1b}",charactersIgnoringModifiers: "\u{1b}",isARepeat: false,keyCode: 53) { view.keyDown(with: escape) }
+    if let escape = GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "\u{1b}",charactersIgnoringModifiers: "\u{1b}",isARepeat: false,keyCode: 53) { view.keyDown(with: escape) }
     checks["activity_blocks_early_answers_calculator_and_escape"] = view.session.attempts[8]?.input == "" && view.session.attempts[8]?.wrongAnswers == 0 && view.screen == .question && view.session.score == 0
     try view.render();try view.canvas.writePNG(to: output.appendingPathComponent("native-cartoon-plot-start.png"))
     checks["activity_question_side_stays_black_during_source_intro"] = (19..<158).allSatisfy { y in (188..<312).allSatisfy { x in view.canvas.pixels[y*320+x] == 1 } }

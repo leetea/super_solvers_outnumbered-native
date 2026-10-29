@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeCanvas {
     func restoreEndingRect(_ source: [UInt8],x: Int,y: Int,right: Int,bottom: Int) {

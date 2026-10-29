@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     func closeHelp() {
@@ -8,7 +8,7 @@ extension NativeGameView {
         if helpPausesAdventure { session?.clock.resume() }
         helpPausesAdventure = false; helpBrowser = nil; needsDisplay = true
     }
-    func helpKey(_ event: NSEvent) {
+    func helpKey(_ event: GameInputEvent) {
         guard var browser = helpBrowser else { return }
         if browser.topic == nil {
             if event.keyCode == 123 { closeHelp();showOptions();return }

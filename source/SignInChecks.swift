@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeSignInChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:],name = OriginalMemberName()
@@ -66,7 +66,7 @@ func nativeSignInChecks(root: URL,output: URL) throws -> [String:Bool] {
     view.fileSelection = 0;view.activateFileItem()
     checks["file_scores_return_to_original_screen"] = view.screen == .scores && view.scoreReturn == .question
     view.closeScores();checks["file_scores_close_preserves_parent_pause"] = view.screen == .question && view.session.clock.pauseDepth == 1
-    view.showFileMenu();view.fileSelection = 2;view.activateFileItem();view.keyDown(with: NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "y",charactersIgnoringModifiers: "y",isARepeat: false,keyCode: 16)!);try view.render()
+    view.showFileMenu();view.fileSelection = 2;view.activateFileItem();view.keyDown(with: GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "y",charactersIgnoringModifiers: "y",isARepeat: false,keyCode: 16)!);try view.render()
     checks["file_play_another_opens_original_three_choice_menu"] = view.screen == .menu && NativeGameView.playerMenuItems == ["Regular Game","Customized Game","Customized Drill for Skill"]
     try view.canvas.writePNG(to: output.appendingPathComponent("native-play-choice-menu.png"))
     view.activatePlayerMenu(-1)

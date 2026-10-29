@@ -1,0 +1,51 @@
+name: Windows native port
+on:
+  push:
+    branches: [windows-native-port]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Install official Swift 6.4.1 toolchain
+        shell: pwsh
+        run: |
+          $url='https://download.swift.org/swift-6.4.1-release/windows10/swift-6.4.1-RELEASE/swift-6.4.1-RELEASE-windows10.exe'
+          Invoke-WebRequest $url -OutFile "$env:TEMP/swift-installer.exe"
+          $process=Start-Process "$env:TEMP/swift-installer.exe" -ArgumentList '-quiet','-norestart' -Wait -PassThru
+          if ($process.ExitCode -notin @(0,3010)) { throw "Swift installer: $($process.ExitCode)" }
+          $machine=[Environment]::GetEnvironmentVariables('Machine')
+          foreach($key in $machine.Keys) { if ($key -ne 'Path') { Set-Item "Env:$key" $machine[$key] } }
+          $env:Path=[Environment]::GetEnvironmentVariable('Path','Machine')+';'+$env:Path
+          Get-ChildItem Env: | Where-Object Name -match 'SDKROOT|SWIFT' | ForEach-Object { "$($_.Name)=$($_.Value)" >> $env:GITHUB_ENV }
+          (Split-Path (Get-Command swiftc).Source) >> $env:GITHUB_PATH
+          swiftc --version
+      - name: Obtain pinned official SDL development package
+        shell: pwsh
+        run: |
+          $url='https://github.com/libsdl-org/SDL/releases/download/release-3.4.18/SDL3-devel-3.4.18-VC.zip'
+          Invoke-WebRequest $url -OutFile "$env:TEMP/SDL.zip"
+          Get-FileHash "$env:TEMP/SDL.zip" | Format-List
+          Expand-Archive "$env:TEMP/SDL.zip" "$env:TEMP/SDL" -Force
+      - name: Build and verify native x64 package
+        shell: pwsh
+        env:
+          OUTNUMBERED_CHECK_OUTPUT: ${{ runner.temp }}/outnumbered-windows-checks
+        run: |
+          $sdl=Get-ChildItem "$env:TEMP/SDL" -Directory | Select-Object -First 1
+          ./windows/build.ps1 -SDLRoot $sdl.FullName
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-native-build-evidence
+          path: |
+            build/Outnumbered-Windows-x64.zip
+            build/windows-x64/*.json
+            ${{ runner.temp }}/outnumbered-windows-checks

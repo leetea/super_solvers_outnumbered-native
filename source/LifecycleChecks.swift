@@ -1,9 +1,9 @@
-import Cocoa
+import Foundation
 
 func nativeLifecycleChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
-    func event(_ key: UInt16,_ text: String = "") -> NSEvent {
-        NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: key)!
+    func event(_ key: UInt16,_ text: String = "") -> GameInputEvent {
+        GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: key)!
     }
     let directory = output.appendingPathComponent("lifecycle-players-"+UUID().uuidString)
     let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)

@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 //1862:0305: type2 waits for Enter/Escape; type7 returns to its caller,
 //which reads one key (the calculator switch accepts Enter only).
@@ -31,7 +31,7 @@ extension NativeGameView {
             modalDepth += 1;keyboard.flush();held.removeAll();needsDisplay = true
         } catch { present(error) }
     }
-    func originalNoticeKey(_ event: NSEvent) {
+    func originalNoticeKey(_ event: GameInputEvent) {
         guard let notice = originalNotice,event.modifierFlags.intersection([.control,.command,.option]).isEmpty,
               notice.original.accepts(event.keyCode) else { return }
         originalNotice = nil;modalDepth -= 1;keyboard.flush();held.removeAll()

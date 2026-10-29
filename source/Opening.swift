@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 //Original1a4e:00b4, DS:3ae0..3ed0. Data translated; no DOS code executes.
 enum OriginalOpening {
@@ -126,7 +126,7 @@ extension NativeGameView {
     func resetOpening() {
         opening = NativeOpeningPresentation();openingLastPulse = ProcessInfo.processInfo.systemUptime;openingFraction = 0
     }
-    func openingKey(_ event: NSEvent) {
+    func openingKey(_ event: GameInputEvent) {
         if event.keyCode == 36 && !event.isARepeat && opening.showingPage { opening.enter() }
         else if event.keyCode == 53 && opening.showingPage {
             confirmNativeExit()

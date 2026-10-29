@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeHelpChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
@@ -29,7 +29,7 @@ func nativeHelpChecks(root: URL,output: URL) throws -> [String:Bool] {
     let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)
     view.timer?.invalidate(); view.zapTimer?.invalidate(); view.soundEnabled = false
     func key(_ code: UInt16) {
-        view.keyDown(with: NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "",charactersIgnoringModifiers: "",isARepeat: false,keyCode: code)!)
+        view.keyDown(with: GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "",charactersIgnoringModifiers: "",isARepeat: false,keyCode: code)!)
     }
     key(122)
     checks["native_f1_help_available_before_player_session"] = view.screen == .help && view.helpReturn == .title && view.session == nil

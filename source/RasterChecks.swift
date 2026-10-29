@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 //Independent10684→11168 oracle: packed nibbles become four bitplanes;
 //their OR is the write mask, while flag20h reverses bit order.

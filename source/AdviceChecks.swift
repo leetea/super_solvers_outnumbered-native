@@ -1,9 +1,9 @@
-import Cocoa
+import Foundation
 
 func nativeAdviceChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
-    func key(_ code: UInt16,_ text: String = "",shift: Bool = false) -> NSEvent {
-        NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: shift ? [.shift] : [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: code)!
+    func key(_ code: UInt16,_ text: String = "",shift: Bool = false) -> GameInputEvent {
+        GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: shift ? [.shift] : [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: code)!
     }
     let directory = output.appendingPathComponent("advice-players-"+UUID().uuidString)
     let view = try NativeGameView(root: root,saveDirectory: directory,automaticallyPresentMessages: false)

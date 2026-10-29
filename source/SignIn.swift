@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 struct OriginalMemberName {
     private(set) var text = ""
@@ -71,7 +71,7 @@ extension NativeGameView {
             signIn.name = OriginalMemberName()
         }
     }
-    func signInKey(_ event: NSEvent) {
+    func signInKey(_ event: GameInputEvent) {
         defer { signIn.blinkIRQ = 0;needsDisplay = true }
         if signIn.error != nil {
             if [36,53].contains(event.keyCode) { signIn.error = nil;signIn.mode = orderedMembers.isEmpty ? .newName : .select;signIn.selection = orderedMembers.count }
@@ -118,18 +118,15 @@ extension NativeGameView {
         signIn = NativeMemberSignIn(memberCount: orderedMembers.count)
         needsDisplay = true
     }
-    @objc func restoreMember() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func restoreMember() {
         guard decoderPanel == nil,confirmation == nil,settingsEditor == nil,originalNotice == nil,optionsMenu == nil,!isTransitioning,screen != .ending else { return }
         let members = profileStore.document.archivedProfiles ?? []
-        let alert = NSAlert();alert.messageText = "Restore Removed Member"
-        guard !members.isEmpty else { alert.informativeText = "There are no removed members.";alert.runModal();return }
-        let picker = NSPopUpButton(frame: NSRect(x: 0,y: 0,width: 260,height: 28));picker.addItems(withTitles: members.map(\.name))
-        alert.accessoryView = picker;alert.addButton(withTitle: "Restore");alert.addButton(withTitle: "Cancel")
-        modalDepth += 1;defer { modalDepth -= 1 }
-        if alert.runModal() == .alertFirstButtonReturn {
-            do { try profileStore.restore(members[picker.indexOfSelectedItem].id);choosePlayer() } catch { present(error) }
-        }
+        PlatformServices.restoreMember(self,members)
     }
+
     func confirmNativeExit() {
         let saving = session != nil && !referenceMode && ![.title,.signin,.practice].contains(screen) && !(screen == .file && fileReturn == .practice)
         showConfirmation(.exit(saving: saving)) { [weak self] choice in
@@ -181,7 +178,10 @@ extension NativeGameView {
     var fileItems: [String] {
         fileReturn == .practice ? ["Play Another Game","Start New Player","Exit the Program"] : ["Lifetime Scores","High Game Scores","Play Another Game","Start New Player","Exit and Save"]
     }
-    @objc func showFileMenu() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func showFileMenu() {
         guard decoderPanel == nil,originalNotice == nil,confirmation == nil,settingsEditor == nil,!isTransitioning,session?.activeZap == nil,session?.activeFountain == nil,screen != .ending,screen != .results,screen != .signin else { return }
         if optionsMenu != nil { closeOptions() }
         if screen == .file { return }
@@ -190,7 +190,7 @@ extension NativeGameView {
         keyboard.flush();save();fileReturn = screen;fileSelection = 0;screen = .file;held.removeAll();needsDisplay = true
     }
     func closeFileMenu() { screen = fileReturn;held.removeAll();needsDisplay = true }
-    func fileKey(_ event: NSEvent) {
+    func fileKey(_ event: GameInputEvent) {
         if event.keyCode == 53 { closeFileMenu();return }
         if event.keyCode == 120 { return }
         if event.keyCode == 123 { closeFileMenu();toggleHelp();return }

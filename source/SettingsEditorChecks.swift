@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeSettingsEditorChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
@@ -60,7 +60,7 @@ func nativeSettingsEditorChecks(root: URL,output: URL) throws -> [String:Bool] {
     view.configure(practice: false) { result = $0 }
     for _ in 0..<40 { view.step() }
     checks["settings_editor_freezes_adventure_rng_score_clock_and_actors"] = try view.settingsEditor != nil && view.modalDepth == 1 && encoder.encode(view.session!) == adventure
-    func event(_ code: UInt16) -> NSEvent { NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "",charactersIgnoringModifiers: "",isARepeat: false,keyCode: code)! }
+    func event(_ code: UInt16) -> GameInputEvent { GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "",charactersIgnoringModifiers: "",isARepeat: false,keyCode: code)! }
     view.settingsEditor!.model.phase = 0;view.keyDown(with: event(123));view.keyDown(with: event(124));view.step();view.step()
     checks["settings_keyboard_waits_until_original_idle_poll"] = view.settingsEditor!.model.focus == 28
     view.step()

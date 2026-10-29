@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     var tutorialState: NativeNewUserMessages {
@@ -70,7 +70,10 @@ extension NativeGameView {
     func setNewUserMessages(_ enabled: Bool) {
         var state = tutorialState; state.chooseEnabled(enabled); tutorialState = state; save()
     }
-    @objc func showNewUserOptions() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func showNewUserOptions() {
         guard decoderPanel == nil,screen != .practice,confirmation == nil,originalNotice == nil,settingsEditor == nil else { return }
         showConfirmation(.messages(tutorialState.enabled)) { [weak self] choice in
             if choice >= 0 { self?.setNewUserMessages(choice == 1) }

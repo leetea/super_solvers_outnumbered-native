@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeKeyboardChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:],q = OriginalKeyboardQueue<Int>()
@@ -26,7 +26,7 @@ func nativeKeyboardChecks(root: URL,output: URL) throws -> [String:Bool] {
     let view = try NativeGameView(root: root,saveDirectory: dir,automaticallyPresentMessages: false)
     view.timer?.invalidate();view.zapTimer?.invalidate();view.soundEnabled = false
     func key(_ code: UInt16,_ text: String = "",repeatKey: Bool = false,up: Bool = false) {
-        let event = NSEvent.keyEvent(with: up ? .keyUp : .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: repeatKey,keyCode: code)!
+        let event = GameInputEvent.keyEvent(with: up ? .keyUp : .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: repeatKey,keyCode: code)!
         if up { view.keyUp(with: event) } else { view.keyDown(with: event) }
     }
     func reset() {
@@ -42,7 +42,7 @@ func nativeKeyboardChecks(root: URL,output: URL) throws -> [String:Bool] {
     for code: UInt16 in [123,124,126,49] {
         reset();key(code);key(code,up: true)
         //In menu/return mode these make codes can still be in the BIOS queue.
-        view.keyboard.append(NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "",charactersIgnoringModifiers: "",isARepeat: false,keyCode: code)!)
+        view.keyboard.append(GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "",charactersIgnoringModifiers: "",isARepeat: false,keyCode: code)!)
         view.step()
         releasedMovementIgnored = releasedMovementIgnored && view.session.position.playerUnit == 90 && view.playerMotion.settled && view.session.activeZap == nil && view.held.isEmpty
     }

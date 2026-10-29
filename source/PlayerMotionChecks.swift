@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativePlayerMotionChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]

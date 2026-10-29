@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 // Native data/state only. No BIOS or original interrupt code executes.
 struct OriginalKeyboardQueue<Element> {
@@ -47,7 +47,7 @@ struct OriginalHeldKeyboard {
 }
 
 extension NativeGameView {
-    override func keyDown(with event: NSEvent) {
+    func keyDown(with event: GameInputEvent) {
         physicalKeyboard.press(event.keyCode,repeatKey: event.isARepeat)
         if originalNotice != nil { originalNoticeKey(event);return }
         if confirmation != nil { confirmationKey(event);return }
@@ -72,10 +72,10 @@ extension NativeGameView {
         if isActivityPresenting { return }
         handleKeyDown(event)
     }
-    override func keyUp(with event: NSEvent) {
+    func keyUp(with event: GameInputEvent) {
         physicalKeyboard.release(event.keyCode);held.remove(event.keyCode)
     }
-    override func resignFirstResponder() -> Bool {
+    func resignFirstResponder() -> Bool {
         //macOS focus loss has no DOS equivalent; avoid stuck held keys.
         physicalKeyboard = OriginalHeldKeyboard();keyboard.flush();held.removeAll();return true
     }

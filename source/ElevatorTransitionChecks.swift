@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeElevatorTransitionChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
@@ -24,7 +24,7 @@ func nativeElevatorTransitionChecks(root: URL,output: URL) throws -> [String:Boo
         view.advanceElevator(irqTicks: travelStart)
         checks["elevator_sound_and_position_at_travel_\(hall)"] = view.session.activeElevator?.travelSoundStarted == true && view.session.activeElevator?.destinationApplied == false && view.session.position.scene == hall
         try view.render();try view.canvas.writePNG(to: output.appendingPathComponent("native-elevator-\(hall)-scroll-first.png"))
-        let menu = NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "\t",charactersIgnoringModifiers: "\t",isARepeat: false,keyCode: 48)!
+        let menu = GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "\t",charactersIgnoringModifiers: "\t",isARepeat: false,keyCode: 48)!
         view.keyDown(with: menu)
         checks["elevator_decoder_locked_during_travel_\(hall)"] = view.screen == .world
         let encoder = JSONEncoder();encoder.outputFormatting = .sortedKeys

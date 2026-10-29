@@ -1,9 +1,9 @@
-import Cocoa
+import Foundation
 
 func nativeOptionsChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
-    func event(_ code: UInt16,_ text: String = "") -> NSEvent {
-        NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: code)!
+    func event(_ code: UInt16,_ text: String = "") -> GameInputEvent {
+        GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: code)!
     }
     let directory = output.appendingPathComponent("options-players-"+UUID().uuidString)
     let view = try NativeGameView(root: root,saveDirectory: directory)

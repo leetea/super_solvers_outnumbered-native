@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 func nativeDrillPresentationChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
@@ -65,7 +65,7 @@ func nativeDrillPresentationChecks(root: URL,output: URL) throws -> [String:Bool
     try view.advanceDrill(irqTicks: 1)
     checks["drill_rejection_muted_sound_gate_and_full_480_IRQ_wait_after_intro"] = view.lastSoundIndex == nil && view.session.activeDrill?.rewardApplied == true && view.session.activeDrill?.resultTicksRemaining == 480 && view.session.score == 600 && view.session.valid
     try view.render();try view.canvas.writePNG(to: output.appendingPathComponent("native-telly-no-code.png"))
-    if let event = NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "\r",charactersIgnoringModifiers: "\r",isARepeat: false,keyCode: 36) { view.keyDown(with: event) }
+    if let event = GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: "\r",charactersIgnoringModifiers: "\r",isARepeat: false,keyCode: 36) { view.keyDown(with: event) }
     checks["drill_return_does_not_skip_source_result_wait"] = view.session.activeDrill?.resultTicksRemaining == 480 && view.screen == .drill
     try view.advanceDrill(irqTicks: 479)
     checks["drill_rejection_last_IRQ_preserved"] = view.session.activeDrill?.resultTicksRemaining == 1

@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     var isTransitioning: Bool { (screen == .title && opening.animating) || session?.activeDoor != nil || session?.activeElevator != nil || session?.activeCollision != nil || isActivityPresenting }

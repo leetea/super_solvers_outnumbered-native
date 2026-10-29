@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 //Original DS data; no DOS code is loaded or executed.
 enum OriginalDecoderDialog {

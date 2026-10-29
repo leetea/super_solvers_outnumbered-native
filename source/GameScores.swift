@@ -1,8 +1,14 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
-    @objc func showLifetimeScores() { showScores(highGames: false) }
-    @objc func showHighGameScores() { showScores(highGames: true) }
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func showLifetimeScores() { showScores(highGames: false) }
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func showHighGameScores() { showScores(highGames: true) }
     func showScores(highGames: Bool) {
         guard screen != .ending,session?.activeZap == nil,session?.activeFountain == nil else { return }
         if screen == .help { closeHelp() }
@@ -20,7 +26,7 @@ extension NativeGameView {
         if scoresPauseAdventure { session?.clock.resume() }
         scoresPauseAdventure = false; needsDisplay = true
     }
-    func scoresKey(_ event: NSEvent) {
+    func scoresKey(_ event: GameInputEvent) {
         if event.keyCode == 53 || event.keyCode == 36 || event.keyCode == 76 { closeScores(); return }
         guard !scoresShowHighGames else { return }
         let last = max(0,(profileStore.document.profiles.count-1)/10)

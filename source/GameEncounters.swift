@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     var playerScreenUnit: Int { session.position.scene < 10 ? session.position.playerUnit-session.position.cameraUnit : session.position.playerUnit }
@@ -164,7 +164,10 @@ extension NativeGameView {
         guard session.position.scene >= 10, let wire = session.liveWire, wire.collisionEnabled, let sprite = wire.sprite else { return }
         canvas.draw(try content.bitmap(String(format: "ROOMS.GRA.%03d",sprite-10000)),x: wire.xUnits*8,y: OriginalLiveWire.yPixels,transparent: true,flipped: wire.renderMirrored)
     }
-    @objc func referenceEnergy() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceEnergy() {
         session = NativeSession(profileID: UUID(),seed: 1)
         session.energyMachineSlot = 6
         let object = world.objects(scene: 1,energyMachineSlot: 6)[2]
@@ -172,7 +175,10 @@ extension NativeGameView {
         session.energy = 10; session.pendingRecharge = 4
         referenceMode = true; screen = .world; held.removeAll(); status = "Up to recharge"; needsDisplay = true
     }
-    @objc func referenceLiveWire() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceLiveWire() {
         session = NativeSession(profileID: UUID(),seed: 1)
         session.position = NativePosition(scene: 10,playerUnit: 12,cameraUnit: 0,facing: 1)
         session.returnPosition = NativePosition(scene: 1,playerUnit: 52,cameraUnit: 38,facing: 1)
@@ -188,7 +194,10 @@ extension NativeGameView {
             try advanceDrill(irqTicks: 0);save()
         } catch { present(error) }
     }
-    @objc func referenceDrill() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceDrill() {
         // Selected native checkpoint seed matches three observed symbols and
         // the Equipment hideout; it is not an inferred historical DOS seed.
         session = NativeSession(profileID: UUID(),seed: 6908,lifetimePoints: 30_000)

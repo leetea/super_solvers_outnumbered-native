@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 extension NativeGameView {
     var isActivityPresenting: Bool { session?.activityPresentation != nil }

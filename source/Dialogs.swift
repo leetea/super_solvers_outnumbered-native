@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 struct OriginalConfirmation {
     let text: String
@@ -86,7 +86,7 @@ extension NativeGameView {
         if screen == .title { opening.restartWait();openingLastPulse = ProcessInfo.processInfo.systemUptime;openingFraction = 0 }
         current.completion(choice);needsDisplay = true
     }
-    func confirmationKey(_ event: NSEvent) {
+    func confirmationKey(_ event: GameInputEvent) {
         guard confirmation != nil else { return }
         guard event.modifierFlags.intersection([.control,.command,.option]).isEmpty else { return }
         if event.keyCode == 48 && event.modifierFlags.contains(.shift) { return }

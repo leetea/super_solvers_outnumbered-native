@@ -1,9 +1,9 @@
-import Cocoa
+import Foundation
 
 func nativeEndingPresentationChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
-    func key(_ code: UInt16,_ text: String = "") -> NSEvent {
-        NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: code)!
+    func key(_ code: UInt16,_ text: String = "") -> GameInputEvent {
+        GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: code)!
     }
     let data = try JSONDecoder().decode(OriginalEndingData.self,from: Data(contentsOf: root.appendingPathComponent("ending-sequences.json")))
     let rank = OriginalRankTimeline(lifetime: 64275,data: data)

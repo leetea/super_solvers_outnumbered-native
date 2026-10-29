@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 struct NativeDecoderPanel {
     enum Mode { case rule(DecoderMatchRule), decision(Int,OriginalConfirmation) }
@@ -17,7 +17,7 @@ extension NativeGameView {
         guard screen == .decoder else { return }
         screen = .world;session.clock.resume();keyboard.flush();held.removeAll();save();needsDisplay = true
     }
-    func decoderKey(_ event: NSEvent) {
+    func decoderKey(_ event: GameInputEvent) {
         guard event.modifierFlags.intersection([.control,.command,.option]).isEmpty else { return }
         decoderFooterBlank = false //07de restores the saved footer before dispatching input.
         switch event.keyCode {
@@ -74,7 +74,7 @@ extension NativeGameView {
         }
         needsDisplay = true
     }
-    func decoderPanelKey(_ event: NSEvent) {
+    func decoderPanelKey(_ event: GameInputEvent) {
         guard let panel = decoderPanel,event.modifierFlags.intersection([.control,.command,.option]).isEmpty else { return }
         switch panel.mode {
         case .rule:

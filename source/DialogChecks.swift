@@ -1,9 +1,9 @@
-import Cocoa
+import Foundation
 
 func nativeDialogChecks(root: URL,output: URL) throws -> [String:Bool] {
     var checks: [String:Bool] = [:]
-    func event(_ code: UInt16,_ text: String = "") -> NSEvent {
-        NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: code)!
+    func event(_ code: UInt16,_ text: String = "") -> GameInputEvent {
+        GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: text,charactersIgnoringModifiers: text,isARepeat: false,keyCode: code)!
     }
     let font = try OriginalContent(root: root).font("MOCKET.DAT.1393")
     var dialog = OriginalConfirmation.exit(saving: false)
@@ -47,12 +47,12 @@ func nativeDialogChecks(root: URL,output: URL) throws -> [String:Bool] {
     view.keyDown(with: event(45,"n"))
     checks["dialog_No_restores_world_without_exit_or_save_changes"] = try view.confirmation == nil && view.modalDepth == 0 && exits == 0 && (try encoder.encode(view.session!)) == snapshot
     view.confirmNativeExit()
-    for flags: NSEvent.ModifierFlags in [.control,.option,.command] {
-        let modified = NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: flags,timestamp: 0,windowNumber: 0,context: nil,characters: "y",charactersIgnoringModifiers: "y",isARepeat: false,keyCode: 16)!
+    for flags: GameInputEvent.ModifierFlags in [.control,.option,.command] {
+        let modified = GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: flags,timestamp: 0,windowNumber: 0,context: nil,characters: "y",charactersIgnoringModifiers: "y",isARepeat: false,keyCode: 16)!
         view.keyDown(with: modified)
     }
     checks["dialog_modifier_Y_cannot_silently_confirm_exit"] = exits == 0 && view.confirmation != nil && view.confirmation?.original.selection == 0
-    let shiftedTab = NSEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [.shift],timestamp: 0,windowNumber: 0,context: nil,characters: "\t",charactersIgnoringModifiers: "\t",isARepeat: false,keyCode: 48)!
+    let shiftedTab = GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [.shift],timestamp: 0,windowNumber: 0,context: nil,characters: "\t",charactersIgnoringModifiers: "\t",isARepeat: false,keyCode: 48)!
     view.keyDown(with: shiftedTab)
     checks["dialog_original_shift_Tab_scan_not_plain_Tab"] = view.confirmation?.original.selection == 0
     view.keyDown(with: event(16,"y"))

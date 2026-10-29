@@ -1,4 +1,4 @@
-import Cocoa
+import Foundation
 
 enum ContentError: Error, LocalizedError {
     case invalid(String)
@@ -144,16 +144,6 @@ final class NativeCanvas {
         }
         return top + lineHeight
     }
-    func representation() throws -> NSBitmapImageRep {
-        guard let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: Self.width, pixelsHigh: Self.height, bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: Self.width*4, bitsPerPixel: 32), let data = rep.bitmapData else { throw ContentError.invalid("Native bitmap allocation failed") }
-        for i in pixels.indices {
-            let color = Self.palette[Int(pixels[i])]
-            data[i*4] = color.0; data[i*4+1] = color.1; data[i*4+2] = color.2; data[i*4+3] = 255
-        }
-        return rep
-    }
-    func writePNG(to url: URL) throws {
-        guard let data = try representation().representation(using: .png, properties: [:]) else { throw ContentError.invalid("Native PNG encoding failed") }
-        try data.write(to: url)
-    }
+    func representation() throws -> RasterImage { RasterImage(pixels: pixels, palette: Self.palette) }
+    func writePNG(to url: URL) throws { try representation().png().write(to:url) }
 }

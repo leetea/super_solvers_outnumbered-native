@@ -1,6 +1,9 @@
-import Cocoa
+import Foundation
 
-final class NativeGameView: NSView, NSMenuItemValidation {
+final class NativeGameView: NSObject {
+    var needsDisplay = true
+    var bounds = GameViewport(width:320,height:200)
+    func convert(_ point: GamePoint, from: Int?) -> GamePoint { point }
     enum Screen { case title, signin, file, menu, practice, world, question, drill, decoder, help, scores, ending, results }
     let content: OriginalContent
     let world: OriginalWorld
@@ -21,7 +24,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var session: NativeSession!
     var held: Set<UInt16> = []
     var physicalKeyboard = OriginalHeldKeyboard()
-    var keyboard = OriginalKeyboardQueue<NSEvent>()
+    var keyboard = OriginalKeyboardQueue<GameInputEvent>()
     var timer: Timer?
     var zapTimer: Timer?
     var lastZapPulse = ProcessInfo.processInfo.systemUptime
@@ -45,7 +48,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var endingReportWritten = false
     var selectedRoom = 0
     var status = ""
-    var sound: NSSound?
+    var sound: PlatformSound?
     var soundEnabled = true
     var musicEnabled = true
     let automaticallyPresentMessages: Bool
@@ -75,19 +78,9 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     var menuCalculatorEnabled = true
     var settingsEditor: NativeSettingsEditor?
     var confirmation: NativeConfirmation?
-    var requestApplicationExit: () -> Void = { NSApplication.shared.terminate(nil) }
+    var requestApplicationExit: () -> Void = { PlatformServices.exit() }
     var modalDepth = 0
     var practice: NativePractice?
-    override var acceptsFirstResponder: Bool { true }
-    override var isFlipped: Bool { true }
-    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-        if decoderPanel != nil || confirmation != nil || settingsEditor != nil || originalNotice != nil || optionsMenu != nil || isTransitioning || screen == .scores || (screen == .help && helpBrowser?.topic != nil) { return false }
-        if menuItem.action == #selector(toggleCalculator(_:)) {
-            menuItem.state = session?.calculatorEnabled == false ? .off : .on
-            return session != nil
-        }
-        return true
-    }
     init(root: URL, saveDirectory: URL = NativeProfileStore.defaultDirectory,automaticallyPresentMessages: Bool = true) throws {
         self.automaticallyPresentMessages = automaticallyPresentMessages
         content = OriginalContent(root: root)
@@ -100,13 +93,11 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         guard helpBook.valid else { throw ContentError.invalid("Invalid original help pages") }
         profileStore = try NativeProfileStore(directory: saveDirectory)
         saves = NativeSessionStore(directory: saveDirectory)
-        super.init(frame: NSRect(x: 0, y: 0, width: 960, height: 600))
+        super.init()
         if let id = profileStore.document.selectedProfileID,let profile = profileStore.document.profiles.first(where: { $0.id == id }) { menuMessages = NativeNewUserMessages(enabled: (profile.lifetimePoints ?? 0) < 5000) }
-        setAccessibilityLabel("Outnumbered native game")
         timer = Timer.scheduledTimer(withTimeInterval: Double(OriginalWorld.frameIRQTicks)*VerifiedClock.pitDivisor/VerifiedClock.pitInputHz, repeats: true) { [weak self] _ in self?.step() }
         zapTimer = Timer.scheduledTimer(withTimeInterval: 1.0/60,repeats: true) { [weak self] _ in self?.pulseZap() }
     }
-    required init?(coder: NSCoder) { fatalError("Not used") }
     func begin() {
         do {
             let profile: NativeProfile
@@ -129,7 +120,10 @@ final class NativeGameView: NSView, NSMenuItemValidation {
             needsDisplay = true
         } catch { present(error) }
     }
-    @objc func referenceQuestion() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceQuestion() {
         // Deterministic video checkpoint, isolated from the player's saved game.
         session = NativeSession(profileID: UUID(), seed: 1, lifetimePoints: 30_000)
         session.position = NativePosition(scene: 10, playerUnit: 23, cameraUnit: 0, facing: 1)
@@ -137,14 +131,20 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         referenceMode = true; screen = .world
         if let fixture = bank.cases.first(where: { $0.id == 9078 && $0.seed == 2 && $0.variant == 3 }) { open(fixture) }
     }
-    @objc func referenceSongs() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceSongs() {
         session = NativeSession(profileID: UUID(),seed: 1,lifetimePoints: 30_000)
         session.position = NativePosition(scene: 13,playerUnit: 15,cameraUnit: 0,facing: 1)
         session.returnPosition = NativePosition(scene: 6,playerUnit: 248,cameraUnit: 228,facing: 1)
         referenceMode = true; screen = .world
         if let fixture = bank.cases.first(where: { $0.id == 9068 && $0.seed == 7 && $0.variant == 3 }) { open(fixture) }
     }
-    @objc func referenceBarChart() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func referenceBarChart() {
         session = NativeSession(profileID: UUID(),seed: 1,lifetimePoints: 30_000)
         session.position = NativePosition(scene: 10,playerUnit: 15,cameraUnit: 0,facing: 1)
         session.returnPosition = NativePosition(scene: 1,playerUnit: 52,cameraUnit: 38,facing: 1)
@@ -169,12 +169,12 @@ final class NativeGameView: NSView, NSMenuItemValidation {
     func present(_ error: Error) {
         let message = error.localizedDescription
         guard message != lastError else { return }; lastError = message
-        let alert = NSAlert(); alert.messageText = "Outnumbered"; alert.informativeText = message; alert.runModal()
+        PlatformServices.error(message)
     }
     func effect(_ index: Int) {
         guard OriginalSoundPolicy.accepts(incoming: index,current: lastSoundIndex,playing: sound?.isPlaying == true,soundEnabled: soundEnabled,musicEnabled: musicEnabled) else { return }
         sound?.stop()
-        sound = NSSound(contentsOf: content.root.appendingPathComponent(String(format: "audio/effect-%02d.wav", index)), byReference: false)
+        sound = PlatformSound(contentsOf: content.root.appendingPathComponent(String(format: "audio/effect-%02d.wav", index)), byReference: false)
         sound?.play()
         lastSoundIndex = index
     }
@@ -304,7 +304,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         if result == .correct { showNewUserMessage(7) }
         else if result == .failed { showNewUserMessage(14) }
     }
-    func handleKeyDown(_ event: NSEvent) {
+    func handleKeyDown(_ event: GameInputEvent) {
         let key = event.keyCode
         if screen == .title && key != 122 { openingKey(event);return }
         if isTransitioning { return }
@@ -376,7 +376,10 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         }
         needsDisplay = true
     }
-    @objc func toggleHelp() {
+    #if canImport(AppKit) && !OUTNUMBERED_PORTABLE
+    @objc
+    #endif
+    func toggleHelp() {
         if decoderPanel != nil || originalNotice != nil || confirmation != nil || settingsEditor != nil { return }
         if optionsMenu != nil { closeOptions() }
         if screen == .ending || screen == .results { return }
@@ -390,7 +393,7 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         screen = .help; held.removeAll()
         needsDisplay = true
     }
-    override func mouseDown(with event: NSEvent) {
+    func mouseDown(with event: GameInputEvent) {
         if originalNotice != nil { return }
         if decoderPanel != nil {
             let point = convert(event.locationInWindow,from: nil)
@@ -636,97 +639,5 @@ final class NativeGameView: NSView, NSMenuItemValidation {
         case .results: try drawResults()
         case .help, .scores: break
         }
-    }
-    override func draw(_ dirtyRect: NSRect) {
-        do {
-            try render()
-            let image = NSImage(size: NSSize(width: 320,height: 200)); image.addRepresentation(try canvas.representation())
-            NSGraphicsContext.current?.imageInterpolation = .none
-            image.draw(in: bounds,from: .zero,operation: .copy,fraction: 1,respectFlipped: true,hints: [.interpolation: NSImageInterpolation.none.rawValue])
-            if let path = ProcessInfo.processInfo.environment["OUTNUMBERED_NATIVE_ENDING_REPORT"],let ending = session?.activeEnding,screen == .ending || screen == .results {
-                let now = ProcessInfo.processInfo.systemUptime
-                if let previous = endingLastDraw { endingMaxDrawGap = max(endingMaxDrawGap,now-previous) }
-                endingLastDraw = now;endingDrawCount += 1
-                if screen == .results,!endingReportWritten,let finished = endingFinishedWallSeconds {
-                    endingReportWritten = true
-                    let duration = EndingTimeline(ending,data: endingData).duration
-                    let report: [String:Any] = ["sourceDurationIRQ":duration,"sourceDurationSeconds":Double(duration)*VerifiedClock.pitDivisor/VerifiedClock.pitInputHz,"completionEventWallSeconds":finished,"resultsDrawWallSeconds":now-endingStartedAt,"endingFrameDrawCount":endingDrawCount,"maximumDrawGapSeconds":endingMaxDrawGap,"finalElapsedIRQ":ending.elapsedTicks,"finalScore":Int(session.score),"finalLifetime":session.lifetimePoints]
-                    try JSONSerialization.data(withJSONObject: report,options: [.prettyPrinted,.sortedKeys]).write(to: URL(fileURLWithPath: path),options: .atomic)
-                }
-            }
-            if !startupReported,let path = ProcessInfo.processInfo.environment["OUTNUMBERED_NATIVE_STARTUP_REPORT"] {
-                startupReported = true
-                let report: [String:Any] = ["firstDrawUTC":ISO8601DateFormatter().string(from: Date()),"secondsSinceNativeMain":ProcessInfo.processInfo.systemUptime-NativeApplication.startedAt,"architecture":"arm64","firstFrameDrawn":true]
-                try JSONSerialization.data(withJSONObject: report,options: [.prettyPrinted,.sortedKeys]).write(to: URL(fileURLWithPath: path),options: .atomic)
-            }
-        } catch { NSLog("Native render: %@",error.localizedDescription) }
-    }
-}
-
-final class NativeApplicationDelegate: NSObject, NSApplicationDelegate {
-    var window: NSWindow!
-    var game: NativeGameView!
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        do {
-            game = try NativeGameView(root: NativeApplication.assets)
-            window = NSWindow(contentRect: NSRect(x: 0,y: 0,width: 960,height: 600),styleMask: [.titled,.closable,.miniaturizable],backing: .buffered,defer: false)
-            window.title = NativeApplication.developmentBuild ? "Outnumbered — Native Development Build" : "Outnumbered!"
-            window.contentView = game; window.center(); window.makeKeyAndOrderFront(nil); window.makeFirstResponder(game)
-            let root = NSMenu(), application = NSMenuItem(), menu = NSMenu()
-            root.addItem(application); application.submenu = menu
-            menu.addItem(withTitle: "Quit Outnumbered",action: #selector(NSApplication.terminate(_:)),keyEquivalent: "q")
-            let gameItem = NSMenuItem(), gameMenu = NSMenu(title: "Game")
-            root.addItem(gameItem); gameItem.submenu = gameMenu
-            let players = NSMenuItem(title: "Play Another Game",action: #selector(NativeGameView.showPlayerMenu),keyEquivalent: "p"); players.target = game; gameMenu.addItem(players)
-            let newPlayer = NSMenuItem(title: "Start New Player",action: #selector(NativeGameView.choosePlayer),keyEquivalent: "n"); newPlayer.target = game; gameMenu.addItem(newPlayer)
-            let restore = NSMenuItem(title: "Restore Removed Member…",action: #selector(NativeGameView.restoreMember),keyEquivalent: "");restore.target = game;gameMenu.addItem(restore)
-            let practice = NSMenuItem(title: "Drill for Skill",action: #selector(NativeGameView.startPractice),keyEquivalent: "k"); practice.target = game; gameMenu.addItem(practice)
-            let lifetime = NSMenuItem(title: "Lifetime Scores",action: #selector(NativeGameView.showLifetimeScores),keyEquivalent: "7"); lifetime.target = game; gameMenu.addItem(lifetime)
-            let highScores = NSMenuItem(title: "High Game Scores",action: #selector(NativeGameView.showHighGameScores),keyEquivalent: "8"); highScores.target = game; gameMenu.addItem(highScores)
-            let options = NSMenuItem(title: "Options",action: #selector(NativeGameView.showOptions),keyEquivalent: ","); options.target = game; gameMenu.addItem(options)
-            if NativeApplication.developmentBuild {
-            gameMenu.addItem(.separator())
-            let reference = NSMenuItem(title: "Reference Rainfall Question",action: #selector(NativeGameView.referenceQuestion),keyEquivalent: "r"); reference.target = game
-            gameMenu.addItem(reference)
-            let songs = NSMenuItem(title: "Reference Cartoon Songs Question",action: #selector(NativeGameView.referenceSongs),keyEquivalent: "g"); songs.target = game; gameMenu.addItem(songs)
-            let bars = NSMenuItem(title: "Bar Chart Checkpoint",action: #selector(NativeGameView.referenceBarChart),keyEquivalent: "b"); bars.target = game; gameMenu.addItem(bars)
-            let spinner = NSMenuItem(title: "Spinner Checkpoint",action: #selector(NativeGameView.referenceSpinner),keyEquivalent: "1"); spinner.target = game; gameMenu.addItem(spinner)
-            let television = NSMenuItem(title: "Television Checkpoint",action: #selector(NativeGameView.referenceTelevision),keyEquivalent: "t"); television.target = game; gameMenu.addItem(television)
-            let music = NSMenuItem(title: "Music Chart Checkpoint",action: #selector(NativeGameView.referenceMusic),keyEquivalent: "2"); music.target = game; gameMenu.addItem(music)
-            let supplies = NSMenuItem(title: "Equipment List Checkpoint",action: #selector(NativeGameView.referenceSupplies),keyEquivalent: "3"); supplies.target = game; gameMenu.addItem(supplies)
-            let questions = NSMenuItem(title: "Junior Questions Checkpoint",action: #selector(NativeGameView.referenceJuniorQuestions),keyEquivalent: "4"); questions.target = game; gameMenu.addItem(questions)
-            let ending = NSMenuItem(title: "Ending Checkpoint",action: #selector(NativeGameView.referenceEnding),keyEquivalent: "5"); ending.target = game; gameMenu.addItem(ending)
-            let drill = NSMenuItem(title: "Reference Telly Drill",action: #selector(NativeGameView.referenceDrill),keyEquivalent: "d"); drill.target = game
-            gameMenu.addItem(drill)
-            let energy = NSMenuItem(title: "Energy Machine Checkpoint",action: #selector(NativeGameView.referenceEnergy),keyEquivalent: "e"); energy.target = game; gameMenu.addItem(energy)
-            let wire = NSMenuItem(title: "LiveWire Checkpoint",action: #selector(NativeGameView.referenceLiveWire),keyEquivalent: "l"); wire.target = game; gameMenu.addItem(wire)
-            }
-            let help = NSMenuItem(title: "Help",action: #selector(NativeGameView.toggleHelp),keyEquivalent: "h"); help.target = game; gameMenu.addItem(help)
-            let calculator = NSMenuItem(title: "Use Calculator",action: #selector(NativeGameView.toggleCalculator(_:)),keyEquivalent: ""); calculator.target = game; calculator.state = .on; gameMenu.addItem(calculator)
-            NSApp.mainMenu = root; NSApp.activate(ignoringOtherApps: true)
-        } catch { let alert = NSAlert(); alert.messageText = "Outnumbered could not open"; alert.informativeText = error.localizedDescription; alert.runModal(); NSApp.terminate(nil) }
-    }
-    func applicationWillTerminate(_ notification: Notification) { game?.save() }
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
-}
-
-@main enum NativeApplication {
-    #if OUTNUMBERED_DEVELOPMENT
-    static let developmentBuild = true
-    #else
-    static let developmentBuild = false
-    #endif
-    static let startedAt = ProcessInfo.processInfo.systemUptime
-    static var assets: URL {
-        if let value = ProcessInfo.processInfo.environment["OUTNUMBERED_ASSETS"] { return URL(fileURLWithPath: value) }
-        return Bundle.main.resourceURL!.appendingPathComponent("assets")
-    }
-    static func main() {
-        _ = startedAt
-        if CommandLine.arguments.contains("--self-test") {
-            do { try nativeIntegrationChecks(root: assets) } catch { fputs("Native checks failed: \(error)\n",stderr); exit(1) }; return
-        }
-        let app = NSApplication.shared; app.setActivationPolicy(.regular)
-        let delegate = NativeApplicationDelegate(); app.delegate = delegate; app.run()
     }
 }
