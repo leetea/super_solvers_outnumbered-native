@@ -30,3 +30,22 @@ files into a separate test directory before compatibility checks.
 
 No final Windows release or interactive success is claimed until recorded gates
 pass. Original DOS ZIP, gameplay MKV, compiler caches and player saves are excluded.
+
+## Windows 10 desktop acceptance
+
+The user has a Windows 10 test machine. Once a candidate ZIP is available:
+
+1. Extract the full folder and open Outnumbered.exe. No developer tools or extra
+   runtimes should be installed. Record the candidate's build/commit identity.
+2. Run Run-Windows-Checks.cmd; retain its checks.json and errors.txt. Verification
+   uses a separate directory, leaving regular player profiles untouched.
+3. Check the opening, keyboard and mouse controls, resizing, display scaling,
+   sound/music toggles, switching away and back, and Help/File/Options screens.
+4. Complete an ordinary adventure: capture code, answer room questions, recharge,
+   use the calculator and decoder, quit/resume mid-game, win and replay. Confirm
+   rank and high-game history. Also check a loss and a separate practice set.
+5. Move the extracted folder to a path with spaces/non-ASCII characters and
+   launch again. Saves should remain available under LOCALAPPDATA.
+
+A Windows 11 desktop run is still required separately before claiming tested
+Windows 10/11 compatibility. Hosted Windows Server CI does not replace that run.

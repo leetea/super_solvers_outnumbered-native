@@ -22,6 +22,11 @@ import Foundation
         #endif
     }
     static func main() {
+        #if os(Windows)
+        if CommandLine.arguments.contains("--host-smoke-test") {
+            do { try windowsHostSmokeTest() } catch { print("Windows host smoke test failed: \(error)");exit(1) };return
+        }
+        #endif
         if CommandLine.arguments.contains("--self-test") {
             do { try nativeIntegrationChecks(root:assets) } catch { print("Native checks failed: \(error)");exit(1) };return
         }

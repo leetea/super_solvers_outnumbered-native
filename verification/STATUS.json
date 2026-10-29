@@ -1,0 +1,35 @@
+{
+  "target": "Windows 10 22H2 / Windows 11 x64",
+  "sharedFoundationCheckCount": 1118,
+  "sharedFoundationChecksPassed": true,
+  "sharedCheckHost": "macOS arm64, portable flag; not Windows execution",
+  "branch": "windows-native-port",
+  "commit": "fcc38f1f71d9b90ca8cb0d25fb545a6d55db6ec9",
+  "windowsBuildVerified": true,
+  "windowsInteractiveVerified": false,
+  "complete": false,
+  "macAdapterRegressionPassed": true,
+  "macAdapterCheckCount": 1118,
+  "latestCommit": "35142308831402e80d2cfa0c2ac18d2dcf8ef1a0",
+  "pullRequest": "https://github.com/leetea/outnumbered-native-macos/pull/1",
+  "portableMacDiagnosticPixelMatches": 110,
+  "firstWindowsCIFailure": "Swift compiler missing from runner PATH after installer; workflow now reads User and Machine environment",
+  "windowsCIRetryRun": 40809168969,
+  "availableInteractiveTestOS": [
+    "Windows 10 x64 (user supplied)"
+  ],
+  "windows11InteractiveValidation": "Not yet available; remains a separate release gate",
+  "originalReleaseDiagnosticPixelMatches": 110,
+  "remainingGates": [
+    "Native Windows build and all 1118 checks",
+    "App-local dependencies with stripped PATH",
+    "Native SDL host smoke test",
+    "Windows 10 ordinary desktop campaign/save/replay",
+    "Windows 11 ordinary desktop acceptance"
+  ],
+  "windowsCheckCount": 1118,
+  "windowsCleanPathChecksPassed": true,
+  "verifiedWindowsCommit": "35142308831402e80d2cfa0c2ac18d2dcf8ef1a0",
+  "verifiedWindowsRun": 40809168969,
+  "nativeSDLHostSmokeVerified": false
+}

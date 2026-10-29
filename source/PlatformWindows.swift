@@ -55,4 +55,20 @@ func runWindowsGame() {
         game.save()
     } catch { ow_error(error.localizedDescription) }
 }
+// CI uses dummy SDL devices: exercises the native host, not an interactive test.
+func windowsHostSmokeTest() throws {
+    guard ow_open() != 0 else { throw ContentError.invalid("SDL host failed to initialize") }
+    defer { ow_close() }
+    let temp=FileManager.default.temporaryDirectory.appendingPathComponent("outnumbered-host-"+UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at:temp) }
+    let game=try NativeGameView(root:NativeApplication.assets,saveDirectory:temp,automaticallyPresentMessages:false)
+    game.timer?.invalidate();game.zapTimer?.invalidate();game.soundEnabled=false
+    try game.render();let image=try game.canvas.representation();ow_frame(image.bitmapData)
+    for index in 0..<52 {
+        let path=NativeApplication.assets.appendingPathComponent(String(format:"audio/effect-%02d.wav",index)).path
+        guard ow_sound(path) != 0 else { throw ContentError.invalid("SDL WAV playback setup failed: \(index)") }
+        ow_stop_sound()
+    }
+    print("{\"passed\":true,\"backend\":\"SDL3\",\"soundStreamsOpened\":52,\"interactiveVerified\":false}")
+}
 #endif
