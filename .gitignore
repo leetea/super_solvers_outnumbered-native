@@ -2,3 +2,10 @@ build/
 source/resources/
 source/*.json
 .DS_Store
+__pycache__/
+*.pyc
+.env
+*.p12
+*.pfx
+*.key
+*.pem

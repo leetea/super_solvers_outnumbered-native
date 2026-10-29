@@ -1,6 +1,8 @@
 name: Windows native port
 on:
   push:
+    branches: [windows-native-port, security/windows-hardening]
+  pull_request:
     branches: [windows-native-port]
   workflow_dispatch:
 permissions:
@@ -10,8 +12,10 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1
         with:
           arch: x64
       - name: Install official Swift 6.4.1 toolchain
@@ -19,6 +23,11 @@ jobs:
         run: |
           $url='https://download.swift.org/swift-6.4.1-release/windows10/swift-6.4.1-RELEASE/swift-6.4.1-RELEASE-windows10.exe'
           Invoke-WebRequest $url -OutFile "$env:TEMP/swift-installer.exe"
+          # Pinned from Microsoft winget-pkgs blob 49843cbc951e6a789498d2749dbb7c8b3d7e8d27.
+          $expected='9382e14919eeae5e7b5dbfe0575452fe2154178e089a595c8b44d03960d91d59'
+          if ((Get-FileHash "$env:TEMP/swift-installer.exe" -Algorithm SHA256).Hash -ne $expected) { throw 'Swift installer SHA256 mismatch' }
+          $signature=Get-AuthenticodeSignature "$env:TEMP/swift-installer.exe"
+          if ($signature.Status -ne 'Valid') { throw 'Swift installer signature is not valid' }
           $process=Start-Process "$env:TEMP/swift-installer.exe" -ArgumentList '-quiet','-norestart' -Wait -PassThru
           if ($process.ExitCode -notin @(0,3010)) { throw "Swift installer: $($process.ExitCode)" }
           foreach($scope in @('Machine','User')) {
@@ -41,7 +50,9 @@ jobs:
         run: |
           $url='https://github.com/libsdl-org/SDL/releases/download/release-3.4.18/SDL3-devel-3.4.18-VC.zip'
           Invoke-WebRequest $url -OutFile "$env:TEMP/SDL.zip"
-          Get-FileHash "$env:TEMP/SDL.zip" | Format-List
+          # GitHub release asset 606657750, digest recorded 2026-10-29.
+          $expected='78d84602ae616cfe26b33a73b7d3b9b6b56e8a6650e53d92c9c6ca938f747acd'
+          if ((Get-FileHash "$env:TEMP/SDL.zip" -Algorithm SHA256).Hash -ne $expected) { throw 'SDL SHA256 mismatch' }
           Expand-Archive "$env:TEMP/SDL.zip" "$env:TEMP/SDL" -Force
       - name: Build and verify native x64 package
         shell: pwsh
@@ -50,11 +61,9 @@ jobs:
         run: |
           $sdl=Get-ChildItem "$env:TEMP/SDL" -Directory | Select-Object -First 1
           ./windows/build.ps1 -SDLRoot $sdl.FullName
-      - uses: actions/upload-artifact@v4
-        if: always()
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: windows-native-build-evidence
           path: |
             build/Outnumbered-Windows-x64.zip
             build/windows-x64/*.json
-            ${{ runner.temp }}/outnumbered-windows-checks
