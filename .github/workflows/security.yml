@@ -1,0 +1,25 @@
+name: Security and package privacy
+on:
+  pull_request:
+  push:
+    branches: [main, windows-native-port, 'security/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: python3 tools/test_security.py
+      - name: Sanitize reference metadata without changing runtime data
+        run: python3 tools/sanitize_runtime.py source/runtime-data.zip
+      - name: Scan tracked files and archive contents
+        run: git ls-files -z | xargs -0 python3 tools/check_privacy.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sanitized-runtime-data
+          path: source/runtime-data.zip
+          retention-days: 7
