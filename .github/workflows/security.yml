@@ -23,3 +23,12 @@ jobs:
           name: sanitized-runtime-data
           path: source/runtime-data.zip
           retention-days: 7
+  macos-build:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: zsh build.sh
+      - run: python3 tools/check_privacy.py build/Outnumbered-1.0.zip
