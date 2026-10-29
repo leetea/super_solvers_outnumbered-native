@@ -25,7 +25,7 @@ extension NativeGameView {
         }
         for cue in cues {
             if let index = cue.index { effect(index) }
-            else { sound?.stop();lastSoundIndex = nil }
+            else { stopSound() }
         }
         session.activityPresentation = presentation
         if presentation.elapsedIRQTicks == plan.duration {

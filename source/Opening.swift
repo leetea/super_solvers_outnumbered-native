@@ -137,7 +137,7 @@ extension NativeGameView {
         for cue in opening.advance(ticks) {
             switch cue {
             case let .sound(index): effect(index)
-            case .stop: sound?.stop();lastSoundIndex = nil
+            case .stop: stopSound()
             case .finished: choosePlayer()
             }
         }

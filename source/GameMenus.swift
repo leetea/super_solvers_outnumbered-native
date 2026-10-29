@@ -14,7 +14,7 @@ extension NativeGameView {
         guard session?.activeZap == nil, session?.activeFountain == nil, screen != .ending else { return }
         keyboard.flush();save();
         if screen == .practice || (screen == .file && fileReturn == .practice) { session = nil }
-        held.removeAll(); sound?.stop(); lastSoundIndex = nil
+        held.removeAll(); stopSound()
         if screen != .menu && screen != .practice { menuReturn = screen }
         practice = nil; screen = .menu; menuSelection = 0; needsDisplay = true
         if selectedProfile == nil { choosePlayer() }
@@ -29,7 +29,7 @@ extension NativeGameView {
         if screen == .scores { closeScores() }
         keyboard.flush();save();
         if screen == .practice || (screen == .file && fileReturn == .practice) { session = nil }
-        held.removeAll();sound?.stop();lastSoundIndex = nil
+        held.removeAll();stopSound()
         signIn = NativeMemberSignIn(memberCount: profileStore.document.profiles.count)
         screen = .signin;needsDisplay = true
     }
@@ -121,11 +121,11 @@ extension NativeGameView {
         needsDisplay = true
     }
     func setMusicEnabled(_ enabled: Bool) {
-        if !enabled { sound?.stop(); lastSoundIndex = nil }
+        if !enabled { stopSound() }
         musicEnabled = enabled; needsDisplay = true
     }
     func setSoundEnabled(_ enabled: Bool) {
-        if !enabled { sound?.stop(); lastSoundIndex = nil }
+        if !enabled { stopSound() }
         soundEnabled = enabled; needsDisplay = true
     }
     #if canImport(AppKit) && !OUTNUMBERED_PORTABLE

@@ -42,3 +42,14 @@ removal are documented adaptations. Alternate DOS display/audio hardware,
 identical analog speaker output and CPU-speed-identical presentation are outside
 this target. Original content retains its ownership; no ownership or redistribution
 rights are conferred by this private reconstruction repository.
+
+## Candidate update: macOS 1.0.2 changes
+
+The Windows source now includes the latest wall/HUD/ending fixes and the music
+resume enhancement from the macOS 1.0.2 delivery. Music resume is a native
+addition, rather than recovered DOS behavior; stationary jumping is supported
+by the original hint and captured code. See [the comparison](docs/NATIVE-ADDITIONS.md).
+
+The build workflow must pass all 1,160 checks and the native SDL smoke check.
+Interactive Windows 10 acceptance remains with the user, and Windows 11 desktop
+validation remains separate. Build identity is included in build-info.json.

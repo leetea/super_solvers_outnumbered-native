@@ -70,14 +70,20 @@ enum PlatformServices {
 }
 #else
 final class PlatformSound {
-    static var start: ((URL)->Void)?
+    static var start: ((URL,TimeInterval)->Void)?
     static var stopPlayback: (()->Void)?
     static var playing: (()->Bool)?
     let url:URL
     init?(contentsOf url:URL,byReference:Bool) { self.url=url }
     var isPlaying:Bool { Self.playing?() ?? false }
-    func stop() { Self.stopPlayback?() }
-    func play() { Self.start?(url) }
+    private var position = 0.0
+    private var startedAt: Double?
+    var currentTime: TimeInterval {
+        get { position+(startedAt.map { max(0,ProcessInfo.processInfo.systemUptime-$0) } ?? 0) }
+        set { position = max(0,newValue);startedAt = nil }
+    }
+    @discardableResult func stop() -> Bool { position = currentTime;startedAt = nil;Self.stopPlayback?();return true }
+    @discardableResult func play() -> Bool { startedAt = ProcessInfo.processInfo.systemUptime;Self.start?(url,position);return true }
 }
 enum PlatformServices {
     static var shouldExit=false
@@ -88,3 +94,5 @@ enum PlatformServices {
     static func restoreMember(_ game:NativeGameView,_ members:[NativeProfile]) { restore?(game,members) }
 }
 #endif
+
+extension PlatformSound: NativeSoundPlayback {}

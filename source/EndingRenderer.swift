@@ -22,6 +22,7 @@ extension NativeGameView {
         canvas.draw(try content.bitmap(String(format: "DMOCKET.GRA.%04x",background)),x: 0,y: 15)
         canvas.draw(try content.bitmap("DMOCKET.GRA.1b58"),x: 152,y: 22,transparent: true)
         var base = canvas.pixels
+        var peekBase = base
         var caption: (String,Int,Int)?
         var bonus: (String,Int,Int)?
         var bonusClosing: Int?
@@ -42,8 +43,11 @@ extension NativeGameView {
                     try sprite(command.resource,command.x,command.y,command.flags)
                 }
             case .snapshot: base = canvas.pixels
+            // The speech bubble covers the entered player. Script erases must
+            // still restore the clean room, not copy that player back.
+            case .snapshotPeek: peekBase = canvas.pixels
             case .restoreAll: canvas.restoreEndingRect(base,x: 0,y: 15,right: 319,bottom: 159)
-            case .restorePeek: canvas.restoreEndingRect(base,x: 96,y: 20,right: 219,bottom: 100)
+            case .restorePeek: canvas.restoreEndingRect(peekBase,x: 96,y: 20,right: 219,bottom: 100)
             case let .sprite(id,x,y): try sprite(id,x,y)
             case let .caption(text,x,y): caption = (text,x,y)
             case .clearCaption: caption = nil

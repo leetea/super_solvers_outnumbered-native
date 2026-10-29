@@ -30,7 +30,7 @@ struct NativeEnding: Codable {
 struct EndingTimeline {
     enum Action {
         case command(OriginalEndingData.Command,[OriginalEndingData.Command])
-        case snapshot, restoreAll, restorePeek
+        case snapshot, snapshotPeek, restoreAll, restorePeek
         case sprite(Int,Int,Int), caption(String,Int,Int), clearCaption
         case bonus(String,Int), hideBonus
         case tally(energy: Int,minutes: Int,score: Int)
@@ -71,7 +71,7 @@ struct EndingTimeline {
             for _ in 0..<10 { add(.sound(49)); wait(100) }
             self.events = events; duration = time; return
         }
-        add(.sound(3)); script("enter_room"); add(.snapshot)
+        add(.sound(3)); script("enter_room"); add(.snapshotPeek)
         add(.sprite(ending.won ? 10027 : 10013,24,20))
         add(.caption(data.dialogues[ending.playerDialogue],ending.playerDialogue == 0 ? 106 : 108,ending.playerDialogue == 0 ? 25 : 28))
         wait(960); add(.clearCaption); add(.restorePeek)
@@ -79,7 +79,7 @@ struct EndingTimeline {
         add(.sound(17))
         if ending.won {
             script("found"); add(.snapshot); add(.clip(308)); script("reveal"); add(.clip(316))
-            add(.sprite(10043,48,25))
+            add(.sprite(10027,48,25))
             add(.caption(data.dialogues[2+ending.masterDialogue],210,ending.masterDialogue == 0 ? 31 : 29))
             wait(700); add(.clearCaption); add(.restoreAll)
             script("bonus_draw")

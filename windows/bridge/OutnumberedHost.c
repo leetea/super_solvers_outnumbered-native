@@ -57,13 +57,19 @@ void ow_frame(const uint8_t *rgba) {
     SDL_RenderClear(renderer);SDL_RenderTexture(renderer,texture,0,0);SDL_RenderPresent(renderer);
 }
 void ow_stop_sound(void) {if(sound) SDL_DestroyAudioStream(sound);sound=0;sound_end=0;}
-int ow_sound(const char *path) {
+int ow_sound(const char *path) { return ow_sound_at(path,0); }
+int ow_sound_at(const char *path,double seconds) {
     ow_stop_sound();SDL_AudioSpec spec;Uint8 *bytes=0;Uint32 count=0;
     if(!SDL_LoadWAV(path,&spec,&bytes,&count)) return 0;
+    const Uint32 frame_bytes=SDL_AUDIO_BYTESIZE(spec.format)*spec.channels;
+    if(!frame_bytes || spec.freq<=0) {SDL_free(bytes);return 0;}
+    double frames=(seconds>=0.0 ? seconds : 0.0)*spec.freq;
+    if(frames>count/frame_bytes) frames=count/frame_bytes;
+    const Uint32 offset=(Uint32)frames*frame_bytes;
     sound=SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK,&spec,0,0);
     if(!sound) {SDL_free(bytes);return 0;}
-    int success=SDL_PutAudioStreamData(sound,bytes,count) && SDL_FlushAudioStream(sound) && SDL_ResumeAudioStreamDevice(sound);
-    sound_end=SDL_GetTicksNS()+(Uint64)((double)count/(spec.freq*SDL_AUDIO_BYTESIZE(spec.format)*spec.channels)*1000000000.0);
+    int success=SDL_PutAudioStreamData(sound,bytes+offset,count-offset) && SDL_FlushAudioStream(sound) && SDL_ResumeAudioStreamDevice(sound);
+    sound_end=SDL_GetTicksNS()+(Uint64)((double)(count-offset)/(spec.freq*frame_bytes)*1000000000.0);
     SDL_free(bytes);return success;
 }
 int ow_sound_playing(void) {return sound && (SDL_GetAudioStreamQueued(sound)>0 || SDL_GetTicksNS()<sound_end);}

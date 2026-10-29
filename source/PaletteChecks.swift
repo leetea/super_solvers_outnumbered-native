@@ -47,5 +47,38 @@ func nativePaletteChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["EGA_play_menu_footer_matches_local_video_black"] = view.canvas.pixels[199*320+100] == 1
     view.referenceQuestion();try view.render()
     try view.canvas.writePNG(to: output.appendingPathComponent("native-palette-weather.png"))
+    // Regression fixtures from the user's October 28 macOS play test.
+    view.session = NativeSession(profileID: UUID(),seed: 1)
+    view.referenceMode = true;view.screen = .world
+    view.session.clock.applyMinutePenalty(40);view.session.score = 400;view.session.energy = 4
+    try view.drawHUD()
+    checks["HUD_energy_red_fill_gray_remainder_and_preserved_frame"] = view.canvas.pixels[180*320+256] == 12 && view.canvas.pixels[180*320+263] == 12 && view.canvas.pixels[180*320+264] == 8 && view.canvas.pixels[180*320+311] == 8 && view.canvas.pixels[168*320+254] == 7
+    func centeredYellow(_ top: Int,_ bottom: Int) -> Bool {
+        let columns = (255..<312).filter { x in (top...bottom).contains { y in view.canvas.pixels[y*320+x] == 14 } }
+        guard let left = columns.first,let right = columns.last else { return false }
+        return abs((left+right)-566) <= 1
+    }
+    checks["HUD_time_and_score_centered_inside_original_cells"] = centeredYellow(164,173) && centeredYellow(186,195)
+    try view.canvas.writePNG(to: output.appendingPathComponent("native-HUD-reference-9-40.png"))
+    view.session.energy = 0;try view.drawHUD()
+    checks["HUD_empty_energy_has_no_black_remainder"] = (175..<185).allSatisfy { y in (255..<312).allSatisfy { x in view.canvas.pixels[y*320+x] == 8 } }
+    view.session.energy = 30;try view.drawHUD()
+    checks["HUD_energy_saturates_at_48_pixels_without_overwriting_frame"] = (256..<304).allSatisfy { view.canvas.pixels[180*320+$0] == 12 } && view.canvas.pixels[180*320+304] == 8 && view.canvas.pixels[180*320+312] == 7
+    let wall = try view.content.bitmap("FASTLOAD.GRA.123")
+    for scene in [0,4,5,9] {
+        let position = NativePosition(scene: scene,playerUnit: scene*38+20,cameraUnit: scene*38,facing: 1)
+        try view.drawWorldBackdrop(position)
+        let leftEnd = scene%5 == 0, origin = leftEnd ? 8 : 296
+        var matches = true
+        for y in 0..<wall.height { for x in 0..<wall.width where wall.pixels[y*wall.width+x] != 0 {
+            let screenX = origin+(leftEnd ? wall.width-1-x : x)
+            if (8..<312).contains(screenX) && (15..<158).contains(28+y) {
+                if view.canvas.pixels[(28+y)*320+screenX] != wall.pixels[y*wall.width+x] { matches = false }
+            }
+        } }
+        checks["hallway_end_wall_faces_inward_scene_\(scene)"] = matches
+        view.canvas.clip = nil;try view.drawHUD()
+        try view.canvas.writePNG(to: output.appendingPathComponent("native-hallway-end-\(scene).png"))
+    }
     return checks
 }

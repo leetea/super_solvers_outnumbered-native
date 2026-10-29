@@ -77,5 +77,36 @@ func nativeEndingPresentationChecks(root: URL,output: URL) throws -> [String:Boo
     view.screen = .results;view.continueAfterResults();view.keyDown(with: key(45,"n"))
     var exits = 0;view.requestApplicationExit = { exits += 1 };view.keyDown(with: key(16,"y"))
     checks["ending_replay_Exit_Yes_requests_one_native_application_exit"] = exits == 1 && view.modalDepth == 0
+    // Animation erases must never resurrect the player from the speech backup.
+    for room in 0..<5 {
+        for dialogue in 0..<2 {
+            view.session = NativeSession(profileID: profile.id,seed: 1)
+            var ending = NativeEnding(reason: .hideout,room: room,tier: 0,initialEnergy: 4,initialMinutes: 40,initialScore: 400,initialLifetime: 0,playerDialogue: dialogue,masterDialogue: dialogue)
+            let timeline = EndingTimeline(ending,data: data)
+            let caption = timeline.events.first { if case .caption(let text,_,_) = $0.action { return text == data.dialogues[2+dialogue] };return false }!
+            ending.elapsedTicks = caption.ticks;view.session.activeEnding = ending
+            view.canvas.clear();try view.drawEnding()
+            // Compare every caption pixel against the white interior of the bubble.
+            let bubble = try view.content.bitmap("CLOSE1.GRA.027"),mask = NativeCanvas()
+            if case let .caption(text,x,y) = caption.action { mask.clear();mask.text(text,font: try view.content.font("MOCKET.DAT.1393"),x: x,y: y,color: 15,lineHeight: 10) }
+            let ink = mask.pixels.indices.filter { mask.pixels[$0] == 15 }
+            checks["ending_master_dialogue_inside_white_bubble_room_\(room)_line_\(dialogue)"] = !ink.isEmpty && ink.allSatisfy { i in
+                let x = i%320-192,y = i/320-25
+                return (0..<bubble.width).contains(x) && (0..<bubble.height).contains(y) && bubble.pixels[y*bubble.width+x] == 15
+            } && view.canvas.pixels[50*320+200] == 15
+            if room == 2 { try view.canvas.writePNG(to: output.appendingPathComponent("native-ending-master-dialogue-\(dialogue).png")) }
+            let moving = timeline.events.first { if case .command(let c,_) = $0.action { return c.resource == 34 && c.x >= 38 && c.flags == 96 };return false }!
+            ending.elapsedTicks = moving.ticks;view.session.activeEnding = ending
+            view.canvas.clear();try view.drawEnding();let movingPixels = view.canvas.pixels
+            let clean = NativeCanvas()
+            clean.draw(try view.content.bitmap(String(format: "DMOCKET.GRA.%04x",data.hallways[room]+190)),x: 0,y: 15)
+            var noStationaryPlayer = true
+            for y in 81...142 { for x in 96...143 {
+                if movingPixels[y*320+x] != clean.pixels[y*320+x] { noStationaryPlayer = false }
+            } }
+            checks["ending_departure_no_stationary_player_room_\(room)_line_\(dialogue)"] = noStationaryPlayer
+            if dialogue == 0 { try view.canvas.writePNG(to: output.appendingPathComponent("native-ending-single-player-room-\(room).png")) }
+        }
+    }
     return checks
 }

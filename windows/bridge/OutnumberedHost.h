@@ -7,6 +7,7 @@ void ow_frame(const uint8_t *rgba);
 void ow_close(void);
 void ow_delay(void);
 int ow_sound(const char *path);
+int ow_sound_at(const char *path,double seconds);
 void ow_stop_sound(void);
 int ow_sound_playing(void);
 void ow_error(const char *message);

@@ -6,7 +6,7 @@ func runWindowsGame() {
     guard ow_open() != 0 else { ow_error("The Windows display or audio device could not be opened.");ow_close();return }
     defer { ow_close() }
     PlatformServices.showError = { ow_error($0) }
-    PlatformSound.start = { _ = ow_sound($0.path) }
+    PlatformSound.start = { _ = ow_sound_at($0.path,$1) }
     PlatformSound.stopPlayback = { ow_stop_sound() }
     PlatformSound.playing = { ow_sound_playing() != 0 }
     PlatformServices.restore = { game,members in
@@ -69,6 +69,9 @@ func windowsHostSmokeTest() throws {
         guard ow_sound(path) != 0 else { throw ContentError.invalid("SDL WAV playback setup failed: \(index)") }
         ow_stop_sound()
     }
-    print("{\"passed\":true,\"backend\":\"SDL3\",\"soundStreamsOpened\":52,\"interactiveVerified\":false}")
+    let music=NativeApplication.assets.appendingPathComponent("audio/effect-02.wav").path
+    guard ow_sound_at(music,9.25) != 0,ow_sound_playing() != 0 else { throw ContentError.invalid("SDL resumed music could not be queued") }
+    ow_stop_sound()
+    print("{\"passed\":true,\"backend\":\"SDL3\",\"soundStreamsOpened\":52,\"musicSeekStartSeconds\":9.25,\"musicSeekPlaybackStarted\":true,\"interactiveVerified\":false}")
 }
 #endif

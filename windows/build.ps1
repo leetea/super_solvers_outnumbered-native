@@ -43,7 +43,7 @@ if ($LASTEXITCODE) { throw 'Runtime dependency inventory failed' }
 & (Join-Path $Destination 'Outnumbered.exe') --self-test | Set-Content (Join-Path $Destination 'self-test.json')
 if ($LASTEXITCODE) { throw 'Windows native checks failed' }
 $report=Get-Content (Join-Path $Destination 'self-test.json') -Raw | ConvertFrom-Json
-if (!$report.passed -or $report.checkCount -ne 1118) { throw 'Windows check count/acceptance mismatch' }
+if (!$report.passed -or $report.checkCount -ne 1160) { throw 'Windows check count/acceptance mismatch' }
 # Do not ship a package that accidentally relies on the build machine PATH.
 $env:PATH="$env:SystemRoot\System32;$env:SystemRoot"
 $oldLocation=Get-Location
@@ -62,5 +62,6 @@ $env:SDL_AUDIODRIVER='dummy'
 if ($LASTEXITCODE) { throw 'Native Windows SDL host smoke test failed' }
 Remove-Item Env:SDL_VIDEODRIVER
 Remove-Item Env:SDL_AUDIODRIVER
+@{version='1.0.2';target='windows-x86_64';sourceCommit=$env:GITHUB_SHA;expectedChecks=1160;interactiveVerified=$false} | ConvertTo-Json | Set-Content (Join-Path $Destination 'build-info.json')
 Get-FileHash (Join-Path $Destination 'Outnumbered.exe') | ConvertTo-Json | Set-Content (Join-Path $Destination 'binary-sha256.json')
 Compress-Archive (Join-Path $Destination '*') (Join-Path (Split-Path $Destination) 'Outnumbered-Windows-x64.zip') -Force

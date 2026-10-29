@@ -48,7 +48,9 @@ final class NativeGameView: NSObject {
     var endingReportWritten = false
     var selectedRoom = 0
     var status = ""
-    var sound: PlatformSound?
+    var sound: (any NativeSoundPlayback)?
+    var soundFactory: (URL) -> (any NativeSoundPlayback)? = { PlatformSound(contentsOf: $0,byReference: false) }
+    var interruptedMusic: (index: Int,position: TimeInterval)?
     var soundEnabled = true
     var musicEnabled = true
     let automaticallyPresentMessages: Bool
@@ -171,10 +173,22 @@ final class NativeGameView: NSObject {
         guard message != lastError else { return }; lastError = message
         PlatformServices.error(message)
     }
+    func stopSound(resetMusic: Bool = true) {
+        sound?.stop();lastSoundIndex = nil
+        if resetMusic { interruptedMusic = nil }
+    }
     func effect(_ index: Int) {
         guard OriginalSoundPolicy.accepts(incoming: index,current: lastSoundIndex,playing: sound?.isPlaying == true,soundEnabled: soundEnabled,musicEnabled: musicEnabled) else { return }
+        if index >= 6,let current = lastSoundIndex,current < 6,sound?.isPlaying == true {
+            interruptedMusic = (current,sound!.currentTime)
+        }
+        let resumePosition = interruptedMusic?.index == index ? interruptedMusic!.position : 0
         sound?.stop()
-        sound = PlatformSound(contentsOf: content.root.appendingPathComponent(String(format: "audio/effect-%02d.wav", index)), byReference: false)
+        sound = soundFactory(content.root.appendingPathComponent(String(format: "audio/effect-%02d.wav", index)))
+        if index < 6 {
+            sound?.currentTime = resumePosition
+            interruptedMusic = nil
+        }
         sound?.play()
         lastSoundIndex = index
     }
@@ -196,7 +210,7 @@ final class NativeGameView: NSObject {
                 for event in try practice?.advance(irqTicks: OriginalWorld.frameIRQTicks,soundPlaying: sound?.isPlaying == true) ?? [] {
                     switch event {
                     case let .sound(index): effect(index)
-                    case .stop: sound?.stop(); lastSoundIndex = nil
+                    case .stop: stopSound(resetMusic: false)
                     }
                 }
             }
@@ -285,7 +299,7 @@ final class NativeGameView: NSObject {
         // Upgrade an assigned pre-0.7 question with the same original data and
         // recovered post-generation stream; never change its identity.
         let challenge = bank.cases.first { $0.id == challenge.id && $0.seed == challenge.seed && $0.variant == challenge.variant } ?? challenge
-        keyboard.flush();sound?.stop();lastSoundIndex = nil
+        keyboard.flush();stopSound()
         if challenge.hotspot == 7 { effect(34) }
         do { try prepareActivityState(challenge,regenerating: true) } catch { present(error); return }
         session.liveWire?.clear()
@@ -471,12 +485,16 @@ final class NativeGameView: NSObject {
         let minute = session.clock.elapsedMinutes
         let hour = (21+minute/60)%12
         let time = session.clock.expired ? "12:00A.M." : "\(hour == 0 ? 12 : hour):\(String(format: "%02d",minute%60))P.M."
-        canvas.fill(254,163,58,10,1)
-        canvas.text(session.clock.roomChallengeActive && visibleScreen != .ending && visibleScreen != .results ? "Pause" : time,font: try content.font("MOCKET.DAT.1396"),x: 256,y: 164,color: 14)
-        canvas.fill(256,176,48,8,1)
-        canvas.fill(256,176,min(48,max(0,session.energy)*2),8,14)
-        canvas.fill(254,188,58,8,1)
-        canvas.text(String(format: "%06d", Int(session.score)),font: font,x: 254,y: 187,color: 14)
+        let clockFont = try content.font("MOCKET.DAT.1396")
+        let clockText = session.clock.roomChallengeActive && visibleScreen != .ending && visibleScreen != .results ? "Pause" : time
+        // Preserve the original frame; center values within its 57-pixel cells.
+        canvas.fill(255,164,57,10,1)
+        canvas.text(clockText,font: clockFont,x: 255+(57-clockFont.width(of: clockText))/2,y: 164,color: 14)
+        canvas.fill(255,175,57,10,8)
+        canvas.fill(256,176,min(48,max(0,session.energy)*2),8,12)
+        let scoreText = String(format: "%06d", Int(session.score))
+        canvas.fill(255,186,57,10,1)
+        canvas.text(scoreText,font: font,x: 255+(57-font.width(of: scoreText))/2,y: 187,color: 14)
         if visibleScreen == .world {
             let prompt = status.isEmpty ? "\u{86} to See Decoder" : status
             canvas.text(prompt,font: font,x: 8,y: 176,color: 15,wrapWidth: 201)
@@ -499,7 +517,7 @@ final class NativeGameView: NSObject {
                     let x = origin+object.pixelX
                     if x > 312 || x+128 < 8 { continue }
                     if object.kind == 1 { try sprite(124,x: x,y: 48) }
-                    try sprite(object.sprite,x: x,y: object.drawY,flipped: object.kind == 6 && scene%5 == 4)
+                    try sprite(object.sprite,x: x,y: object.drawY,flipped: object.kind == 6 && scene%5 == 0)
                     //196..201 replace only the top24 rows, not the whole
                     //88x87 machine. Original1b03:013f backs up this strip.
                     if object.kind == 9, let fountain = session.activeFountain, fountain.phase == .dispensing {

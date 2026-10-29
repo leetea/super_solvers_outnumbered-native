@@ -109,7 +109,7 @@ extension NativeGameView {
                 let frame = frames[i]
                 if award && !rewarded && frame.phase == .dispensing { issueAward() }
                 if frame.phase == .leaving && i > 0 && frames[i-1].phase == .dispensing {
-                    sound?.stop();lastSoundIndex = nil
+                    stopSound(resetMusic: false)
                 }
                 if frame.updatesActors {
                     var prior = i == 0 ? fountain.origin! : frames[i-1].position
@@ -127,7 +127,7 @@ extension NativeGameView {
         if award && !rewarded { issueAward() }
         session.activeFountain = fountain
         if fountain.phase == .finished {
-            if fountain.origin == nil { sound?.stop();lastSoundIndex = nil }
+            if fountain.origin == nil { stopSound(resetMusic: false) }
             session.activeFountain = nil;session.clock.pollAfterIRQTicks(0);save()
         }
         needsDisplay = true
@@ -205,7 +205,7 @@ extension NativeGameView {
         // the original question draws before decoder generation.
         var checkpoint = DecoderGenerator(seed: 6908)
         session.decoder = checkpoint.makePuzzle(difficulty: 1)
-        sound?.stop(); lastSoundIndex = nil
+        stopSound()
         session.score = 600
         for _ in 0..<12 { session.clock.pollAfterIRQTicks(781) }
         referenceMode = true; startDrill(reference: true); needsDisplay = true
@@ -220,7 +220,7 @@ extension NativeGameView {
                 for sound in result.sounds {
                     switch sound {
                     case .play(let index): effect(index)
-                    case .stop: self.sound?.stop();lastSoundIndex = nil
+                    case .stop: stopSound(resetMusic: false)
                     }
                 }
                 if presentation.stage == .result { finishDrill() }

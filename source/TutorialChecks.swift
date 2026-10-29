@@ -77,5 +77,66 @@ func nativeTutorialChecks(root: URL,output: URL) throws -> [String:Bool] {
     checks["sound_on_does_not_reenable_music"] = view.soundEnabled && !view.musicEnabled
     view.setMusicEnabled(true)
     checks["music_on_waits_for_next_source_trigger"] = view.lastSoundIndex == nil && view.musicEnabled && view.soundEnabled
+    // Audio probes exercise the real action dispatcher without an audio device.
+    final class SoundProbe: NativeSoundPlayback {
+        var isPlaying = false
+        var currentTime = 0.0
+        var plays = 0,stops = 0
+        let index: Int
+        init(_ index: Int) { self.index = index }
+        func play() -> Bool { plays += 1;isPlaying = true;return true }
+        func stop() -> Bool { stops += 1;isPlaying = false;return true }
+    }
+    var streams: [SoundProbe] = [],trace: [[String:Any]] = []
+    view.soundFactory = { url in
+        let index = Int(url.deletingPathExtension().lastPathComponent.suffix(2))!
+        let stream = SoundProbe(index);streams.append(stream);return stream
+    }
+    view.stopSound();view.referenceMode = true;view.screen = .world
+    view.session = NativeSession(profileID: UUID(),seed: 1)
+    view.session.position = NativePosition(scene: 5,playerUnit: 210,cameraUnit: 190,facing: 1)
+    view.clearTelly()
+    view.effect(2);streams.last!.currentTime = 7.25;view.effect(2)
+    checks["music_repeated_frame_requests_leave_active_cursor_untouched"] = streams.count == 1 && streams[0].plays == 1 && streams[0].currentTime == 7.25
+    view.beginJump(direction: 0)
+    for _ in 0..<8 { let movement = view.preparePlayerFrame();view.finishPlayerFrame(movement) }
+    checks["jump_landing_effect_bookmarks_playing_music"] = view.lastSoundIndex == 38 && view.interruptedMusic?.index == 2 && view.interruptedMusic?.position == 7.25 && !streams[0].isPlaying
+    view.effect(2)
+    checks["music_resume_waits_for_higher_priority_effect_completion"] = streams.count == 2 && view.lastSoundIndex == 38
+    streams.last!.isPlaying = false
+    let movement = view.preparePlayerFrame();view.finishPlayerFrame(movement)
+    checks["jump_landing_resumes_music_at_saved_position"] = view.lastSoundIndex == 2 && streams.last!.currentTime == 7.25 && view.interruptedMusic == nil
+    // Space follows the ordinary held-key poll and timed zap completion path.
+    for attempt in 1...3 {
+        let position = 7.25+Double(attempt)*2
+        streams.last!.currentTime = position
+        let event = GameInputEvent.keyEvent(with: .keyDown,location: .zero,modifierFlags: [],timestamp: 0,windowNumber: 0,context: nil,characters: " ",charactersIgnoringModifiers: " ",isARepeat: false,keyCode: 49)!
+        view.keyDown(with: event);view.pollWorldKeyboard();view.physicalKeyboard.release(49)
+        let began = view.session.activeZap != nil
+        view.lastZapPulse = ProcessInfo.processInfo.systemUptime-2;view.pulseZap()
+        let preserved = view.interruptedMusic?.position == position && view.lastSoundIndex == 14
+        // Equal-priority requests must not replace the original music bookmark.
+        if attempt == 2 { view.effect(21) }
+        streams.last!.isPlaying = false
+        let movement = view.preparePlayerFrame();view.finishPlayerFrame(movement)
+        checks["space_action_resumes_music_without_restarting_\(attempt)"] = began && preserved && view.session.activeZap == nil && view.lastSoundIndex == 2 && streams.last!.currentTime == position
+        trace.append(["action":"Space","attempt":attempt,"interruptedSeconds":position,"resumedSeconds":streams.last!.currentTime])
+    }
+    streams.last!.currentTime = 14.5;view.effect(14);view.stopSound(resetMusic: false);view.effect(2)
+    checks["effect_only_stop_preserves_music_bookmark"] = streams.last!.currentTime == 14.5 && view.interruptedMusic == nil
+    streams.last!.currentTime = 15;view.effect(14);streams.last!.isPlaying = false;view.effect(1)
+    checks["changing_background_tune_discards_old_music_bookmark"] = streams.last!.index == 1 && streams.last!.currentTime == 0 && view.interruptedMusic == nil
+    streams.last!.currentTime = 3;streams.last!.isPlaying = false;view.effect(1)
+    checks["natural_music_completion_starts_next_loop_at_zero"] = streams.last!.currentTime == 0 && view.interruptedMusic == nil
+    streams.last!.currentTime = 4;view.effect(14);view.setMusicEnabled(false)
+    let beforeMute = streams.count;view.effect(1)
+    checks["music_off_clears_interrupted_bookmark_and_blocks_restart"] = view.interruptedMusic == nil && view.lastSoundIndex == nil && streams.count == beforeMute
+    view.setMusicEnabled(true);view.effect(1)
+    checks["music_reenabled_starts_fresh_on_next_trigger"] = streams.last!.currentTime == 0
+    streams.last!.currentTime = 5;view.effect(14);view.setSoundEnabled(false);view.effect(1);view.effect(38)
+    checks["sound_master_off_clears_bookmark_and_stops_all_audio"] = view.interruptedMusic == nil && view.lastSoundIndex == nil && !streams.last!.isPlaying
+    view.setSoundEnabled(true);view.effect(1);streams.last!.currentTime = 6;view.effect(14);view.stopSound();view.effect(1)
+    checks["explicit_scene_stop_does_not_leak_music_cursor_into_new_scene"] = streams.last!.currentTime == 0 && view.interruptedMusic == nil
+    try JSONSerialization.data(withJSONObject: trace,options: [.prettyPrinted,.sortedKeys]).write(to: output.appendingPathComponent("music-resume-action-trace.json"))
     return checks
 }

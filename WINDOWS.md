@@ -1,4 +1,4 @@
-# Windows native port — implementation in progress
+# Windows native port — 1.0.2 candidate
 
 Target: Windows 10 22H2 / Windows 11, Intel/AMD x64. Portable ZIP, native Swift
 and SDL3. No DOS emulator, Apple runtime or CPU emulation is part of the app.
@@ -49,3 +49,17 @@ The user has a Windows 10 test machine. Once a candidate ZIP is available:
 
 A Windows 11 desktop run is still required separately before claiming tested
 Windows 10/11 compatibility. Hosted Windows Server CI does not replace that run.
+
+## Updates synchronized with macOS 1.0.2
+
+This candidate includes corrected hallway end walls, Energy colors, centered
+Time/Score values, the master speech bubble and the single-player ending fix.
+Music resumes from its interrupted position after action sounds. This is an
+added native enhancement: the original DOS game restarted the tune. See
+[the behavior comparison](docs/NATIVE-ADDITIONS.md).
+
+The package includes build-info.json with its source commit. Automated checks
+cover 1,160 cases, clean-PATH startup, SDL display/audio setup and nonzero-position
+music playback setup. Dummy-device checks do not establish audible output or
+interactive Windows 10/11 compatibility. Keep all bundled DLLs and assets beside
+Outnumbered.exe; extracting only the executable is insufficient.

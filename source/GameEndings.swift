@@ -34,7 +34,7 @@ extension NativeGameView {
         ending.elapsedTicks = min(timeline.duration,old+max(0,ticks))
         session.activeEnding = ending
         for cue in timeline.sounds(after: old,through: ending.elapsedTicks) {
-            if cue.interrupt { sound?.stop(); lastSoundIndex = nil }
+            if cue.interrupt { stopSound() }
             if cue.index >= 0 { effect(cue.index) }
         }
         let totals = timeline.totals(at: ending.elapsedTicks)

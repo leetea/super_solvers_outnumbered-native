@@ -30,7 +30,7 @@ extension NativeGameView {
               OriginalNewUserText.messages.indices.contains(id),welcome || tutorialState.canShow(id) else { return }
         let pause = modalDepth == 0 && !tutorialPracticeContext && session != nil && [.world,.question,.drill,.decoder].contains(screen)
         if pause { session.clock.pause() }
-        held.removeAll();sound?.stop();lastSoundIndex = nil
+        held.removeAll();stopSound()
         let practiceContext = tutorialPracticeContext || screen == .practice
         let finish: () -> Void = { [weak self] in
             guard let self else { return }

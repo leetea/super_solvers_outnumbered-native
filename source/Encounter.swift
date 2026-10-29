@@ -194,6 +194,14 @@ struct NativeZap: Codable {
     var valid: Bool { (1...33).contains(playerX) && playerY == 81 && [-1,1].contains(facing) && (0...127).contains(initialEnergy) && (0...90).contains(elapsedIRQTicks) && (0...9).contains(targetWidth) && (targetLeft == nil || (-32768...32767).contains(targetLeft!)) && OriginalZapHitEffect(rawValue: hitEffect) != nil }
 }
 
+// Native playback seam shared by Cocoa/SDL and deterministic audio checks.
+protocol NativeSoundPlayback: AnyObject {
+    var isPlaying: Bool { get }
+    var currentTime: TimeInterval { get set }
+    @discardableResult func play() -> Bool
+    @discardableResult func stop() -> Bool
+}
+
 enum OriginalSoundPolicy {
     // DS:4506 signed-word priorities. Slot51 reads the following original word
     //0x460c; its valid impact stream is retained, not treated as silence.

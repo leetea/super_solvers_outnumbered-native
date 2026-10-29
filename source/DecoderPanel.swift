@@ -9,7 +9,7 @@ struct NativeDecoderPanel {
 extension NativeGameView {
     func openDecoder() {
         guard session != nil,screen == .world else { return }
-        sound?.stop();lastSoundIndex = nil;selectedRoom = 0;decoderButton = 0;decoderBlinkIRQ = 0
+        stopSound();selectedRoom = 0;decoderButton = 0;decoderBlinkIRQ = 0
         decoderConfirmationPending = false;decoderFooterBlank = false;screen = .decoder;session.clock.pause();keyboard.flush();held.removeAll()
         showNewUserMessage(13);needsDisplay = true
     }
