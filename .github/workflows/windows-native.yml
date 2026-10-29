@@ -21,9 +21,18 @@ jobs:
           Invoke-WebRequest $url -OutFile "$env:TEMP/swift-installer.exe"
           $process=Start-Process "$env:TEMP/swift-installer.exe" -ArgumentList '-quiet','-norestart' -Wait -PassThru
           if ($process.ExitCode -notin @(0,3010)) { throw "Swift installer: $($process.ExitCode)" }
-          $machine=[Environment]::GetEnvironmentVariables('Machine')
-          foreach($key in $machine.Keys) { if ($key -ne 'Path') { Set-Item "Env:$key" $machine[$key] } }
-          $env:Path=[Environment]::GetEnvironmentVariable('Path','Machine')+';'+$env:Path
+          foreach($scope in @('Machine','User')) {
+            $vars=[Environment]::GetEnvironmentVariables($scope)
+            foreach($key in $vars.Keys) { if ($key -ne 'Path') { Set-Item "Env:$key" $vars[$key] } }
+          }
+          $env:Path=[Environment]::GetEnvironmentVariable('Path','Machine')+';'+[Environment]::GetEnvironmentVariable('Path','User')+';'+$env:Path
+          $compiler=Get-Command swiftc -ErrorAction SilentlyContinue
+          if (!$compiler) {
+            $roots=@('C:/Library/Developer/Toolchains','C:/Program Files/Swift',"$env:LOCALAPPDATA/Programs")
+            $found=$roots | Where-Object {Test-Path $_} | ForEach-Object {Get-ChildItem $_ -Filter swiftc.exe -Recurse -ErrorAction SilentlyContinue} | Select-Object -First 1
+            if (!$found) { throw 'Swift installer completed but swiftc.exe was not installed in expected locations' }
+            $env:Path=$found.DirectoryName+';'+$env:Path
+          }
           Get-ChildItem Env: | Where-Object Name -match 'SDKROOT|SWIFT' | ForEach-Object { "$($_.Name)=$($_.Value)" >> $env:GITHUB_ENV }
           (Split-Path (Get-Command swiftc).Source) >> $env:GITHUB_PATH
           swiftc --version

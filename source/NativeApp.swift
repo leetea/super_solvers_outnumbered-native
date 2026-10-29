@@ -640,4 +640,23 @@ final class NativeGameView: NSObject {
         case .help, .scores: break
         }
     }
+    func recordPresentedFrame() throws {
+            if let path = ProcessInfo.processInfo.environment["OUTNUMBERED_NATIVE_ENDING_REPORT"],let ending = session?.activeEnding,screen == .ending || screen == .results {
+                let now = ProcessInfo.processInfo.systemUptime
+                if let previous = endingLastDraw { endingMaxDrawGap = max(endingMaxDrawGap,now-previous) }
+                endingLastDraw = now;endingDrawCount += 1
+                if screen == .results,!endingReportWritten,let finished = endingFinishedWallSeconds {
+                    endingReportWritten = true
+                    let duration = EndingTimeline(ending,data: endingData).duration
+                    let report: [String:Any] = ["sourceDurationIRQ":duration,"sourceDurationSeconds":Double(duration)*VerifiedClock.pitDivisor/VerifiedClock.pitInputHz,"completionEventWallSeconds":finished,"resultsDrawWallSeconds":now-endingStartedAt,"endingFrameDrawCount":endingDrawCount,"maximumDrawGapSeconds":endingMaxDrawGap,"finalElapsedIRQ":ending.elapsedTicks,"finalScore":Int(session.score),"finalLifetime":session.lifetimePoints]
+                    try JSONSerialization.data(withJSONObject: report,options: [.prettyPrinted,.sortedKeys]).write(to: URL(fileURLWithPath: path),options: .atomic)
+                }
+            }
+            if !startupReported,let path = ProcessInfo.processInfo.environment["OUTNUMBERED_NATIVE_STARTUP_REPORT"] {
+                startupReported = true
+                let report: [String:Any] = ["firstDrawUTC":ISO8601DateFormatter().string(from: Date()),"secondsSinceNativeMain":ProcessInfo.processInfo.systemUptime-NativeApplication.startedAt,"architecture":NativeApplication.architecture,"firstFrameDrawn":true]
+                try JSONSerialization.data(withJSONObject: report,options: [.prettyPrinted,.sortedKeys]).write(to: URL(fileURLWithPath: path),options: .atomic)
+            }
+    }
+
 }

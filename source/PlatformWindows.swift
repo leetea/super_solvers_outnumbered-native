@@ -11,7 +11,7 @@ func runWindowsGame() {
     PlatformSound.playing = { ow_sound_playing() != 0 }
     PlatformServices.restore = { game,members in
         guard !members.isEmpty else { ow_error("There are no removed members.");return }
-        game.modalDepth += 1;defer { game.modalDepth -= 1 }
+        game.modalDepth += 1;defer { game.modalDepth -= 1;game.lastZapPulse=ProcessInfo.processInfo.systemUptime;game.lastEndingPulse=game.lastZapPulse;game.openingLastPulse=game.lastZapPulse }
         var index=0
         while true {
             let choice=ow_choose_member(members[index].name)
@@ -35,7 +35,7 @@ func runWindowsGame() {
                 switch event.type {
                 case 1:game.confirmNativeExit()
                 case 2:
-                    if input.modifierFlags.contains(.control),text.lowercased()=="r",game.screen == .signin { game.restoreMember() }
+                    if input.modifierFlags.contains(.control),input.modifierFlags.contains(.shift),text.lowercased()=="r",game.screen == .signin { game.restoreMember() }
                     else { game.keyDown(with:input) }
                 case 3:game.keyUp(with:input)
                 case 4:
@@ -48,7 +48,7 @@ func runWindowsGame() {
             if now>=nextStep { game.step();nextStep=now+interval }
             if now>=nextPulse {
                 game.pulseZap();nextPulse=now+1.0/60
-                if game.needsDisplay { try game.render();let image=try game.canvas.representation();ow_frame(image.bitmapData);game.needsDisplay=false }
+                if game.needsDisplay { try game.render();let image=try game.canvas.representation();ow_frame(image.bitmapData);try game.recordPresentedFrame();game.needsDisplay=false }
             }
             ow_delay()
         }

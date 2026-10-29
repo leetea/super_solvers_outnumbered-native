@@ -19,6 +19,7 @@ final class MacGameView: NSView {
             let image = NSImage(size: NSSize(width: 320,height: 200)); image.addRepresentation(try game.canvas.macRepresentation())
             NSGraphicsContext.current?.imageInterpolation = .none
             image.draw(in: bounds,from: .zero,operation: .copy,fraction: 1,respectFlipped: true,hints: [.interpolation: NSImageInterpolation.none.rawValue])
+            try game.recordPresentedFrame()
         } catch { game.present(error) }
     }
 }

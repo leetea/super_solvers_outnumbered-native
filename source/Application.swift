@@ -5,6 +5,13 @@ import Foundation
     #else
     static let developmentBuild=false
     #endif
+#if arch(x86_64)
+    static let architecture="x86_64"
+#elseif arch(arm64)
+    static let architecture="arm64"
+#else
+    static let architecture="unknown"
+#endif
     static let startedAt=ProcessInfo.processInfo.systemUptime
     static var assets:URL {
         if let path=ProcessInfo.processInfo.environment["OUTNUMBERED_ASSETS"] { return URL(fileURLWithPath:path) }

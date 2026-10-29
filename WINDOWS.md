@@ -20,8 +20,8 @@ startup, sound, scaling, focus, ordinary win/loss and save/replay acceptance.
 
 Controls: arrows, Up to interact/jump, Space to zap, Tab to open decoder, Enter,
 Escape, F1 Help, F2 File, F3 Options, Home/F12 left flip, Page Up right flip.
-Calculator accepts digits and arithmetic keys. Ctrl-R at Sign-In opens restore
-removed member; Ctrl-R is reserved for restoration on Windows.
+Calculator accepts digits and arithmetic keys. Ctrl-R at Sign-In removes a member recoverably; Ctrl-Shift-R restores a
+removed member.
 
 Saves are under %LOCALAPPDATA%/OutnumberedNativeReimplementation, separately from
 read-only assets. Do not replace original saves to test. Use the existing
