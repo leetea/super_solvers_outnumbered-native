@@ -61,3 +61,11 @@ hardware and identical analog speaker/CPU-speed behavior are not claimed.
 This is a reimplementation informed by original code/data, not direct binary
 recompilation. Original game artwork and other content retain their ownership.
 See the included recovery documents and final verification report for evidence.
+
+## Native additions and original behavior
+
+The locally delivered macOS 1.0.2 preserves music position after interrupting
+action sounds; the original game restarted the tune. Treat this as an added
+native enhancement. Up-only stationary jumping is supported by the original
+hint and captured code, despite the different result in the user's reference
+test. See [the comparison and evidence](NATIVE-ADDITIONS.md).

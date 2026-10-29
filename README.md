@@ -42,3 +42,14 @@ removal are documented adaptations. Alternate DOS display/audio hardware,
 identical analog speaker output and CPU-speed-identical presentation are outside
 this target. Original content retains its ownership; no ownership or redistribution
 rights are conferred by this private reconstruction repository.
+
+## Native additions and original behavior
+
+The locally delivered macOS **1.0.2** adds **music resume after action sounds**:
+the original game restarted the tune, so this is a native enhancement rather
+than an original-behavior fix.
+
+Stationary jumping is documented separately: the user's reference test differed,
+but the original hint and captured code both support an Up-only vertical jump.
+See [the behavior comparison](docs/NATIVE-ADDITIONS.md) for the evidence and
+version scope. This note leaves the repository's 1.0 source snapshot in place.
