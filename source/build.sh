@@ -3,12 +3,23 @@ set -euo pipefail
 source_dir="${0:A:h}"
 destination="${1:-${source_dir:h}/Outnumbered.app}"
 build_mode="${2:-release}"
+if [[ "$destination" != *.app || -e "$destination" || -L "$destination" ]]; then
+  print -u2 "Choose a new .app destination; existing files and bundles are preserved."
+  exit 2
+fi
 swift_flags=()
 case "$build_mode" in
   release) ;;
+  distribution) ;;
   development) swift_flags=(-D OUTNUMBERED_DEVELOPMENT) ;;
-  *) print -u2 "Use release or development as the second argument."; exit 2 ;;
+  *) print -u2 "Use release, development or distribution as the second argument."; exit 2 ;;
 esac
+if [[ "$build_mode" == distribution ]]; then
+  if [[ "${OUTNUMBERED_SIGNING_IDENTITY:-}" != "Developer ID Application: "* || -z "${OUTNUMBERED_NOTARY_PROFILE:-}" ]]; then
+    print -u2 "Distribution requires OUTNUMBERED_SIGNING_IDENTITY and OUTNUMBERED_NOTARY_PROFILE in your keychain."
+    exit 2
+  fi
+fi
 build_dir="$(mktemp -d /private/tmp/outnumbered-native.XXXXXX)"
 trap 'rm -rf "$build_dir"' EXIT
 app="$build_dir/Outnumbered Native Development.app"
@@ -41,19 +52,29 @@ cat > "$app/Contents/Info.plist" <<'PLIST'
 <key>NSHighResolutionCapable</key><true/>
 </dict></plist>
 PLIST
-if [[ "$build_mode" == release ]]; then
+if [[ "$build_mode" != development ]]; then
   /usr/libexec/PlistBuddy -c 'Set :CFBundleIdentifier local.outnumbered.native' "$app/Contents/Info.plist"
   /usr/libexec/PlistBuddy -c 'Set :CFBundleName Outnumbered' "$app/Contents/Info.plist"
   /usr/libexec/PlistBuddy -c 'Set :CFBundleShortVersionString 1.0.0' "$app/Contents/Info.plist"
   /usr/libexec/PlistBuddy -c 'Set :CFBundleVersion 100' "$app/Contents/Info.plist"
 fi
+python3 "$source_dir/../tools/check_privacy.py" "$app"
 xattr -cr "$app"
 xattr -d com.apple.FinderInfo "$app" 2>/dev/null || true
-codesign --force --sign - "$app"
+if [[ "$build_mode" == distribution ]]; then
+  codesign --force --options runtime --timestamp --sign "$OUTNUMBERED_SIGNING_IDENTITY" "$app"
+  ditto -c -k --norsrc --noextattr --keepParent "$app" "$build_dir/notarization.zip"
+  xcrun notarytool submit "$build_dir/notarization.zip" --keychain-profile "$OUTNUMBERED_NOTARY_PROFILE" --wait
+  xcrun stapler staple "$app"
+  xcrun stapler validate "$app"
+  spctl --assess --type execute "$app"
+else
+  codesign --force --sign - "$app"
+fi
 xattr -d com.apple.FinderInfo "$app" 2>/dev/null || true
 codesign --verify --deep --strict "$app"
 mkdir -p "$destination"
-rsync -a --delete "$app/" "$destination/"
+rsync -a "$app/" "$destination/"
 xattr -cr "$destination"
 # File Provider can immediately re-add FinderInfo to the derived bundle root.
 # Retry metadata cleanup, while still requiring strict signature verification.
