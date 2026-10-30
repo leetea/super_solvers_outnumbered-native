@@ -1,4 +1,4 @@
-# Outnumbered! for Apple Silicon — 1.0
+# Outnumbered! for Apple Silicon — 1.0.0
 
 A native Swift/Cocoa macOS reimplementation of Super Solvers Outnumbered.
 The game runs directly on Apple Silicon with recovered artwork, fonts, question
@@ -8,7 +8,7 @@ DOS drawing module runs inside the app.
 ## Play and build
 
 The final app ZIP is supplied with the project delivery. Extract it and open
-Outnumbered.app on an Apple Silicon Mac running macOS 12 or newer. Playing needs
+Outnumbered.app on an Apple Silicon Mac running macOS 12 or newer. For Windows, extract it and open Outnumbered.exe on Windows 10 PC or newer. Playing needs
 no developer tools or extra packages. The app is ad-hoc signed, not notarized.
 See [the player guide](docs/PLAYER-GUIDE.md) for controls and native save locations.
 
