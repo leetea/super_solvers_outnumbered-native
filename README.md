@@ -45,7 +45,7 @@ rights are conferred by this private reconstruction repository.
 
 ## Native additions and original behavior
 
-The locally delivered macOS **1.0.2** adds **music resume after action sounds**:
+The locally delivered macOS **1.0.1** adds **music resume after action sounds**:
 the original game restarted the tune, so this is a native enhancement rather
 than an original-behavior fix.
 
